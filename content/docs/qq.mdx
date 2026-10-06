@@ -111,20 +111,6 @@ on Linux:
 
 That serves innernet at **http://127.0.0.1:3470**. **Ctrl-C** stops it.
 
-### When your result differs from CI
-
-A pass on your machine does not yet guarantee a pass in CI, for two reasons:
-
-- **Different commands.** `qq build` and `qq test` run the recipes for each
-  kind, but CI still runs stand-in commands from infra-config's `kinds.toml`.
-- **Different toolchains.** CI uses the pinned versions. On a Mac, or with
-  your own Python or Node, you may be on another version.
-
-Until this is fixed, which is planned for v1, treat the presubmit on your
-pull request as the result that counts. When the two disagree, run
-`qq test` on Linux x86_64 after `qq sync`, so you use the pinned toolchains,
-and compare with the presubmit's log.
-
 <Accordions>
   <Accordion title="Exit codes and common errors">
 
@@ -275,8 +261,6 @@ release tag; nothing lands on its own; scheduled jobs run late, so lkgr, perf
 and the canary lag.
 
 ## Go deeper
-
-- Feedback on qq or this page: open an issue in [quirq-ai/wiki](https://github.com/quirq-ai/wiki/issues).
 
 - The v0 plan: infra-config [`docs/v0.md`](https://github.com/quirq-ai/infra-config/blob/main/docs/v0.md); each repo's README.
 - Running xo-space, Mac steps, every error: [build and run guide](https://github.com/quirq-ai/research/blob/main/infra/output/report/2026-10-05-qq-build-run-locally.md).
