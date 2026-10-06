@@ -121,16 +121,29 @@ two do not run the same thing:
   [`kinds.toml`](https://github.com/quirq-ai/infra-config/blob/main/config/kinds.toml),
   for example `pnpm install --frozen-lockfile`, `pnpm build` and
   `pnpm typecheck` for a Next.js app.
-- **Different tool versions.** `qq sync` gives you CPython 3.14.8, Node 24.21.0
-  and pnpm 11. CI sets up Python 3.14 and Node 24 with GitHub's setup actions
+- **Different tool versions.** On Linux, `qq sync` gives you CPython 3.14.8,
+  Node 24.21.0 and pnpm 11.28.2. CI sets up Python 3.14 and Node 24 with GitHub's setup actions
   and installs pnpm 10, so patch versions can differ and pnpm always does.
 
 Until that changes, the presubmit on your pull request is the result that
-counts. When the two disagree, open the presubmit's log, see which command
-failed, and run that command yourself with Python 3.14, or Node 24 and pnpm 10.
-Moving CI onto the recipes is open v0 work (the second row under
-[Where qq stands](#where-qq-stands)); giving CI the same pinned toolchains is
-planned for v1.
+counts. When the two disagree, open the presubmit's log to see which step
+failed, then run CI's commands yourself. On Linux, after `qq sync`, in a
+Next.js repo:
+
+```sh
+( set -e; export PATH="$PWD/.qq/toolchains/node/bin:$PATH"; npx -y pnpm@10 install --frozen-lockfile; npx -y pnpm@10 build; npx -y pnpm@10 typecheck )
+```
+
+and in xo-space (the virtualenv sits outside the repo, so pip never writes into
+the shared toolchain):
+
+```sh
+( set -e; rm -rf ~/qq-ci-venv; .qq/toolchains/python/bin/python3 -m venv ~/qq-ci-venv; . ~/qq-ci-venv/bin/activate; python -m pip install -q -r requirements.txt; python -m pip install -q -r requirements-dev.txt; python -m compileall -q .; python -m pytest -q -p no:cacheprovider )
+```
+
+On a Mac, use your own Python 3.14 or Node 24 in place of `.qq/toolchains`.
+Moving CI onto the recipes and the toolchains `qq sync` fetches is open v0
+work (the second row under [Where qq stands](#where-qq-stands)).
 
 <Accordions>
   <Accordion title="Exit codes and common errors">
