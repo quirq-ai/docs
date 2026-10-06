@@ -24,20 +24,25 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 - **One config repo decides everything.** `infra-config` holds every policy
   as TOML; changing one is a pull request there.
-- **A repo writes one file by hand,** `infra/repo.toml`. Its CI is generated
+- **A product repo writes one file by hand,** `infra/repo.toml`. Its CI is generated
   from config, and its GitHub settings are applied from the `gate` repo.
 - **`qq` is the command line.** It builds and tests any repo the same way.
 - **Who uses it:** xo-space and innernet, all the way to the canary. website
   is listed but not in the canary.
 
-**Words used below.** **v0**: the first, thin version of qq, being finished
-now. **Pinned by digest**: named by the hash of its exact bytes, so every
-machine gets the same thing. **Presubmit**: the blocking check on a pull
-request. **Merge queue**: tests each pull request merged onto the latest
-`main` before it lands. **Post-submit**: the builder that runs on `main`
-after a change lands. **lkgr** (last known good): the newest `main` commit
-whose post-submit builders all passed. **Canary**: the daily release channel,
-built from lkgr; dev and stable come later.
+**Words used below**
+
+- **v0:** the first, thin version of qq, being finished now.
+- **Pinned by digest:** named by the hash of its exact bytes, so every
+  machine that fetches it gets the same bytes.
+- **Presubmit:** the blocking check on a pull request.
+- **Merge queue:** tests each pull request merged onto the latest `main`
+  before it lands.
+- **Post-submit:** the builder that runs on `main` after a change lands.
+- **lkgr** (last known good): the newest `main` commit whose post-submit
+  builders all passed.
+- **Canary:** the daily release channel, built from lkgr; dev and stable come
+  later.
 
 ## How a change moves
 
@@ -52,9 +57,10 @@ built from lkgr; dev and stable come later.
 5. **Ship to canary.** The `release` repo moves lkgr. Once a day the canary
    builds lkgr, starts it on a CI runner, probes it, then moves the canary
    channel. **Today:** GitHub often skips scheduled runs here, so a daily
-   backstop (07:37 UTC) starts any missed lkgr or canary run. The first
-   canary, started by hand on 2026-10-05, shipped both products. The channel
-   is recorded only in release's `release-state` branch.
+   backstop routine (07:37 UTC), run outside these repos, starts any missed
+   lkgr or canary run. The first canary, started by hand on 2026-10-05,
+   shipped both products. lkgr and the channel are recorded only in
+   release's `release-state` branch.
 6. **Install from a channel.** `qqinstall` names a channel's commit and
    digest. **Today:** every install, including xo-space's `install.sh` and
    in-app updater, follows `main`; canary test machines are not set up yet.
@@ -63,7 +69,8 @@ Dependency updates come from Dependabot; today a person merges each one.
 
 ## Use qq on your machine
 
-You need `git` and `python3` 3.11.4 or newer. Toolchains are fetched for
+You need `git` and `python3` 3.11.4 or newer with its venv module
+(Debian/Ubuntu: `python3-venv`). Toolchains are fetched for
 Linux x86_64 only. On a Mac, `qq sync` stops with `no pin for platform`, and
 you install the pinned Python 3.14.8 or Node 24 yourself.
 
@@ -122,12 +129,12 @@ and compare with the presubmit's log.
   <Accordion title="Exit codes and common errors">
 
 `qq sync`, `qq build` and `qq test` exit 0 when everything passed, 1 when a
-step failed, and 2 when the manifest is missing or invalid. Every `FAIL` line
+step failed, and 2 when `infra/repo.toml` is missing or invalid. Every `FAIL` line
 names its log file.
 
 | You see | Do this |
 |---|---|
-| `no pin for platform macos-arm64` | Install the pinned version yourself and pass `--toolchain python=ROOT` to `qq build` and `qq test` |
+| `no pin for platform macos-arm64` | Install the pinned version yourself and pass `--toolchain python=ROOT` to `qq build` and `qq test`; for Node, put Node 24 and pnpm on `PATH` |
 | `FAIL … toolchain-check` | Install the version the log names, or run on Linux after `qq sync` |
 | `qq: no infra/repo.toml here or above` | The repo has no manifest yet ([Add a repo](#add-a-repo)) |
 | `Could not find a production build in the '.next' directory` | Run `qq test` before `pnpm start` |
@@ -200,9 +207,10 @@ Then put it under qq's landing rules, in this order:
 ( mkdir -p ~/qq-apply && cd ~/qq-apply && rm -rf qq-gate && git clone -q https://github.com/quirq-ai/gate qq-gate && cd ./qq-gate && git checkout -q <COMMIT> && scripts/apply.sh )
 ```
 
-Before release moves its own infra-config pin past this change, install the
-release executor App on the repo and add the repo to gate's `executor_repos`.
-Otherwise release's lkgr job fails for every repo. Dependency rolls
+Release does not act as its executor App yet. Once it does, every repo it
+lists needs the App installed, or release's lkgr job fails for every repo. So
+install the release executor App on the repo and add the repo to gate's
+`executor_repos` before release moves its infra-config pin past this change. Dependency rolls
 (Dependabot and the rollers App) are optional and can come later.
 
 ## Who decides what
@@ -251,7 +259,7 @@ and promotion paths.
 
 v0's goal is a thin, working version of every repo, end to end on GitHub.
 Its code is built and its settings are applied, but its exit test has not
-passed. v1 (canary rollback, the dev channel, fuzzing) and v2 (remote
+passed. v1 (automatic canary rollback, the dev channel, fuzzing) and v2 (remote
 execution, the stable channel) come after. The exit test, as of 2026-10-06:
 
 | Test | Status |
