@@ -111,6 +111,27 @@ on Linux:
 
 That serves innernet at **http://127.0.0.1:3470**. **Ctrl-C** stops it.
 
+### When your result differs from CI
+
+A pass on your machine does not yet guarantee a pass in a presubmit, because the
+two do not run the same thing:
+
+- **Different commands.** `qq build` and `qq test` run the recipes for each
+  kind. CI still runs stand-in commands from infra-config's
+  [`kinds.toml`](https://github.com/quirq-ai/infra-config/blob/main/config/kinds.toml),
+  for example `pnpm install --frozen-lockfile`, `pnpm build` and
+  `pnpm typecheck` for a Next.js app.
+- **Different tool versions.** `qq sync` gives you CPython 3.14.8, Node 24.21.0
+  and pnpm 11. CI sets up Python 3.14 and Node 24 with GitHub's setup actions
+  and installs pnpm 10, so patch versions can differ and pnpm always does.
+
+Until that changes, the presubmit on your pull request is the result that
+counts. When the two disagree, open the presubmit's log, see which command
+failed, and run that command yourself with Python 3.14, or Node 24 and pnpm 10.
+Moving CI onto the recipes is open v0 work (the second row under
+[Where qq stands](#where-qq-stands)); giving CI the same pinned toolchains is
+planned for v1.
+
 <Accordions>
   <Accordion title="Exit codes and common errors">
 
@@ -262,6 +283,7 @@ and the canary lag.
 
 ## Go deeper
 
+- Feedback on qq or this page: open an issue in [quirq-ai/wiki](https://github.com/quirq-ai/wiki/issues).
 - The v0 plan: infra-config [`docs/v0.md`](https://github.com/quirq-ai/infra-config/blob/main/docs/v0.md); each repo's README.
 - Running xo-space, Mac steps, every error: [build and run guide](https://github.com/quirq-ai/research/blob/main/infra/output/report/2026-10-05-qq-build-run-locally.md).
 - Onboarding with screenshots: [operator guide](https://github.com/quirq-ai/research/blob/main/infra/output/report/2026-10-05-qq-onboard-website.md) and gate's [apply guide](https://github.com/quirq-ai/gate/blob/main/docs/apply-settings.md).
