@@ -7,7 +7,7 @@ import { BrandIcon } from "@/components/brand-icon";
 import { SystemSequence } from "@/components/system-sequence";
 import { socialLinks } from "@/lib/layout.shared";
 
-const SIGN_UP_URL = "https://app.xo.builders/sign-up?ref=docs.quirq.ai";
+const SIGN_UP_URL = "https://app.xo.builders/sign-up?ref=docs.quirq.dev";
 const GITHUB_REPO_URL = "https://github.com/quirq-ai/xo-space";
 
 export function QuirqHome() {

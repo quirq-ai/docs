@@ -76,22 +76,23 @@ you install the pinned Python 3.14.8 or Node 24 yourself.
 
 Each command runs inside `( … )`, so it leaves your shell as it was, and each
 is safe to run again. Install `qq` and `qqsync`, then put both on your `PATH`
-(it adds one line to `~/.bashrc` for bash, `~/.zshrc` otherwise; open a new
-terminal afterwards):
+(it adds one line to `~/.bashrc` for bash, `~/.bash_profile` for bash on a
+Mac, `~/.zshrc` otherwise; open a new terminal afterwards):
 
 ```sh
 ( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/depot; git clone -q https://github.com/quirq-ai/depot ~/qq-tools/depot; ~/qq-tools/depot/bin/qq --version )
 ```
 
 ```sh
-( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/qqsync; python3 -m venv ~/qq-tools/qqsync; ~/qq-tools/qqsync/bin/pip install -q --disable-pip-version-check "qqsync @ git+https://github.com/quirq-ai/sync@main"; ~/qq-tools/qqsync/bin/qqsync --version )
+( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/qqsync; python3 -m venv ~/qq-tools/qqsync; ~/qq-tools/qqsync/bin/pip install -q --disable-pip-version-check "qqsync @ git+https://github.com/quirq-ai/sync@9f4c77ebe2c81d6ffd643d737a35b962f6fd322a"; ~/qq-tools/qqsync/bin/qqsync --version )
 ```
 
 ```sh
-( case "$SHELL" in */bash) rc=~/.bashrc ;; *) rc=~/.zshrc ;; esac; mkdir -p ~/qq-tools/bin && ln -sf ~/qq-tools/depot/bin/qq ~/qq-tools/qqsync/bin/qqsync ~/qq-tools/bin/ && { grep -qs 'qq-tools/bin:' "$rc" || printf '\nexport PATH="$HOME/qq-tools/bin:$PATH"\n' >> "$rc"; } && echo "qq-tools/bin is on PATH in $rc; open a new terminal" )
+( case "$SHELL:$(uname)" in */bash:Darwin) rc=~/.bash_profile ;; */bash:*) rc=~/.bashrc ;; *) rc=~/.zshrc ;; esac; mkdir -p ~/qq-tools/bin && ln -sf ~/qq-tools/depot/bin/qq ~/qq-tools/qqsync/bin/qqsync ~/qq-tools/bin/ && { grep -qs 'qq-tools/bin:' "$rc" || printf '\nexport PATH="$HOME/qq-tools/bin:$PATH"\n' >> "$rc"; } && echo "qq-tools/bin is on PATH in $rc; open a new terminal" )
 ```
 
-The first two print `qq 0.1.0` and `qqsync 0.1.0`. Then, in any repo that
+The first two print `qq 0.1.0` and `qqsync 0.1.0`. qqsync is pinned to the
+sync commit that qq itself pins, so the two agree. Then, in any repo that
 has `infra/repo.toml`:
 
 | Command | What it does |
@@ -234,7 +235,8 @@ It prints the commit, digest and generation the canary names.
 ( chmod -R u+w ~/.cache/qq 2>/dev/null; rm -rf ~/qq-tools ~/qq-try ~/qq-ci-venv ~/.cache/qq )
 ```
 
-Then delete the `qq-tools/bin` line from `~/.bashrc` or `~/.zshrc`.
+Then delete the `qq-tools/bin` line from `~/.bashrc`, `~/.bash_profile` or
+`~/.zshrc`.
 
   </Accordion>
 </Accordions>
@@ -329,9 +331,11 @@ and promotion paths.
 ## Where qq stands
 
 v0's goal is a thin, working version of every repo, end to end on GitHub.
-Its code is built and its settings are applied, but its exit test has not
-passed. v1 (automatic canary rollback, the dev channel, fuzzing) and v2 (remote
-execution, the stable channel) come after. The exit test, as of 2026-10-06:
+Its code is built and its settings are applied, except gate's latest changes
+(onboarding website, release-state rules), which are not applied yet. Its exit
+test has not passed. v1 (automatic canary rollback, the dev channel, fuzzing)
+and v2 (remote execution, the stable channel) come after. The exit test, as of
+2026-10-07:
 
 | Test | Status |
 |---|---|
@@ -343,7 +347,7 @@ execution, the stable channel) come after. The exit test, as of 2026-10-06:
 
 **Limits today:** Linux x86_64 toolchains only; no `qq` release tag; CI does
 not run a repo's own commands; nothing lands on its own; scheduled jobs run late, so lkgr, perf
-and the canary lag.
+and the canary lag (perf has not recorded since 2026-10-05).
 
 ## Go deeper
 

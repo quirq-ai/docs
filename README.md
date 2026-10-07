@@ -17,7 +17,7 @@ In the project, you can see:
 
 | Route                         | Description                            |
 | ----------------------------- | -------------------------------------- |
-| `src/app/(docs)`              | The documentation layout and pages.    |
+| `src/app/docs`                | The documentation layout and pages.    |
 | `src/app/api/search/route.ts` | The Route Handler for search.          |
 | `src/app/api/chat/route.ts`   | The Route Handler for AI chat.         |
 | `src/app/og/docs`             | OG image generation for docs pages.    |

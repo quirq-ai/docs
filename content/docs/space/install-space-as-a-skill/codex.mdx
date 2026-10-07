@@ -25,7 +25,7 @@ codex plugin marketplace add quirq-ai/xo-space
 Then launch Codex and enter `/plugins`. Select the **Quirq** marketplace, open
 the **quirq** plugin, and install it. Start a new Codex session before using its
 skills. This follows the repository's
-[Codex plugin README](https://github.com/quirq-ai/xo-space/blob/development/.agents/plugins/quirq/README.md)
+[Codex plugin README](https://github.com/quirq-ai/xo-space/blob/development/plugins/quirq/README.md)
 and the [official OpenAI plugin instructions](https://learn.chatgpt.com/docs/plugins#plugin-browser-in-codex-cli).
 
 The repository declares marketplace name `quirq-ai` in
@@ -90,7 +90,7 @@ After confirmation, Codex runs the official installer from that directory,
 prepares the Python environment, and starts the server as a background task of
 the session. On success it reports the `/space/` URL, the log at
 `<workspace>/.quirq/logs/quirq.log`, and configuration at `<workspace>/xo-space/.env`.
-The [bundled install skill](https://github.com/quirq-ai/xo-space/blob/development/.agents/plugins/quirq/skills/quirq-install/SKILL.md)
+The [bundled install skill](https://github.com/quirq-ai/xo-space/blob/development/plugins/quirq/skills/quirq-install/SKILL.md)
 defines this sequence.
 
 ## Start an existing installation
@@ -118,8 +118,8 @@ For a server you manage independently, follow
 [Install Space](/docs/space/install-space) in your own terminal.
 
 These behaviors come from the
-[Quirq lifecycle skill](https://github.com/quirq-ai/xo-space/blob/development/.agents/plugins/quirq/skills/quirq/SKILL.md)
-and [start skill](https://github.com/quirq-ai/xo-space/blob/development/.agents/plugins/quirq/skills/quirq-start/SKILL.md).
+[Quirq lifecycle skill](https://github.com/quirq-ai/xo-space/blob/development/plugins/quirq/skills/quirq/SKILL.md)
+and [start skill](https://github.com/quirq-ai/xo-space/blob/development/plugins/quirq/skills/quirq-start/SKILL.md).
 OpenAI's [plugin permissions guide](https://learn.chatgpt.com/docs/plugins#how-permissions-and-data-sharing-work)
 describes the host-level controls.
 
