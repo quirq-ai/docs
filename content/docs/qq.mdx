@@ -76,8 +76,9 @@ you install the pinned Python 3.14.8 or Node 24 yourself.
 
 Each command runs inside `( … )`, so it leaves your shell as it was, and each
 is safe to run again. Install `qq` and `qqsync`, then put both on your `PATH`
-(it adds one line to `~/.bashrc` for bash, `~/.bash_profile` for bash on a Mac (or the `~/.bash_login`
-or `~/.profile` bash already reads), `~/.zshrc` otherwise; open a new terminal afterwards):
+(it adds one line to `~/.bashrc` for bash, to `~/.zshrc` otherwise, and on a Mac
+to the first of `~/.bash_profile`, `~/.bash_login` or `~/.profile` that bash
+already reads; open a new terminal afterwards):
 
 ```sh
 ( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/depot; git clone -q https://github.com/quirq-ai/depot ~/qq-tools/depot; ~/qq-tools/depot/bin/qq --version )
@@ -92,8 +93,8 @@ or `~/.profile` bash already reads), `~/.zshrc` otherwise; open a new terminal a
 ```
 
 The first two print `qq 0.1.0` and `qqsync 0.1.0`. qqsync is pinned to the
-sync commit that qq itself pins (depot `pyproject.toml`), so the two agree; this
-guide's pin is updated whenever depot's changes. Then, in any repo that
+sync commit that qq itself pins in depot's `pyproject.toml` as of 2026-10-07,
+so the two agree. Then, in any repo that
 has `infra/repo.toml`:
 
 {/* Same sync commit as quirq-ai/depot pyproject.toml:15 (and recipes pyproject.toml); bump them together, with setup's cli/tools.mjs and its fixture. */}
@@ -238,7 +239,12 @@ It prints the commit, digest and generation the canary names.
 ( chmod -R u+w ~/.cache/qq 2>/dev/null; rm -rf ~/qq-tools ~/qq-try ~/qq-ci-venv ~/.cache/qq )
 ```
 
-Then delete the `qq-tools/bin` line from the file the `PATH` command named.
+Then remove the `PATH` line. This deletes the `qq-tools/bin` line and the blank
+line before it, and deletes the file if that line was all it held:
+
+```sh
+( for f in ~/.bashrc ~/.bash_profile ~/.bash_login ~/.profile ~/.zshrc; do grep -qs 'qq-tools/bin:' "$f" || continue; awk '/qq-tools\/bin:/ { if (b > 0) b--; next } /^$/ { b++; next } { while (b > 0) { print ""; b-- } print } END { while (b > 0) { print ""; b-- } }' "$f" > "$f.qq-tmp" || exit 1; if grep -q '[^[:space:]]' "$f.qq-tmp"; then cat "$f.qq-tmp" > "$f"; rm -f "$f.qq-tmp"; echo "removed the qq-tools/bin line from $f"; else rm -f "$f" "$f.qq-tmp"; echo "deleted $f, which held only that line"; fi; done )
+```
 
   </Accordion>
 </Accordions>
