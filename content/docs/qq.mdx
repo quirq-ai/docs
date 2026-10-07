@@ -101,15 +101,52 @@ has `infra/repo.toml`:
 | `qqsync show infra/repo.toml` | list the repo's targets |
 | `qq build [TARGET]` | install dependencies and build |
 | `qq test [TARGET]` | build and test; results in `.qq/out/results.json` |
+| `qq run "COMMAND"` | run a command once, from the repo root, with the pinned toolchains first on `PATH` |
+| `qq create NAME COMMAND` | give the repo a command of its own, saved as `infra/commands/NAME.sh` |
+| `qq NAME [ARG ...]` | run that command, like any other qq command |
 
-There is no `qq run` yet, so start an app with its own command. For example,
-on Linux:
+`qq run` starts an app with the toolchains `qq sync` fetched. For example, on
+Linux:
 
 ```sh
-( set -e; mkdir -p ~/qq-try; cd ~/qq-try; rm -rf innernet; qq fetch https://github.com/quirq-ai/innernet; cd innernet; INNERNET_DEMO=1 qq test; PATH="$PWD/.qq/toolchains/node/bin:$PATH" pnpm start )
+( set -e; mkdir -p ~/qq-try; cd ~/qq-try; rm -rf innernet; qq fetch https://github.com/quirq-ai/innernet; cd innernet; INNERNET_DEMO=1 qq test; qq run "pnpm start" )
 ```
 
-That serves innernet at **http://127.0.0.1:3470**. **Ctrl-C** stops it.
+That serves innernet at **http://127.0.0.1:3470**. **Ctrl-C** stops it. If `qq run`
+says `invalid choice: 'run'`, run the first install command again. On a Mac, `qq run` uses the tools on your `PATH` and
+names the pinned toolchains it could not use.
+
+### Add your own commands
+
+`qq create` gives a repo a command of its own, and `qq NAME` runs it like any
+other qq command:
+
+```sh
+qq create check ./scripts/check --all
+qq check --fast
+```
+
+The first saves `infra/commands/check.sh`; the second runs
+`./scripts/check --all --fast`.
+
+- **Share it** by committing `infra/commands/NAME.sh`; teammates and agents
+  then get `qq NAME` too. `qq --help` lists the repo's commands under qq's own.
+- **It runs like `qq run`:** from the repo root, with the pinned toolchains
+  first on `PATH`.
+- **Arguments.** Created from several words, each word stays one word and the
+  arguments you give `qq NAME` are passed on after them. Created from one
+  argument (a quoted command line, or a single word such as
+  `qq create lint ruff`), it is saved as typed: add `"$@"` where arguments go,
+  or qq refuses to run it with arguments rather than drop them. `qq NAME --help`
+  shows the command when it takes no arguments; otherwise `--help` goes to the
+  command.
+- **Names** are lowercase letters, digits, `-` and `_`. qq's own command names,
+  and names one typo away from them (`snyc`, `tets`), cannot be created, so a
+  mistyped `qq sync` never runs a repo's code. `qq create --force NAME COMMAND`
+  replaces a command.
+- **Trust.** A repo's command is code in that repo, and CI does not run it.
+  Before running one from a repo you do not trust, read it with `less` or
+  `cat -v` (plain `cat` lets terminal escapes in it act).
 
 ### When your result differs from CI
 
@@ -130,23 +167,21 @@ two do not run the same thing:
 
 Until that changes, the presubmit on your pull request is the result that
 counts. When the two disagree, open the presubmit's log to see which step
-failed, then run CI's commands yourself. On Linux x86_64, after `qq sync`, in a
-Next.js repo:
+failed, then run CI's commands yourself. After `qq sync`, in a Next.js repo:
 
 ```sh
-( set -e; export PATH="$PWD/.qq/toolchains/node/bin:$PATH"; npx -y pnpm@10 install --frozen-lockfile; npx -y pnpm@10 build; npx -y pnpm@10 typecheck )
+qq run "set -e; npx -y pnpm@10 install --frozen-lockfile; npx -y pnpm@10 build; npx -y pnpm@10 typecheck"
 ```
 
 and in xo-space (pip installs into a fresh virtualenv in your home folder, never
 into the shared toolchain):
 
 ```sh
-( set -e; rm -rf ~/qq-ci-venv; .qq/toolchains/python/bin/python3 -m venv ~/qq-ci-venv; . ~/qq-ci-venv/bin/activate; python -m pip install -q --disable-pip-version-check -r requirements.txt; python -m pip install -q --disable-pip-version-check -r requirements-dev.txt; python -m compileall -q .; python -m pytest -q -p no:cacheprovider )
+qq run 'set -e; rm -rf ~/qq-ci-venv; python3 -m venv ~/qq-ci-venv; . ~/qq-ci-venv/bin/activate; python -m pip install -q --disable-pip-version-check -r requirements.txt; python -m pip install -q --disable-pip-version-check -r requirements-dev.txt; python -m compileall -q .; python -m pytest -q -p no:cacheprovider'
 ```
 
-On a Mac there is no `.qq/toolchains`: in the xo-space command, write
-`python3.14` in place of `.qq/toolchains/python/bin/python3`; the Next.js
-command uses the Node 24 on your `PATH`.
+On a Mac, `qq run` uses the tools on your `PATH`: in the xo-space command, write
+`python3.14` in place of `python3`.
 
 Moving CI onto the recipes is open v0 work (the second row under
 [Where qq stands](#where-qq-stands)). Moving CI onto the toolchains `qq sync`
@@ -159,12 +194,21 @@ fetches is planned for v1.
 step failed, and 2 when `infra/repo.toml` is missing or invalid. Every `FAIL` line
 names its log file.
 
+`qq run` and `qq NAME` exit with the command's own code. When qq itself fails
+they exit 125: `qq run` with nothing to run or outside a repo, or a command file
+qq cannot read or refuses to run. A command that is not found gives 127, and one
+that cannot run gives 126. A name the repo has no command for is an unknown qq
+command and exits 2. `qq create` exits 2 on bad usage or outside a repo, and 1
+when it cannot create the command (the name is taken, the file exists).
+
 | You see | Do this |
 |---|---|
 | `no pin for platform macos-arm64` | Install the pinned version yourself and pass `--toolchain python=ROOT` to `qq build` and `qq test`; for Node, put Node 24 and pnpm on `PATH` |
 | `FAIL … toolchain-check` | Install the version the log names, or run on Linux after `qq sync` |
 | `qq: no infra/repo.toml here or above` | The repo has no manifest yet ([Add a repo](#add-a-repo)) |
-| `Could not find a production build in the '.next' directory` | Run `qq test` before `pnpm start` |
+| `Could not find a production build in the '.next' directory` | Run `qq test` before `qq run "pnpm start"` |
+| `qq NAME never mentions its arguments` | Add `"$@"` where the arguments go in `infra/commands/NAME.sh` |
+| `NAME is one typo away from qq …` | Pick another name, or rename the file |
 
   </Accordion>
   <Accordion title="Send a change for review with qq">
@@ -297,8 +341,8 @@ execution, the stable channel) come after. The exit test, as of 2026-10-06:
 | A planted break reverted automatically | Not started: needs the gardener App |
 | A scorecard computed by a script | Built |
 
-**Limits today:** Linux x86_64 toolchains only; no `qq run` and no `qq`
-release tag; nothing lands on its own; scheduled jobs run late, so lkgr, perf
+**Limits today:** Linux x86_64 toolchains only; no `qq` release tag; CI does
+not run a repo's own commands; nothing lands on its own; scheduled jobs run late, so lkgr, perf
 and the canary lag.
 
 ## Go deeper
