@@ -76,8 +76,8 @@ you install the pinned Python 3.14.8 or Node 24 yourself.
 
 Each command runs inside `( … )`, so it leaves your shell as it was, and each
 is safe to run again. Install `qq` and `qqsync`, then put both on your `PATH`
-(it adds one line to `~/.bashrc` for bash, `~/.bash_profile` for bash on a
-Mac, `~/.zshrc` otherwise; open a new terminal afterwards):
+(it adds one line to `~/.bashrc` for bash, `~/.bash_profile` for bash on a Mac (or the `~/.bash_login`
+or `~/.profile` bash already reads), `~/.zshrc` otherwise; open a new terminal afterwards):
 
 ```sh
 ( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/depot; git clone -q https://github.com/quirq-ai/depot ~/qq-tools/depot; ~/qq-tools/depot/bin/qq --version )
@@ -88,12 +88,15 @@ Mac, `~/.zshrc` otherwise; open a new terminal afterwards):
 ```
 
 ```sh
-( case "$SHELL:$(uname)" in */bash:Darwin) rc=~/.bash_profile ;; */bash:*) rc=~/.bashrc ;; *) rc=~/.zshrc ;; esac; mkdir -p ~/qq-tools/bin && ln -sf ~/qq-tools/depot/bin/qq ~/qq-tools/qqsync/bin/qqsync ~/qq-tools/bin/ && { grep -qs 'qq-tools/bin:' "$rc" || printf '\nexport PATH="$HOME/qq-tools/bin:$PATH"\n' >> "$rc"; } && echo "qq-tools/bin is on PATH in $rc; open a new terminal" )
+( case "$SHELL:$(uname)" in */bash:Darwin) for rc in ~/.bash_profile ~/.bash_login ~/.profile ~/.bash_profile; do [ -f "$rc" ] && break; done ;; */bash:*) rc=~/.bashrc ;; *) rc=~/.zshrc ;; esac; mkdir -p ~/qq-tools/bin && ln -sf ~/qq-tools/depot/bin/qq ~/qq-tools/qqsync/bin/qqsync ~/qq-tools/bin/ && { grep -qs 'qq-tools/bin:' "$rc" || printf '\nexport PATH="$HOME/qq-tools/bin:$PATH"\n' >> "$rc"; } && echo "qq-tools/bin is on PATH in $rc; open a new terminal" )
 ```
 
 The first two print `qq 0.1.0` and `qqsync 0.1.0`. qqsync is pinned to the
-sync commit that qq itself pins, so the two agree. Then, in any repo that
+sync commit that qq itself pins (depot `pyproject.toml`), so the two agree; this
+guide's pin is updated whenever depot's changes. Then, in any repo that
 has `infra/repo.toml`:
+
+{/* Same sync commit as quirq-ai/depot pyproject.toml:15 (and recipes pyproject.toml); bump them together, with setup's cli/tools.mjs and its fixture. */}
 
 | Command | What it does |
 |---|---|
@@ -235,8 +238,7 @@ It prints the commit, digest and generation the canary names.
 ( chmod -R u+w ~/.cache/qq 2>/dev/null; rm -rf ~/qq-tools ~/qq-try ~/qq-ci-venv ~/.cache/qq )
 ```
 
-Then delete the `qq-tools/bin` line from `~/.bashrc`, `~/.bash_profile` or
-`~/.zshrc`.
+Then delete the `qq-tools/bin` line from the file the `PATH` command named.
 
   </Accordion>
 </Accordions>
@@ -331,8 +333,10 @@ and promotion paths.
 ## Where qq stands
 
 v0's goal is a thin, working version of every repo, end to end on GitHub.
-Its code is built and its settings are applied, except gate's latest changes
-(onboarding website, release-state rules), which are not applied yet. Its exit
+Its code is built. Its GitHub settings were last applied at gate `6610664`, which
+covered the 13 infra repos plus xo-space and innernet. Gate #23, #24, #25, #26
+and #28 (website onboarding) are merged but not applied yet, and the
+release-state rules are in gate #27, which is still open. Its exit
 test has not passed. v1 (automatic canary rollback, the dev channel, fuzzing)
 and v2 (remote execution, the stable channel) come after. The exit test, as of
 2026-10-07:
