@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAISearchContext } from "@/components/ai/search";
 import { cn } from "@/lib/cn";
 
-const SIGN_UP_URL = "https://app.xo.builders/sign-up?ref=docs.quirq.ai";
+const SIGN_UP_URL = "https://app.xo.builders/sign-up?ref=docs.quirq.dev";
 /** Hide the bar near the page end so the docs footer / social links stay reachable. */
 const HIDE_NEAR_BOTTOM_PX = 160;
 /** Matches bar content + vertical padding; reserved so content can scroll clear of the bar. */

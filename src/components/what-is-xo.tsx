@@ -5,7 +5,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { BrandIcon } from "./brand-icon";
 
 // What is XO — 4-layer architecture explainer. Theme-aware (fd-* tokens).
-const SIGN_UP_URL = "https://app.xo.builders/sign-up?ref=docs.quirq.ai";
+const SIGN_UP_URL = "https://app.xo.builders/sign-up?ref=docs.quirq.dev";
 const GITHUB_REPO_URL = "https://github.com/quirq-ai/xo-space";
 
 const ICONS: Record<string, string> = {
