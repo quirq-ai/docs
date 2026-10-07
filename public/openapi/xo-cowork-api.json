@@ -11,7 +11,7 @@
   },
   "externalDocs": {
     "description": "XO Cowork API guides and full behavioral documentation",
-    "url": "https://docs.xo.builders/more/xo-cowork-api"
+    "url": "https://docs.quirq.dev/more/xo-cowork-api"
   },
   "servers": [
     {

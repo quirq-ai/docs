@@ -189,7 +189,7 @@ async function assertExternalLinkOpensNewTab(link) {
 async function verifyWikiNavigation() {
   // Inspect navigation without contacting GitHub or the published docs site.
   // No screenshot includes this destination stub or modified Space content.
-  for (const pattern of ["https://docs.quirq.ai/**", "https://github.com/**"]) {
+  for (const pattern of ["https://docs.quirq.dev/**", "https://github.com/**"]) {
     await context.route(pattern, (route) =>
       route.fulfill({
         contentType: "text/html",
