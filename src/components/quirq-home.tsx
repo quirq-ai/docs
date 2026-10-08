@@ -85,15 +85,15 @@ export function QuirqHome() {
         <div className="relative mx-auto max-w-4xl text-center">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-fd-border bg-fd-background/80 px-3.5 py-1 text-xs font-medium text-fd-foreground shadow-sm">
             <span className="size-2 rounded-full bg-green-500 animate-pulse" />
-            <span>One-Click Agentic Environments</span>
+            <span>Open source</span>
             <span className="text-fd-muted-foreground">•</span>
             <span className="text-fd-muted-foreground">
-              Measure Output, Not Just Tokens
+              On your computer or in the cloud
             </span>
           </div>
 
           <h1 className="text-balance text-4xl font-bold tracking-[-0.05em] sm:text-6xl lg:text-7xl">
-            Build, observe, and measure agentic work.
+            A place for your AI agents to work.
           </h1>
 
           <Link
@@ -105,11 +105,9 @@ export function QuirqHome() {
           </Link>
 
           <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-7 text-fd-muted-foreground sm:text-lg">
-            Every agent needs a <strong>Runtime</strong> (the machine), an{" "}
-            <strong>Environment</strong> (XO Space), an <strong>Agent</strong>{" "}
-            (unopinionated harness), and an <strong>Output</strong> (quirq). XO
-            decouples the environment from the machine—bringing live
-            observability and verified work measurement to your team.
+            XO Space shows what your agents are doing, keeps your projects and
+            history in one place, and runs on your computer or in the cloud. You
+            bring your own agent and model key.
           </p>
 
           {/* Terminal Install Snippet */}
@@ -141,8 +139,8 @@ export function QuirqHome() {
               </button>
             </div>
             <p className="mt-2 text-xs text-fd-muted-foreground">
-              Runs locally on <code>localhost:5002</code> · Auto-detects Claude
-              Code, OpenClaw, Hermes, Antigravity, Cursor
+              Opens at <code>localhost:5002</code> · Finds Claude Code,
+              OpenClaw, Hermes, Antigravity and Cursor
             </p>
           </div>
 
@@ -153,14 +151,14 @@ export function QuirqHome() {
               className="rounded-lg bg-fd-primary px-6 py-3 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
             >
               <span className="icon-[ph--monitor-fill] mr-2 inline-block size-4 align-[-0.125em]" />
-              Start Local Space
+              Install on my computer
             </Link>
             <a
               href={SIGN_UP_URL}
               className="rounded-lg border border-fd-border bg-fd-background/80 px-6 py-3 text-sm font-semibold transition-colors hover:bg-fd-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
             >
               <span className="icon-[ph--rocket-fill] mr-2 inline-block size-4 align-[-0.125em] text-fd-primary" />
-              1-Click Managed Cloud
+              Use XO Cloud
             </a>
             <a
               href={GITHUB_REPO_URL}
@@ -183,15 +181,13 @@ export function QuirqHome() {
         <div className="mx-auto max-w-6xl">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-fd-muted-foreground">
-              Decoupled Architecture
+              Two ways to run it
             </p>
             <h2 className="mt-3 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-              One Environment. Any Machine.
+              Your computer or our cloud.
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-fd-muted-foreground sm:text-base">
-              Because <strong>Environment (XO Space)</strong> is decoupled from
-              the machine runtime, your project memory, live trace logs, and
-              agent sessions travel anywhere without vendor lock-in.
+              It is the same XO Space either way. Pick the one that suits you.
             </p>
           </div>
 
@@ -213,21 +209,21 @@ export function QuirqHome() {
                 </span>
                 <div className="mt-auto">
                   <p className="text-xs font-semibold uppercase tracking-wider text-fd-primary">
-                    Self-Hosted (Local OSS)
+                    On your computer
                   </p>
                   <h3 className="mt-2 text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">
-                    Your Laptop or Mac Studio.
+                    Free and open source.
                   </h3>
                   <p className="mt-3 text-sm leading-6 text-white/70">
-                    Run Space directly on your machine. Auto-discovers local
-                    agent CLIs and stores all trace telemetry in{" "}
-                    <code>~/.quirq/</code>.
+                    Run Space on your own machine. It finds the agents you
+                    already use and keeps its data in a <code>.quirq</code>{" "}
+                    folder next to your projects.
                   </p>
                   <Link
                     href="/docs/space/install-space"
                     className="mt-6 inline-flex items-center rounded-lg bg-fd-primary px-5 py-2.5 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
                   >
-                    Install Local Space
+                    Install Space
                     <span className="icon-[ph--arrow-right-bold] ml-2 size-3.5" />
                   </Link>
                 </div>
@@ -251,15 +247,14 @@ export function QuirqHome() {
                 </span>
                 <div className="mt-auto">
                   <p className="text-xs font-semibold uppercase tracking-wider text-fd-primary">
-                    Managed Cloud Sandbox
+                    XO Cloud
                   </p>
                   <h3 className="mt-2 text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">
-                    1-Click XO Cloud Sandboxes.
+                    Nothing to install.
                   </h3>
                   <p className="mt-3 text-sm leading-6 text-white/70">
-                    Run the identical Space engine on isolated Linux VMs with
-                    browser VS Code IDE (code-server), team sharing, and
-                    persistent endpoints.
+                    We run XO Space for you on a cloud machine, with VS Code in
+                    your browser and project sharing.
                   </p>
                   <a
                     href={SIGN_UP_URL}
@@ -280,51 +275,46 @@ export function QuirqHome() {
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-fd-muted-foreground">
-              Core Architecture
+              How it fits together
             </p>
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">
-              Environment is the Space. quirqs measure the Output.
+              Your machine, your Space, your agent.
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-fd-muted-foreground">
-              AI labs push endless model token consumption. XO provides the
-              decoupled execution plane and output meter to verify real work.
+              Space sits between the machine and the agent, so you can change
+              either one.
             </p>
           </div>
           <dl className="grid gap-x-8 gap-y-7 sm:grid-cols-2">
             <div>
-              <dt className="font-semibold text-fd-foreground">
-                1. Runtime (The Machine)
-              </dt>
+              <dt className="font-semibold text-fd-foreground">1. Machine</dt>
               <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
-                Where code physically runs: your laptop, on-prem hardware, or an
-                XO cloud VM.
+                Where the work runs: your computer, your own server or an XO
+                cloud machine.
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-fd-foreground">2. XO Space</dt>
+              <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
+                Holds your projects, agent sessions and history, and shows them
+                to you.
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-fd-foreground">3. Agent</dt>
+              <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
+                The agent you choose: Claude Code, OpenClaw, Hermes, Antigravity
+                or Cursor.
               </dd>
             </div>
             <div>
               <dt className="font-semibold text-fd-foreground">
-                2. Environment (XO Space)
+                4. Work, and quirqs (proposed)
               </dt>
               <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
-                The <code>cowork-api</code> control plane that holds memory,
-                session traces, and file watcher events.
-              </dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-fd-foreground">
-                3. Agent (Unopinionated)
-              </dt>
-              <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
-                Any coding agent harness: Claude Code, OpenClaw, Hermes,
-                Antigravity, or Cursor.
-              </dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-fd-foreground">
-                4. Output & quirq (The Output Meter)
-              </dt>
-              <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
-                Minting verified units of delivered work ($V \cdot B$) scored
-                against machine-checkable definitions of done.
+                What your agents deliver. A quirq is a proposed unit for
+                counting checked, delivered work. XO Space does not count quirqs
+                yet.
               </dd>
             </div>
           </dl>
@@ -347,7 +337,7 @@ export function QuirqHome() {
               </span>
               <span className="font-semibold">Install Space</span>
               <span className="mt-2 block text-sm text-fd-muted-foreground">
-                Single curl command setup.
+                One command to install.
               </span>
             </Link>
             <Link
@@ -359,7 +349,7 @@ export function QuirqHome() {
               </span>
               <span className="font-semibold">Space UI</span>
               <span className="mt-2 block text-sm text-fd-muted-foreground">
-                UI guide for localhost:5002.
+                A tour of the app.
               </span>
             </Link>
             <Link
@@ -369,9 +359,9 @@ export function QuirqHome() {
               <span className="mb-3 flex size-8 items-center justify-center rounded-lg border border-fd-border bg-fd-muted text-fd-primary">
                 <span className="icon-[ph--gauge-fill] size-4" />
               </span>
-              <span className="font-semibold">Measure Work (quirq)</span>
+              <span className="font-semibold">quirq (proposal)</span>
               <span className="mt-2 block text-sm text-fd-muted-foreground">
-                The output meter for AI.
+                A proposed unit for agent work.
               </span>
             </Link>
             <Link
@@ -381,9 +371,9 @@ export function QuirqHome() {
               <span className="mb-3 flex size-8 items-center justify-center rounded-lg border border-fd-border bg-fd-muted text-fd-primary">
                 <span className="icon-[ph--book-open-fill] size-4" />
               </span>
-              <span className="font-semibold">All Documentation</span>
+              <span className="font-semibold">All docs</span>
               <span className="mt-2 block text-sm text-fd-muted-foreground">
-                Browse every guide & API spec.
+                Every guide and the API reference.
               </span>
             </Link>
           </div>

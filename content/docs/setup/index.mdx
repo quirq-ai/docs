@@ -1,43 +1,39 @@
 ---
-title: Configure Your Space
-description: Connect compatible models, data sources, and channels after your space is provisioned.
+title: Set up XO Cloud
+description: Connect models, data and chat apps after your cloud machine is ready.
 icon: Settings
 ---
 
 import { Cards, Card } from "@/components/card";
 
-The **Setup** tab in your XO project page is where you configure your agent
-after provisioning. The available model and channel options depend on the agent
-you selected, while data-source connections are shared across supported
-spaces.
-
----
-
-## Configure Your Agent
+Once your cloud machine is ready, open the **Setup** tab on your XO project page.
+What you can connect depends on the agent you picked.
 
 <Cards>
 	<Card
 		icon={<span className="icon-[ph--check-square-offset-fill] size-4.5 text-green-400" />}
-		title="Compatibility Guide"
-		description="Check which model connections, interfaces, and channels apply to each agent."
+		title="What works with my agent"
+		description="Which models, apps and chat channels each agent supports."
 		href="/docs/setup/compatibility"
 	/>
 	<Card
 		icon={<span className="icon-[ph--cpu-fill] size-4.5 text-green-400" />}
 		title="Models"
-		description="Connect Anthropic, OpenAI, or OpenRouter via API key — or use OAuth with your Claude/ChatGPT subscription."
+		description="Use an Anthropic, OpenAI or OpenRouter key, or sign in with your Claude or ChatGPT plan."
 		href="/docs/setup/models"
 	/>
 	<Card
 		icon={<span className="icon-[ph--database-fill] size-4.5 text-green-400" />}
-		title="Data Sources"
-		description="Connect Google Drive, OneDrive, GitHub, or Vercel so your agent can read from them."
+		title="Data sources"
+		description="Let your agent read Google Drive, OneDrive, GitHub or Vercel."
 		href="/docs/setup/data"
 	/>
 	<Card
 		icon={<span className="icon-[ph--chat-circle-fill] size-4.5 text-green-400" />}
-		title="OpenClaw Channels"
-		description="Connect Telegram or Slack through Setup, then restart the OpenClaw Gateway."
+		title="OpenClaw chat apps"
+		description="Connect Telegram or Slack, then restart the OpenClaw Gateway."
 		href="/docs/setup/channels"
 	/>
 </Cards>
+
+Running Space on your own computer? Use [Setup in Space](/docs/space/space-walk/setup) instead.

@@ -1,44 +1,48 @@
 ---
 title: Troubleshooting
-description: Start with the symptom, service, or exact error you are seeing.
+description: Find help by what is going wrong.
 icon: CircleHelp
 ---
 
 import { Cards, Card } from "@/components/card";
 
-Start with the part of XO that is failing. The most complete agent-specific
-coverage currently focuses on OpenClaw; the other links take you to the
-relevant setup or space checks.
+Pick what is going wrong. The most detailed help today is for OpenClaw.
 
 <Cards>
 	<Card
 		icon={<span className="icon-[mingcute--chat-2-ai-fill] size-6" />}
-		title="OpenClaw errors"
-		description="Fix gateway-token errors, unresponsive agents, failed startups, 502s, and model-provider problems."
+		title="OpenClaw isn't working"
+		description="Token errors, no reply, failed start, 502 errors and model problems."
 		href="/docs/troubleshooting/agents/openclaw"
 	/>
 	<Card
 		icon={<span className="icon-[ph--monitor-fill] size-6" />}
-		title="Space or IDE access"
-		description="Check machine state, service readiness, browser IDE access, and restart controls."
-		href="/docs/getting-started/manage-space"
+		title="I can't reach my cloud machine"
+		description="Check that it is on, restart services and open the browser editor."
+		href="/docs/cloud/manage-space"
 	/>
 	<Card
 		icon={<span className="icon-[ph--cpu-fill] size-6" />}
-		title="Model authentication"
-		description="Review OAuth and API-key setup, then use the path supported by your selected agent."
+		title="My model won't connect"
+		description="Check your API key or subscription sign-in."
 		href="/docs/setup/models"
 	/>
 	<Card
 		icon={<span className="icon-[ph--chat-circle-fill] size-6" />}
-		title="Messaging channels"
-		description="Check agent compatibility, credentials, save state, gateway restart, and connection status."
+		title="My chat app isn't connected"
+		description="Check that your agent supports it, then your keys and restart."
 		href="/docs/setup/compatibility"
 	/>
 	<Card
 		icon={<span className="icon-[ph--rocket-fill] size-6" />}
-		title="Launchpad deployment"
-		description="Diagnose build, port, and 502 problems in the deployment-method guides."
+		title="My Launchpad deploy failed"
+		description="Build, port and 502 problems."
 		href="/templates/no-code-deployment"
+	/>
+	<Card
+		icon={<span className="icon-[ph--terminal-fill] size-6" />}
+		title="Space on my computer"
+		description="Install, start again, update or remove it."
+		href="/docs/space/install-space"
 	/>
 </Cards>

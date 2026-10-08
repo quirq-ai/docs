@@ -1,5 +1,5 @@
 {
-  "title": "Space Configuration",
+  "title": "Set up XO Cloud",
   "icon": "Settings",
   "pages": ["compatibility", "models", "data", "channels"]
 }
