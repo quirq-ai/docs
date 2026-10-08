@@ -2,6 +2,7 @@
   "title": "XO Documentation",
   "pages": [
     "index",
+    "start",
     "---XO Space Engine---",
     "space",
     "---Deployment---",

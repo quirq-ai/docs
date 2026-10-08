@@ -28,7 +28,7 @@
   --color-fd-border: hsla(92, 35%, 40%, 22%);
   --color-fd-ring: hsl(92, 60%, 28%);
   --color-fd-muted: hsl(92, 18%, 96%);
-  --color-fd-muted-foreground: hsl(92, 8%, 44%);
+  --color-fd-muted-foreground: hsl(92, 8%, 39%);
 }
 
 .dark {
@@ -68,4 +68,10 @@ aside [data-sidebar-viewport],
 #nd-sidebar-mobile [data-radix-scroll-area-viewport],
 [data-sidebar] [data-radix-scroll-area-viewport] {
   padding-bottom: calc(var(--docs-bottom-bar-height, 60px) + 3.5rem) !important;
+}
+
+/* Keep focused links clear of the sticky header and the fixed bottom bar. */
+html {
+  scroll-padding-top: 6.5rem;
+  scroll-padding-bottom: calc(var(--docs-bottom-bar-height, 60px) + 1rem);
 }
