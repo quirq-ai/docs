@@ -14,8 +14,7 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 ![Setup Workspace with identity, folders, and section navigation](/images/space/setup.png)
 
-Open the **Setup** tab, or press **4**. **Refresh status** checks the
-installation again. A banner tells you when a saved change needs a restart.
+Open the **Setup** tab, or press **4**. **Refresh** (top right) checks again. A banner tells you when a saved change needs a restart.
 
 | Section | Use it to |
 | --- | --- |
@@ -37,9 +36,9 @@ In **Workspace → Folders**:
 3. Click **Save folders**, then restart. **Currently using** and **Pending
    restart** show when the saved folders differ from the running ones.
 
-If Space runs in a container, Setup shows an installer command to run instead.
-Use **Copy installer command**. Add or remove single projects in **Projects →
-Manage**.
+When saved folders differ from the running ones, Setup shows the command that
+applies them; **Copy installer command** copies it. Add or remove single
+projects in **Projects → Manage**.
 
 ## Pick your agent
 
@@ -70,7 +69,8 @@ To sign in to services and apps, use [Connectors](/docs/space/space-walk/connect
 **Intelligence layer** shows whether usage reporting is **off**, **on**,
 **pending** or **blocked**. When it is on, Space sends daily token, cost and
 session summaries. These leave out prompts and file contents, but error notes
-can include file names. **What leaves your machine** in Setup sums this up; the
+can include file names and raw error details. Reporting is on when an XO account
+key (`XO_API_KEY`) is saved or you sign in. **What leaves your machine** in Setup sums this up; the
 [collection guide](/docs/space/observability/collection) has the details.
 
 ## Restart the server
@@ -91,8 +91,8 @@ In **Server → Updates**, click **Check for updates**. **Update now** appears
 when the update can apply cleanly. Restart afterwards to run the new code.
 
 <Callout type="info">
-  Updating never discards your local edits. If your copy has changes or is on
-  another branch, save or sort out that work first.
+  Updating never discards your work. If your copy has unsaved changes, or
+  commits that aren't on GitHub, Update won't run until you sort those out.
 </Callout>
 
 ## Run saved commands

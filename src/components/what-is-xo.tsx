@@ -596,7 +596,7 @@ export function WhatIsXO() {
         {/* Buttons Row */}
         <div className="flex flex-wrap items-center justify-center gap-3">
           <a
-            href="/docs/space"
+            href="/docs/space/install-space"
             className="inline-flex items-center gap-2 rounded-lg bg-fd-primary px-5 py-2.5 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-90"
           >
             <Icon name="terminal" className="size-4" />

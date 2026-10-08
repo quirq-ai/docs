@@ -77,21 +77,21 @@ curl -fsSL https://quirq.ai/install | sh
 ```
 
 An update skips a checkout that has local changes or is on another branch, and
-the startup message says so. Removing keeps your project folders. Space adds no
+the startup message says so. Removing deletes Space's code and its history in
+`.quirq`. It keeps your project folders and your saved secrets. Space adds no
 system service, scheduled job or login item.
 
 ## Install from a clone
 
-If the one-line command doesn't work for you, clone and install:
+If the one-line command doesn't work for you, run this from your projects
+folder instead:
 
 ```bash
 git clone https://github.com/quirq-ai/xo-space.git
-cd xo-space
-./install.sh
+./xo-space/install.sh
 ```
 
-This uses your checkout as it is. The folder you start from becomes your
-workspace unless you pick other folders in Setup. To change Space's own code,
+This gives the same layout as the one-line install. To change Space's own code,
 see [contributing](/docs/space/contributing).
 
 ## What it creates
@@ -109,8 +109,10 @@ conversations in their usual folders.
 
 ## Settings
 
-The installer writes `xo-space/.env` once and keeps your later edits. **Setup
-shows the settings Space is really using**, so check there first. Common ones:
+The installer writes `xo-space/.env` once and keeps your later edits. After
+editing it, stop Space and run `./xo-space/install.sh` again. Anything you saved
+in Setup wins over `.env`, and **Setup shows the settings Space is really
+using**, so check there first. Common ones:
 
 | Setting | Default | Meaning |
 |---|---|---|
@@ -126,7 +128,8 @@ To set one when you install:
 curl -fsSL https://quirq.ai/install | PORT=8080 sh
 ```
 
-Keep the state folder outside your project folders.
+If you move the state folder, don't put it inside a project. The default
+`.quirq` in your projects folder is fine.
 
 Next: [your first Space](/docs/space/first-space). Rather not install anything?
 Use [XO Cloud](https://app.xo.builders/).
