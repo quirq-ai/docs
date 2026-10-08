@@ -1,207 +1,112 @@
 ---
-title: Setup & Quirq State
-description: Set up your workspace and agent, manage secrets and connectors, and apply changes through Server controls.
+title: Setup
+description: Pick your folders and agent, save secrets, connect tools and restart Space.
 icon: Settings
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 
 <Lead>
-  **Setup** separates initial setup from ongoing management. Start with
-  **Workspace** and **Intelligence layer**, then use **Connectors**, **Secrets**,
-  **Commands**, and **Server** as needed.
+  **Setup** is where you tell Space which folders to use and which agent to run.
+  Start with **Workspace** and **Intelligence layer**. Come back for the other
+  sections when you need them.
 </Lead>
 
 ![Setup Workspace with identity, folders, and section navigation](/images/space/setup.png)
 
-Open the fourth primary tab, **Setup**, press **4**, or use
-`/space/#/setup/workspace`. **Refresh status** checks the installation again. The
-banner distinguishes unsaved edits from saved changes that require a restart.
+Open the **Setup** tab, or press **4**. **Refresh** (top right) checks again.
+A banner tells you when a saved change needs a restart.
 
-| Section | What you can do | Route |
-| --- | --- | --- |
-| Workspace | Check Space and account identity; choose folders | `#/setup/workspace` |
-| Intelligence layer | Choose the agent for new chats and configure activity collection | `#/setup/intelligence` |
-| Connectors | Connect workspace tools and account apps | `#/setup/connectors` |
-| Secrets | Add, replace, or remove environment values | `#/setup/secrets` |
-| Commands | Save, run, and schedule commands; read their results | `#/setup/commands` |
-| Server | Restart, check updates, and inspect technical details | `#/setup/server` |
+| Section | Use it to |
+| --- | --- |
+| Workspace | Check who and where this Space is; choose folders |
+| Intelligence layer | Pick the agent for new chats; choose which agents' activity to collect |
+| Connectors | Connect tools and accounts |
+| Secrets | Add, replace or remove keys and tokens |
+| Commands | Save, run and schedule commands |
+| Server | Restart, update, and see technical details |
 
-Use the sidebar or the [command palette](/docs/space/space-walk#search-and-quick-actions)
-to find a section. If the **Search setup…** page filter is visible, it searches
-setting names, not typed values or saved credentials. Older `#/secrets` and
-`#/connectors` links still reach their corresponding sections.
-
-## Check the running installation
-
-**Workspace identity** reports the Space ID, available workspace name and owner,
-and verified XO and GitHub connection status. A configured credential is not
-enough for a **Connected** label: Space checks the identity with the service.
-GitHub status also identifies whether access comes from `GITHUB_PAT` or a saved
-connection.
-
-Expand **Folder and connection details** for the browser address, execution and
-project paths, and Space data path. These rows distinguish missing, unreadable,
-read-only, and writable locations.
-
-## Set storage roots
+## Choose your folders
 
 In **Workspace → Folders**:
 
-1. Set **Projects folder**, the folder whose direct child directories are
-   projects. Changing it selects another workspace; it does not move projects.
-2. Set **Space data folder**, which holds machine-local settings, credentials,
-   and activity. The runtime fallback is `~/.quirq/`; the local installer
-   normally selects `<workspace>/.quirq/`. Use the path shown for your installation.
-3. Click **Save folders**. When a saved path differs from the running one, the
-   form shows **Currently using** and **Pending restart**.
-4. Apply the displayed instructions. Restart to use saved folders; for an
-   installer-managed container, run the displayed installer command to update
-   its mounts. **Copy installer command** copies that installation's command.
-5. Refresh status after applying the changes to confirm the folders in use.
+1. **Projects folder**: each folder inside it is a project. Changing it switches
+   to another workspace. It does not move your projects.
+2. **Space data folder**: settings, saved secrets and activity for this
+   computer. The installer normally uses `.quirq/` in your workspace.
+3. Click **Save folders**, then restart. **Currently using** and **Pending
+   restart** show when the saved folders differ from the running ones.
 
-In installer-managed environments, the installer can copy current state when
-the new state directory is empty. Use the displayed command because host paths
-and mount requirements vary. Add or remove individual projects through
-**Projects → Manage**.
+When saved folders differ from the running ones, Setup shows the command that
+applies them; **Copy installer command** copies it. Add or remove single
+projects in **Projects → Manage**.
 
-## Configure the agent and watcher
+## Pick your agent
 
 ![Intelligence layer with agent selection and activity settings](/images/space/setup-runtime.png)
 
 In **Intelligence layer**, choose **Agent for new chats** and click **Save
-agent**. The choices come from installed agent manifests. **In use**, **Selected**,
-and **Restart to apply** distinguish the running agent from your draft or saved
-selection.
+agent**. **In use** is the agent running now; **Restart to apply** means your
+saved choice starts after a restart.
 
-Activity collection has its own form:
+**Update activity automatically** keeps sessions and project history up to date.
+Scheduled commands need it on. **Activity sources** picks **All agents** or
+**Chat agent only**. Click **Save activity settings**.
 
-| Control | What it changes |
-| --- | --- |
-| **Update activity automatically** | Runs the watcher that keeps supported sessions and project history up to date. Scheduled commands also need it enabled. |
-| **Activity sources** | **All agents** or **Chat agent only**; this is independent of which agent handles new chats. |
-| **Advanced → Check every** | Watcher interval from **0.25 to 60 seconds**; the default is one second. |
+Each agent card shows whether its CLI is installed and whether its activity is
+collected. Seeing session files does not mean the agent is signed in.
 
-Click **Save activity settings**. If either form requires a restart, follow the
-banner to **Server** and use **Apply & restart**, or the terminal instructions
-for a foreground process.
+## Save secrets
 
-The watcher reads runtime activity. Agents record shared project todos through
-the todo API; changing watcher settings does not import a runtime's private
-todo list into Space.
+Open **Secrets**, click **Add secret**, enter an uppercase **Key** and its
+**Value**, and click **Save secret**. Restart when the banner asks. Space never
+shows a saved value again: you can **Replace** or **Remove** it. Secrets are
+kept in the Space data folder, outside your projects.
 
-## Inspect native sources
+To sign in to services and apps, use [Connectors](/docs/space/space-walk/connectors).
 
-The selected agent appears first; expand **Other agents** to inspect the rest.
-Each card reports CLI installation, whether the agent folder exists, and whether
-it is **Included in activity**. **Agent details** shows host/server paths and
-discovered session-file counts. A discovered file count does not establish that
-the agent is signed in or that its watcher is healthy.
+## Usage reporting
 
-Use a recommended credential button to open its key in **Secrets**. Some agents
-use their own sign-in. When supported, a missing CLI can be installed by Setup
-when that agent is selected and the server restarts. Watcher discovery and
-[Agents telemetry coverage](/docs/space/space-walk/sessions#select-sources) remain
-separate capabilities.
-
-## Manage credentials
-
-Open **Secrets**:
-
-1. Click **Add secret**, or follow a recommended key from an agent card.
-2. Enter an uppercase **Key** and its **Value**, then click **Save secret**.
-3. Restart through **Server** when the banner requests it.
-
-**Show / Hide** reveals only the value being typed. Saved values use fixed masks
-and configured status; the UI never fetches their plaintext. **Replace** starts
-a blank replacement form. **Remove** deletes the saved variable after
-confirmation. Credentials are stored in machine-local Space data, outside
-project folders.
-
-For native service sign-in and account apps, use
-[Connectors](/docs/space/space-walk/connectors).
-
-## Check usage reporting
-
-**Intelligence layer** reports whether usage reporting is **off**, **on**,
-**pending**, or **blocked**. An accepted credential enables daily token, cost,
-and session/tool summaries. **Pending** means the key has no conclusive probe
-result; **blocked** means the key was rejected. These describe current status,
-not whether an earlier report was ever sent.
-
-**What leaves your machine** summarizes the policy. Normal metric fields
-exclude prompt and file contents, but reporting error notes can include source
-filenames and raw error details. See the
-[collection and reporting guide](/docs/space/observability/collection) for the
-full boundaries.
+**Intelligence layer** shows whether usage reporting is **off**, **on**,
+**pending** or **blocked**. When it is on, Space sends daily token, cost and
+session summaries. These leave out prompts and file contents, but error notes
+can include file names and raw error details. Reporting is on when an XO account
+key (`XO_API_KEY`) is saved or you sign in. **What leaves your machine** in Setup sums this up; the
+[collection guide](/docs/space/observability/collection) has the details.
 
 ## Restart the server
 
 ![Server controls for restart, updates, and technical details](/images/space/setup-server.png)
 
 Open **Server → Restart** and click **Restart server** or **Apply & restart**.
-Confirm and leave the page open. Space shows **Restarting…** and reloads when a
-replacement server responds; a response from the old instance does not count
-as completion.
+Leave the page open: it reloads when Space is back.
 
-| Installation mode | What happens |
-| --- | --- |
-| **Managed** | A container supervisor restarts the process after it exits. |
-| **Native** | The native process manager checks its PID file and restarts that installation. |
-| **Foreground** | A manually launched process or development reload mode requires **Ctrl-C and re-run** in its original terminal. The UI restart button is disabled. |
+If Space runs in your terminal, as it does after the one-line install, the
+button is turned off. Press `Ctrl-C` in that terminal and run
+`./xo-space/install.sh` from your projects folder. If Space doesn't come
+back, check its terminal or log.
 
-If Space cannot reconnect, use **Refresh status** and check its server log or
-original terminal. A saved container folder change may require the installer
-command before a restart can apply it.
+## Update Space
 
-Restart, update, and command writes support same-origin requests through a
-local HTTPS proxy as well as direct local access. The server connection must
-come from loopback, and browser origin checks still apply. If the request is
-refused, use the server's terminal rather than changing the browser URL alone.
-
-## Update xo-space
-
-In **Server → Updates**, click **Check for updates**. The result compares the
-checkout with its configured Git remote and shows the branch, installed/latest
-commit, and any local changes or divergence that prevent an update.
-
-**Update now** appears when the checkout can fast-forward. Updating changes code
-on disk; use **Restart server** to run it, or follow the foreground terminal
-hint. If dependency requirements changed, follow the result's installation
-guidance.
+In **Server → Updates**, click **Check for updates**. **Update now** appears
+when the update can apply cleanly. Restart afterwards to run the new code.
 
 <Callout type="info">
-  Self-update fast-forwards a clean Git checkout. It does not resolve a
-  divergent branch or discard local edits. Save or reconcile your local work
-  before updating.
+  Updating never discards your work. If your copy has changes you haven't
+  committed, or commits that aren't on GitHub, Update won't run until you sort
+  those out.
 </Callout>
 
 ## Run saved commands
 
-Open **Commands** to add a manual command or an interval schedule. **Copy agent
-prompt** supplies instructions for an agent to manage commands through the
-Space API. Nothing is seeded or run when you open the page.
+**Commands** saves commands you run by hand or on a schedule. Nothing runs when
+you open the page. Each command's **Inbox** button shows its last 20 runs, and
+scheduled commands also appear in **Inbox → Jobs**. See
+[Commands & schedules](/docs/space/space-walk/commands).
 
-Follow [Commands & schedules](/docs/space/space-walk/commands) for command fields,
-start times, execution, and results.
+## Technical details
 
-### Read results and history
-
-Each saved command's **Inbox** button opens its newest 20 runs and local log
-path. Scheduled commands also appear under **Inbox → Jobs**, where **Results**
-opens the same drawer. See
-[command results](/docs/space/space-walk/commands#read-results-and-history).
-
-## Open Quirq state
-
-Choose **Server → Technical details** to open `/space/#/setup/server/details`.
-The older `#/quirq` link remains an alias. This view maps installation state,
-watcher activity, project records, runtime configuration, and their availability.
-Use **Refresh data** for another snapshot or **← Setup** to return to Server.
-
-![Quirq state view with machine-local and portable project records](/images/space/quirq.png)
-
-Portable project metadata lives in project `.xo/` folders. Machine-local
-materialized records and operational state live under the configured Space data
-folder. Follow each row's effective location and the
-[storage map](/docs/space/observability/storage) for the current layout.
+**Server → Technical details** shows where Space keeps its files and what it is
+tracking. Project records travel with each project in its `.xo/` folder;
+everything else stays in the Space data folder. See the
+[storage map](/docs/space/observability/storage).

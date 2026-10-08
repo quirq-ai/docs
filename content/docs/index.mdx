@@ -9,6 +9,7 @@ import { Accordions, Accordion } from "fumadocs-ui/components/accordion";
 
 {/* ── What is XO ───────────────────────────────────────────────────── */}
 
+<div className="mb-6">
 <Cards>
 	<Card
 		icon={<span className="icon-[ph--map-trifold-fill] size-6" />}
@@ -17,6 +18,7 @@ import { Accordions, Accordion } from "fumadocs-ui/components/accordion";
 		href="/docs/start"
 	/>
 </Cards>
+</div>
 
 <WhatIsXO />
 
@@ -57,22 +59,21 @@ import { Accordions, Accordion } from "fumadocs-ui/components/accordion";
 
 <Accordions>
 	<Accordion title="Is XO Space free?">
-		Yes! **XO Space** is open-source. You can run Space locally on your machine for free with a single `curl` command to observe and measure your local agents.
-		
-		If you prefer a managed environment, **XO Cloud** on [app.xo.builders](https://app.xo.builders) provides pre-provisioned cloud infrastructure (includes a 30-day trial). You bring your own model key in both cases.
+		Yes. **XO Space** is open source, and you can run it on your computer for free with one command.
+
+		**XO Cloud** on [app.xo.builders](https://app.xo.builders) runs it for you on a cloud machine; you pick a plan when you sign up. Either way, you bring your own model key.
 	</Accordion>
 	<Accordion title="Do I need my own model key?">
-		You bring your own model: use an API key from Anthropic, OpenAI, or
-		OpenRouter, or connect via OAuth with your existing Claude or ChatGPT
-		subscription. XO does not sell model credits.
+		Yes. Use an API key from Anthropic, OpenAI or OpenRouter, or sign in with
+		your Claude or ChatGPT subscription. XO does not sell model credits.
 	</Accordion>
-	<Accordion title="What is the relationship between XO Space and XO Cloud?">
-		**XO Space** is the core open-source engine (`cowork-api`) for agent execution and observability. **XO Cloud** is simply a managed way to launch Space on remote infrastructure. Anything you can do on XO Cloud can also be done locally with XO Space.
+	<Accordion title="What is the difference between XO Space and XO Cloud?">
+		**XO Space** is the open-source app your agents work in. **XO Cloud** runs XO Space for you on a cloud machine, so you don't install anything. See the [overview](/docs/cloud/overview).
 	</Accordion>
-	<Accordion title="How do I observe local agents?">
-		Install Space locally using `curl -fsSL quirq.ai/install | sh` (or add it as an agent skill). Launch the local UI on `localhost:5002` to watch live agent sessions, inspect tool execution, and track performance metrics.
+	<Accordion title="How do I see what my agents are doing?">
+		Install Space on your computer with `curl -fsSL quirq.ai/install | sh` (or add it as an agent skill), then open `localhost:5002` to see your agents' sessions and tool use.
 	</Accordion>
-	<Accordion title="Is my data secure?">
-		On **Local Space**, work and telemetry stay 100% on your machine. On **Cloud Space**, credentials live in isolated cloud containers under your control. See the [Glossary](/docs/glossary) for details.
+	<Accordion title="Where is my data kept?">
+		Space on your computer keeps your work there and sends nothing unless you turn something on, such as [usage reporting](/docs/space/space-walk/setup#usage-reporting), GitHub backup or a connector. Your agent still talks to its model provider. On **XO Cloud**, your work is on your cloud machine.
 	</Accordion>
 </Accordions>

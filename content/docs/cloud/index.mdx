@@ -1,70 +1,68 @@
 ---
-title: Cloud Space (Managed)
-description: Pre-provisioned cloud infrastructure for running XO Space on managed remote machines.
+title: XO Cloud
+description: XO Space, run for you at app.xo.builders. Nothing to install.
 icon: Cloud
 ---
 
 import { Cards, Card } from "@/components/card";
 
 <Lead>
-  **Cloud Space** is the managed cloud offering on [app.xo.builders](https://app.xo.builders). It runs the exact same **XO Space** engine (`cowork-api`) on isolated cloud infrastructure with automated VM provisioning, browser-based VS Code IDE access, persistent webhooks, and project dashboard management.
+  **XO Cloud** runs XO Space for you on a cloud machine at
+  [app.xo.builders](https://app.xo.builders). You don't install anything: you
+  sign up, pick an agent, and work in your browser.
 </Lead>
 
-## Managed Cloud Workflow
+## Get started
 
 <Cards>
 	<Card
-		icon={<span className="icon-[ph--cloud-fill] size-6" />}
-		title="Overview"
-		description="Learn how Cloud Space provisions hosted remote machines running XO Space."
-		href="/docs/cloud/overview"
-	/>
-	<Card
 		icon={<span className="icon-[ph--user-plus-fill] size-6" />}
-		title="Create an Account"
-		description="Sign up on app.xo.builders, choose your handle, and start a 30-day Basic trial."
+		title="1. Create an account"
+		description="Sign up, choose a username and pick a plan."
 		href="/docs/cloud/create-account"
 	/>
 	<Card
 		icon={<span className="icon-[mingcute--chat-2-ai-fill] size-6" />}
-		title="Choose an Agent Template"
-		description="Select pre-configured runtimes for OpenClaw, Claude Code, Hermes, XO Cowork, or Antigravity."
+		title="2. Choose an agent"
+		description="OpenClaw, Claude Code, Hermes or Antigravity."
 		href="/docs/cloud/choose-an-agent"
 	/>
 	<Card
 		icon={<span className="icon-[ph--rocket-fill] size-6" />}
-		title="Launch First Cloud Agent"
-		description="Provision your cloud container, open the browser IDE, and verify agent status."
+		title="3. Launch your first agent"
+		description="Start your cloud machine and run a first test."
 		href="/docs/cloud/launch-first-agent"
 	/>
 </Cards>
 
-## Managing Your Cloud Machine
+## After launch
 
 <Cards>
 	<Card
 		icon={<span className="icon-[ph--air-traffic-control-fill] size-6" />}
-		title="Manage Space Machine"
-		description="Monitor CPU/RAM usage, manage services, restart gateways, and control VM power states."
+		title="Manage your machine"
+		description="Check usage, restart services, turn it on or off."
 		href="/docs/cloud/manage-space"
 	/>
 	<Card
 		icon={<span className="icon-[ph--code-fill] size-6" />}
-		title="Browser VS Code IDE"
-		description="Access your Space files and terminals directly from any browser via code-server."
+		title="VS Code in your browser"
+		description="Open your files and a terminal from any browser."
 		href="/docs/cloud/vs-code-server"
 	/>
 	<Card
 		icon={<span className="icon-[ph--share-network-fill] size-6" />}
-		title="Share Project Workspace"
-		description="Invite team members to collaborate on your managed Cloud Space."
+		title="Share a project"
+		description="Invite people to work with you."
 		href="/docs/cloud/share-project"
+	/>
+	<Card
+		icon={<span className="icon-[ph--gear-fill] size-6" />}
+		title="Set up XO Cloud"
+		description="Models, data and chat apps."
+		href="/docs/setup"
 	/>
 </Cards>
 
-## Related
-
-- [XO Space Core](/docs/space) — Self-hosted local installation & observability engine.
-- [Space Configuration](/docs/setup) — Models, data sources, channels, and secrets.
-- [AI Agent Guides](/docs/agents) — Deep dives for supported agent runtimes.
-- [Glossary](/docs/glossary) — Platform terminology.
+Want to compare with running Space on your own computer? See the
+[overview](/docs/cloud/overview).

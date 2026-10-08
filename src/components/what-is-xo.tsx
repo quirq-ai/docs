@@ -188,7 +188,8 @@ const STEPS: Step[] = [
     title: "4. Live Observability & Telemetry (Session Traces)",
     time: "Layer 4",
     layer: "Observability Layer",
-    summary: "Live trace streams, multi-runtime telemetry, and 3D session replay.",
+    summary:
+      "Live trace streams, multi-runtime telemetry, and 3D session replay.",
     detail:
       "Monitor every coding agent in real time. Space normalizes session traces, token volumes, latency percentiles, and tool invocations across Claude Code, Codex, and Cursor into one unified control plane.",
     highlights: [
@@ -552,14 +553,12 @@ export function WhatIsXO() {
           </a>
         </div>
         <h1 className="text-3xl font-bold tracking-tight text-fd-foreground sm:text-5xl">
-          One-Click Agentic Environments. Live Multi-Runtime Observability.
+          A place for your AI agents to work.
         </h1>
         <p className="mt-4 text-sm leading-relaxed text-fd-muted-foreground sm:text-base">
-          Every AI coding workload requires three core layers: <strong>Runtime</strong>{" "}
-          (the machine), <strong>Environment</strong> (XO Space), and{" "}
-          <strong>Agent</strong> (Claude Code, OpenClaw, Hermes, Antigravity, Codex, Cursor).
-          XO decouples the environment from the machine—providing live session tracing, unified
-          telemetry, and workspace coordination across your entire team.
+          XO Space runs on your computer or in the cloud. It shows what your
+          agents are doing in one place: Claude Code, OpenClaw, Hermes,
+          Antigravity, Codex or Cursor.
         </p>
       </div>
 
@@ -597,11 +596,11 @@ export function WhatIsXO() {
         {/* Buttons Row */}
         <div className="flex flex-wrap items-center justify-center gap-3">
           <a
-            href="/docs/space"
+            href="/docs/space/install-space"
             className="inline-flex items-center gap-2 rounded-lg bg-fd-primary px-5 py-2.5 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-90"
           >
             <Icon name="terminal" className="size-4" />
-            Install Space (Local)
+            Install on my computer
           </a>
           <a
             href={SIGN_UP_URL}
@@ -610,7 +609,7 @@ export function WhatIsXO() {
             className="inline-flex items-center gap-2 rounded-lg border border-fd-border bg-fd-background px-5 py-2.5 text-sm font-semibold text-fd-foreground transition-colors hover:bg-fd-muted"
           >
             <Icon name="rocket" className="size-4" />
-            Launch on Managed Cloud
+            Use XO Cloud
           </a>
           <a
             href={GITHUB_REPO_URL}
@@ -629,9 +628,8 @@ export function WhatIsXO() {
       <div className="mt-8 flex flex-col items-center gap-2 rounded-2xl border border-fd-primary/20 bg-fd-primary/5 px-5 py-4 text-center sm:flex-row sm:justify-center sm:gap-3">
         <Icon name="shield" className="size-5 shrink-0 text-fd-primary" />
         <span className="text-xs font-medium leading-relaxed text-fd-foreground sm:text-sm">
-          <strong>Environment = Space:</strong> Decoupling the environment from
-          the runtime eliminates vendor lock-in and gives teams unified
-          observability across local machines and cloud sandboxes.
+          Space keeps your projects and history when you switch agents or
+          restart.
         </span>
       </div>
     </section>

@@ -1,71 +1,32 @@
 ---
 title: Overview
-description: What XO Cloud is, how it differs from XO Space, and the path from account to a running agent.
+description: XO Cloud or XO Space on your own computer, and how to pick.
 icon: Cloud
 ---
 
-import { Cards, Card } from "@/components/card";
-import { Callout } from "fumadocs-ui/components/callout";
-
 <Lead>
-  **Cloud Space** runs the open-source **XO Space** engine (`cowork-api`) on an isolated, remote cloud VM. You manage it directly from [app.xo.builders](https://app.xo.builders)—provisioning projects, attaching AI models, and accessing your workspace via browser IDE or API.
+  XO Space is open source. You can run it on your own computer, or let **XO
+  Cloud** run it for you on a cloud machine at
+  [app.xo.builders](https://app.xo.builders). Both run the same XO Space.
 </Lead>
 
-## Local Space vs. Managed Cloud Space
+## Which one to pick
 
-Both options run the identical **XO Space** engine under the hood. Choose the deployment target that fits your workflow:
-
-| Feature / Aspect | **Self-Hosted Local Space** | **Managed Cloud Space** |
+| | **On your computer** | **XO Cloud** |
 |---|---|---|
-| **Core Engine** | `cowork-api` (Local process) | `cowork-api` (Cloud VM container) |
-| **Primary Use Case** | Local agent observability, offline work, zero cost | 1-click sandboxes, remote execution, team sharing |
-| **How You Install** | `curl -fsSL quirq.ai/install | sh` or skill | Dashboard account on [app.xo.builders](https://app.xo.builders) |
-| **IDE Access** | Local Editor (VS Code, Cursor, Terminal) | Browser VS Code (code-server) & Desktop SSH/VS Code |
-| **Data & Telemetry** | Stored 100% locally on your machine | Encrypted in isolated cloud project containers |
-| **Agent Support** | OpenClaw, Claude Code, Hermes, Antigravity, etc. | OpenClaw, Claude Code, Hermes, Antigravity, etc. |
+| **Good for** | Watching the agents you already run, working offline | Not installing anything, running agents remotely, sharing a project |
+| **How to start** | [Install Space](/docs/space/install-space) | Sign up at [app.xo.builders](https://app.xo.builders) |
+| **Where you edit** | Your own editor and terminal | VS Code in your browser, or desktop VS Code or Cursor |
+| **Where data lives** | On your computer. Space sends usage summaries only if you turn on [usage reporting](/docs/space/space-walk/setup#usage-reporting) | On your cloud machine |
 
-<Callout type="info">
-  **Engine Parity:** Whether you run Space locally or on Cloud Space, every API endpoint, session log format, and connector functions identically.
-</Callout>
+Either way, you bring your own model key or subscription.
 
-## Path on XO Cloud
+## Start on XO Cloud
 
-Follow these guides in order for a first successful interaction.
+1. [Create an account](/docs/cloud/create-account).
+2. [Choose an agent](/docs/cloud/choose-an-agent).
+3. [Launch your first agent](/docs/cloud/launch-first-agent).
+4. [Manage your machine](/docs/cloud/manage-space).
 
-<Cards>
-	<Card
-		icon={<span className="icon-[ph--user-plus-fill] size-6" />}
-		title="1. Create an account"
-		description="Sign up, choose a username, and select a plan."
-		href="/docs/cloud/create-account"
-	/>
-	<Card
-		icon={<span className="icon-[mingcute--chat-2-ai-fill] size-6" />}
-		title="2. Choose an agent"
-		description="Pick OpenClaw, Claude Code, Hermes, XO Cowork, or Antigravity."
-		href="/docs/cloud/choose-an-agent"
-	/>
-	<Card
-		icon={<span className="icon-[ph--rocket-fill] size-6" />}
-		title="3. Launch your first agent"
-		description="Create the XO project, wait for the workspace machine, complete a first test."
-		href="/docs/cloud/launch-first-agent"
-	/>
-	<Card
-		icon={<span className="icon-[ph--arrow-clockwise] size-6" />}
-		title="4. Operate the workspace"
-		description="Monitor services, open the IDE, share the project."
-		href="/docs/cloud/manage-workspace"
-	/>
-</Cards>
-
-## Also in this section
-
-After launch, Cloud docs continue with:
-
-- **[Workspace configuration](/docs/setup)** — Setup tab: models, data, channels  
-- **[AI Agent Guides](/docs/agents)** — per-template Cloud quickstarts and deep dives  
-
-## Next
-
-[Create an account](/docs/cloud/create-account) · [Glossary](/docs/glossary)
+Then [set up models, data and chat apps](/docs/setup). Words you don't know are in
+the [Glossary](/docs/glossary).

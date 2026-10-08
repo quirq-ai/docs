@@ -38,9 +38,9 @@ const stageDetails = [
   },
   {
     name: "quirqs",
-    label: "Precision measurement field",
+    label: "A proposed unit for work",
     description:
-      "The measurement layer that records verified, owner-valued work instead of only model consumption.",
+      "A proposed way to count checked, delivered work, not just model use. XO Space does not count quirqs yet.",
     icon: "icon-[ph--gauge-fill]",
     imageName: "quirqs",
   },
