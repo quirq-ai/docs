@@ -1,5 +1,9 @@
 # XO Docs
 
+The docs are live at [docs.quirq.dev](https://docs.quirq.dev/). New here? Start at
+[docs.quirq.dev/docs/start](https://docs.quirq.dev/docs/start), which links every quirq guide and
+site on one page. The rest of this file is for people working on the docs site itself.
+
 Run development server:
 
 ```bash
