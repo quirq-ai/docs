@@ -23,13 +23,15 @@ export function QuirqHome() {
   return (
     <main className="min-h-screen bg-fd-background text-fd-foreground">
       {/* Header */}
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
+      <header className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-5 sm:px-8">
         <Link
           href="/"
           className="inline-flex items-center gap-2.5 text-sm font-semibold tracking-tight"
         >
           <BrandIcon name="quirq" size={24} />
-          <span className="whitespace-nowrap text-base font-bold">XO Space</span>
+          <span className="whitespace-nowrap text-base font-bold">
+            XO Space
+          </span>
         </Link>
         <nav aria-label="Primary" className="flex items-center gap-4 text-sm">
           <Link
@@ -126,7 +128,9 @@ export function QuirqHome() {
                 {copied ? (
                   <>
                     <span className="icon-[ph--check-bold] size-3.5 text-fd-primary" />
-                    <span className="text-fd-primary font-semibold">Copied</span>
+                    <span className="text-fd-primary font-semibold">
+                      Copied
+                    </span>
                   </>
                 ) : (
                   <>
@@ -168,7 +172,6 @@ export function QuirqHome() {
               GitHub Repo
             </a>
           </div>
-
         </div>
       </section>
 
