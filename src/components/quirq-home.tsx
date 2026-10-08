@@ -33,8 +33,14 @@ export function QuirqHome() {
         </Link>
         <nav aria-label="Primary" className="flex items-center gap-4 text-sm">
           <Link
+            href="/docs/start"
+            className="whitespace-nowrap py-3 font-medium text-fd-foreground transition-colors hover:text-fd-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
+          >
+            Start here
+          </Link>
+          <Link
             href="/docs"
-            className="text-fd-muted-foreground transition-colors hover:text-fd-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
+            className="hidden text-fd-muted-foreground transition-colors hover:text-fd-foreground sm:inline-block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
           >
             Docs
           </Link>
@@ -154,6 +160,17 @@ export function QuirqHome() {
               GitHub Repo
             </a>
           </div>
+
+          <p className="mt-6 text-sm text-fd-muted-foreground">
+            New here?{" "}
+            <Link
+              href="/docs/start"
+              className="font-semibold text-fd-foreground underline underline-offset-4 hover:text-fd-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
+            >
+              Start here
+            </Link>
+            : every quirq link on one page.
+          </p>
         </div>
       </section>
 
