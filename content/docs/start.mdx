@@ -1,38 +1,141 @@
 ---
 title: Start here
-description: Every quirq link in one place. Pick what you want to do and follow one link.
+description: The main XO and quirq links on one page.
 icon: Map
 ---
 
-quirq makes **XO Space**, a place where AI agents do their work, on your own computer or in
-the cloud. This page lists everything we publish. Pick one row and follow its link.
+import { Cards, Card } from "@/components/card";
 
-## What do you want to do?
+XO Space gives your AI agents one place to work, on your computer or in the cloud. Pick what
+you want to do.
 
-| I want to… | Go here |
-| --- | --- |
-| Try XO Space in the cloud | [Open the cloud app](https://app.xo.builders/), then follow [Cloud Space](/docs/cloud) |
-| Run XO Space on my computer | [Install Space](/docs/space/install-space) |
-| Set up an agent (Claude Code, OpenClaw, Hermes, Antigravity) | [Agent guides](/docs/agents) |
-| Fix something that broke | [Troubleshooting](/docs/troubleshooting) |
-| Look up a word | [Glossary](/docs/glossary) |
-| Connect my own code to a Space | [API reference](/api-reference) |
-| Build and ship code with qq | [The qq guide](/docs/qq) |
-| Set up qq for my GitHub org | [qq setup](https://github.com/quirq-ai/setup) |
-| Tell us qq got in my way | [Feedback form](https://github.com/quirq-ai/wiki/issues/new?template=alpha.yml) |
-| Read the ideas behind it | [Research](/research) |
+## Use XO Space
+
+<Cards>
+	<Card
+		title="Try it in the cloud"
+		description="The cloud guide. It starts with sign-up at app.xo.builders."
+		href="/docs/cloud"
+	/>
+	<Card
+		title="Run it on my computer"
+		description="Install Space with one command."
+		href="/docs/space/install-space"
+	/>
+	<Card
+		title="Install from a clone"
+		description="If the one-line install does not work, clone XO Space from GitHub."
+		href="/docs/space/install-space#install-from-a-clone"
+	/>
+	<Card
+		title="Set up an agent in XO Cloud"
+		description="Claude Code, OpenClaw, Hermes or Antigravity."
+		href="/docs/agents"
+	/>
+	<Card
+		title="Connect models, data and chat apps"
+		description="Set up a Space after it is running."
+		href="/docs/setup"
+	/>
+	<Card
+		title="Fix a problem"
+		description="Help for cloud spaces and agents."
+		href="/docs/troubleshooting"
+	/>
+	<Card
+		title="Build an app on a Space's API"
+		description="The Space API reference."
+		href="/api-reference"
+	/>
+	<Card
+		title="Look up a word"
+		description="XO terms, defined in one place."
+		href="/docs/glossary"
+	/>
+	<Card
+		title="Read our research"
+		description="Our thinking on agents and work."
+		href="/research"
+	/>
+</Cards>
 
 ## Other places
 
-- [quirq.ai](https://www.quirq.ai/): our website.
-- [github.com/quirq-ai](https://github.com/quirq-ai): all our code, in the open.
-- [XO Space on GitHub](https://github.com/quirq-ai/xo-space#quick-start): the source, with a quick start.
-- [monitoring.quirq.dev](https://monitoring.quirq.dev/): whether our builds and releases are healthy today.
-- [Innernet demo](https://innernet-nine.vercel.app/): search projects and the stories behind your folders.
+<Cards>
+	<Card
+		title="quirq.ai"
+		description="Our website."
+		href="https://www.quirq.ai/"
+	/>
+	<Card
+		title="Whitepaper"
+		description="The longer version of the idea."
+		href="https://www.quirq.ai/whitepaper"
+	/>
+	<Card
+		title="XO Space on GitHub"
+		description="The source, with a quick start."
+		href="https://github.com/quirq-ai/xo-space#quick-start"
+	/>
+	<Card
+		title="github.com/quirq-ai"
+		description="Our open-source code."
+		href="https://github.com/quirq-ai"
+	/>
+	<Card
+		title="Innernet demo"
+		description="Search quirq's own open-source projects. Install Innernet to search your own folders."
+		href="https://innernet-nine.vercel.app/"
+	/>
+</Cards>
+
+## Working on quirq's own code (alpha)
+
+These are for people who build quirq's repos. You do not need them to use XO Space.
+
+<Cards>
+	<Card
+		title="Build and test a quirq repo with qq"
+		description="The qq guide."
+		href="/docs/qq"
+	/>
+	<Card
+		title="Preview qq setup for a GitHub org"
+		description="It shows a plan and changes nothing yet."
+		href="https://github.com/quirq-ai/setup"
+	/>
+	<Card
+		title="Report a qq problem"
+		description="Opens a public GitHub issue."
+		href="https://github.com/quirq-ai/wiki/issues/new?template=alpha.yml"
+	/>
+	<Card
+		title="Build and release health"
+		description="monitoring.quirq.dev"
+		href="https://monitoring.quirq.dev/"
+	/>
+	<Card
+		title="Code wiki"
+		description="A generated index of every public quirq-ai repo."
+		href="https://github.com/quirq-ai/wiki"
+	/>
+	<Card
+		title="Plans and status reports"
+		description="The research repo."
+		href="https://github.com/quirq-ai/research"
+	/>
+</Cards>
 
 ## Names you will see
 
-- **XO Space**: the app your agents work in. It runs on your computer.
-- **XO Cloud**: the same app, run for you in the cloud.
-- **quirq**: our company, and also the [meter that measures the work agents deliver](/docs/quirq).
-- **qq**: the tool we use to build, test and ship our own code.
+- **XO Space**: the app your agents work in. Run it on your computer or in the cloud.
+- **XO Cloud**: XO Space run for you at app.xo.builders. Some pages call it Cloud Space, Managed
+  Cloud Space, XO Managed Cloud or XO Swarm.
+- **XO and quirq**: XO Labs makes XO Space. quirq is the name on our GitHub org and website, so
+  you will see both.
+- **a quirq**: a proposed unit for the work agents deliver ([the idea](/docs/quirq)). XO Space
+  does not count quirqs yet.
+- **qq**: the tools we use to build, test and land our own code. Releases through qq are not
+  live yet.
+
+More words: [Glossary](/docs/glossary).

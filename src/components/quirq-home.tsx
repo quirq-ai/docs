@@ -29,7 +29,7 @@ export function QuirqHome() {
           className="inline-flex items-center gap-2.5 text-sm font-semibold tracking-tight"
         >
           <BrandIcon name="quirq" size={24} />
-          <span className="text-base font-bold">XO Space</span>
+          <span className="whitespace-nowrap text-base font-bold">XO Space</span>
         </Link>
         <nav aria-label="Primary" className="flex items-center gap-4 text-sm">
           <Link
@@ -40,19 +40,19 @@ export function QuirqHome() {
           </Link>
           <Link
             href="/docs"
-            className="hidden text-fd-muted-foreground transition-colors hover:text-fd-foreground sm:inline-block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
+            className="hidden whitespace-nowrap text-fd-muted-foreground transition-colors hover:text-fd-foreground sm:inline-block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
           >
             Docs
           </Link>
           <Link
             href="/docs/space/space-walk"
-            className="hidden text-fd-muted-foreground transition-colors hover:text-fd-foreground sm:inline-block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
+            className="hidden whitespace-nowrap text-fd-muted-foreground transition-colors hover:text-fd-foreground sm:inline-block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
           >
             Space UI
           </Link>
           <Link
             href="/docs/quirq"
-            className="hidden text-fd-muted-foreground transition-colors hover:text-fd-foreground sm:inline-block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
+            className="hidden whitespace-nowrap text-fd-muted-foreground transition-colors hover:text-fd-foreground sm:inline-block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
           >
             quirq
           </Link>
@@ -60,14 +60,14 @@ export function QuirqHome() {
             href={GITHUB_REPO_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden items-center gap-1.5 text-fd-muted-foreground transition-colors hover:text-fd-foreground sm:inline-flex"
+            className="hidden items-center gap-1.5 whitespace-nowrap text-fd-muted-foreground transition-colors hover:text-fd-foreground sm:inline-flex"
           >
             <BrandIcon name="github" size={16} />
             GitHub
           </a>
           <a
             href={SIGN_UP_URL}
-            className="rounded-lg bg-fd-primary px-4 py-2 font-medium text-fd-primary-foreground transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
+            className="rounded-lg bg-fd-primary px-4 py-2 font-medium text-fd-primary-foreground transition-opacity sm:whitespace-nowrap hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
           >
             Launch Cloud
           </a>
@@ -93,6 +93,14 @@ export function QuirqHome() {
           <h1 className="text-balance text-4xl font-bold tracking-[-0.05em] sm:text-6xl lg:text-7xl">
             Build, observe, and measure agentic work.
           </h1>
+
+          <Link
+            href="/docs/start"
+            className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl border border-fd-border bg-fd-background px-5 py-2 text-balance text-sm font-semibold text-fd-foreground shadow-sm transition-colors hover:bg-fd-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
+          >
+            New to XO Space? Start here: the main links on one page
+            <span className="icon-[ph--arrow-right-bold] size-3.5" />
+          </Link>
 
           <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-7 text-fd-muted-foreground sm:text-lg">
             Every agent needs a <strong>Runtime</strong> (the machine), an{" "}
@@ -161,16 +169,6 @@ export function QuirqHome() {
             </a>
           </div>
 
-          <p className="mt-6 text-sm text-fd-muted-foreground">
-            New here?{" "}
-            <Link
-              href="/docs/start"
-              className="font-semibold text-fd-foreground underline underline-offset-4 hover:text-fd-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
-            >
-              Start here
-            </Link>
-            : every quirq link on one page.
-          </p>
         </div>
       </section>
 
