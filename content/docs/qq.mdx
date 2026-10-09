@@ -85,7 +85,7 @@ already reads; open a new terminal afterwards):
 ```
 
 ```sh
-( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/qqsync; python3 -m venv ~/qq-tools/qqsync; ~/qq-tools/qqsync/bin/pip install -q --disable-pip-version-check "qqsync @ git+https://github.com/quirq-ai/sync@9f4c77ebe2c81d6ffd643d737a35b962f6fd322a"; ~/qq-tools/qqsync/bin/qqsync --version )
+( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/qqsync; python3 -m venv ~/qq-tools/qqsync; ~/qq-tools/qqsync/bin/pip install -q --disable-pip-version-check "qqsync @ git+https://github.com/quirq-ai/sync@aecb0fdb89f0d88b61a26052f5b3c26c48392841"; ~/qq-tools/qqsync/bin/qqsync --version )
 ```
 
 ```sh
@@ -93,7 +93,7 @@ already reads; open a new terminal afterwards):
 ```
 
 The first two print `qq 0.1.0` and `qqsync 0.1.0`. qqsync is pinned to the
-sync commit that qq itself pins in its `pyproject.toml` as of 2026-10-07,
+sync commit that qq itself pins in its `pyproject.toml` as of 2026-10-09,
 so the two agree. Then, in any repo that
 has `infra/repo.toml`:
 
