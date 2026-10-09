@@ -81,7 +81,7 @@ to the first of `~/.bash_profile`, `~/.bash_login` or `~/.profile` that bash
 already reads; open a new terminal afterwards):
 
 ```sh
-( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/depot; git clone -q https://github.com/quirq-ai/depot ~/qq-tools/depot; ~/qq-tools/depot/bin/qq --version )
+( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/depot; git clone -q https://github.com/quirq-ai/qq ~/qq-tools/depot; ~/qq-tools/depot/bin/qq --version )
 ```
 
 ```sh
@@ -93,11 +93,11 @@ already reads; open a new terminal afterwards):
 ```
 
 The first two print `qq 0.1.0` and `qqsync 0.1.0`. qqsync is pinned to the
-sync commit that qq itself pins in depot's `pyproject.toml` as of 2026-10-07,
+sync commit that qq itself pins in its `pyproject.toml` as of 2026-10-07,
 so the two agree. Then, in any repo that
 has `infra/repo.toml`:
 
-{/* Same sync commit as quirq-ai/depot pyproject.toml:15 (and recipes pyproject.toml); bump them together, with setup's cli/tools.mjs and its fixture. */}
+{/* Same sync commit as quirq-ai/qq pyproject.toml:15 (and recipes pyproject.toml); bump them together, with setup's cli/tools.mjs and its fixture. */}
 
 | Command | What it does |
 |---|---|
@@ -319,7 +319,7 @@ and promotion paths.
 
 | Repo | Its job |
 |---|---|
-| [depot](https://github.com/quirq-ai/depot) | the `qq` command line |
+| [qq](https://github.com/quirq-ai/qq) (was depot) | the `qq` command line |
 | [sync](https://github.com/quirq-ai/sync) | the `infra/repo.toml` format and its only reader, `qqsync` |
 | [recipes](https://github.com/quirq-ai/recipes) | how to build and test each kind of target |
 | [toolchains](https://github.com/quirq-ai/toolchains) | Python and Node builds, pinned by digest |
