@@ -1,9 +1,9 @@
 import type { BaseLayoutProps, LinkItemType } from "fumadocs-ui/layouts/shared";
 import { BrandIcon } from "@/components/brand-icon";
-import { appName, gitConfig } from "./shared";
+import { gitConfig } from "./shared";
 
 const logo = (
-  <span className="inline-flex items-center gap-2" aria-label={appName}>
+  <span className="inline-flex items-center gap-2">
     <BrandIcon name="quirq" size={24} />
     <span className="whitespace-nowrap text-base font-bold">quirq</span>
   </span>

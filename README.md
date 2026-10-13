@@ -1,6 +1,7 @@
-# XO Docs
+# quirq docs
 
-The docs are live at [docs.quirq.dev](https://docs.quirq.dev/). New here? Start at
+The docs for qq and quirq are live at [docs.quirq.dev](https://docs.quirq.dev/). XO Space docs
+are at [docs.xo.builders](https://docs.xo.builders/). New here? Start at
 [docs.quirq.dev/docs/start](https://docs.quirq.dev/docs/start), which links the main guides and
 sites on one page. The rest of this file is for people working on the docs site itself.
 

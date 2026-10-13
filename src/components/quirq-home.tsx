@@ -27,9 +27,7 @@ export function QuirqHome() {
           className="inline-flex items-center gap-2.5 text-sm font-semibold tracking-tight"
         >
           <BrandIcon name="quirq" size={24} />
-          <span className="whitespace-nowrap text-base font-bold">
-            quirq
-          </span>
+          <span className="whitespace-nowrap text-base font-bold">quirq</span>
         </Link>
         <nav aria-label="Primary" className="flex items-center gap-4 text-sm">
           <Link
@@ -211,8 +209,9 @@ export function QuirqHome() {
                   </h3>
                   <p className="mt-3 text-sm leading-6 text-white/70">
                     <code>qq sync</code> fetches the pinned toolchains and
-                    checks their digests. <code>qq build</code> and{" "}
-                    <code>qq test</code> build and test the repo&apos;s targets.
+                    checks their digests. Then the repo&apos;s targets build
+                    with <code>qq build</code> and test with{" "}
+                    <code>qq test</code>.
                   </p>
                   <Link
                     href="/docs/qq#use-qq-on-your-machine"
@@ -276,21 +275,27 @@ export function QuirqHome() {
               One config repo decides everything.
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-fd-muted-foreground">
-              A product repo writes one file by hand. Everything else comes
-              from config.
+              A product repo writes one file by hand. Everything else comes from
+              config.
             </p>
           </div>
           <dl className="grid gap-x-8 gap-y-7 sm:grid-cols-2">
             <div>
-              <dt className="font-semibold text-fd-foreground">1. infra-config</dt>
+              <dt className="font-semibold text-fd-foreground">
+                1. infra-config
+              </dt>
               <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
-                Holds every policy as TOML. Changing one is a pull request there.
+                Holds every policy as TOML. Changing one is a pull request
+                there.
               </dd>
             </div>
             <div>
-              <dt className="font-semibold text-fd-foreground">2. infra/repo.toml</dt>
+              <dt className="font-semibold text-fd-foreground">
+                2. infra/repo.toml
+              </dt>
               <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
-                The one file a product repo writes by hand. Its CI is generated from config.
+                The one file a product repo writes by hand. Its CI is generated
+                from config.
               </dd>
             </div>
             <div>
@@ -302,7 +307,8 @@ export function QuirqHome() {
             <div>
               <dt className="font-semibold text-fd-foreground">4. gate</dt>
               <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
-                Applies each repo&apos;s required checks, settings and merge queue.
+                Applies each repo&apos;s required checks, settings and merge
+                queue.
               </dd>
             </div>
           </dl>
@@ -371,7 +377,10 @@ export function QuirqHome() {
       {/* Footer */}
       <footer className="border-t border-fd-border bg-fd-muted/30 px-5 py-8 sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col gap-5 text-sm text-fd-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>quirq docs: qq, quirq&apos;s infra, and quirq, a proposed unit of agent work.</p>
+          <p>
+            quirq docs: qq, quirq&apos;s infra, and quirq, a proposed unit of
+            agent work.
+          </p>
           <nav aria-label="Social links" className="flex items-center gap-2">
             {socialLinks.map((link, idx) => {
               if (!("url" in link) || typeof link.url !== "string") return null;

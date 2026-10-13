@@ -10,29 +10,29 @@ Use this page as the single definition source. Guides link here instead of redef
 
 ## qq terms
 
-| Term | What it means | Do not confuse with |
-|---|---|---|
-| **qq** | quirq infra: how quirq builds, tests and lands code, and its command line, `qq`. See [the qq guide](/docs/qq). | **a quirq**, the proposed unit of work |
-| **`infra/repo.toml`** | The one file a product repo writes by hand. It lists the repo's targets; its CI is generated from config. | infra-config, which holds every policy |
-| **infra-config** | The config repo that holds every policy as TOML. Changing one is a pull request there. | A repo's own `infra/repo.toml` |
-| **gate** | The repo that applies required checks, repo settings and the merge queue. | infra-config |
-| **v0** | The first, thin version of qq, being finished now. | |
-| **Pinned by digest** | Named by the hash of its exact bytes, so every machine that fetches it gets the same bytes. | A version number |
-| **Presubmit** | The blocking check on a pull request. | Post-submit |
-| **Merge queue** | Tests each pull request merged onto the latest `main` before it lands. | |
-| **Post-submit** | The builder that runs on `main` after a change lands. | Presubmit |
-| **lkgr** (last known good) | The newest `main` commit whose post-submit builders all passed. | The canary channel |
-| **Canary** | The daily release channel, built from lkgr; dev and stable come later. | lkgr |
+| Term | What it means |
+|---|---|
+| **qq** | quirq infra: how quirq builds, tests and lands code, and its command line, `qq`. See [the qq guide](/docs/qq). Not **a quirq**, the proposed unit of work. |
+| **`infra/repo.toml`** | The one file a product repo writes by hand. It lists the repo's targets; its CI is generated from config. Not infra-config, which holds every policy. |
+| **infra-config** | The config repo that holds every policy as TOML. Changing one is a pull request there. Not a repo's own `infra/repo.toml`. |
+| **gate** | The repo that applies required checks, repo settings and the merge queue. Not infra-config. |
+| **v0** | The first, thin version of qq, being finished now. |
+| **Pinned by digest** | Named by the hash of its exact bytes, so every machine that fetches it gets the same bytes. Not a version number. |
+| **Presubmit** | The blocking check on a pull request. Not the post-submit. |
+| **Merge queue** | Tests each pull request merged onto the latest `main` before it lands. |
+| **Post-submit** | The builder that runs on `main` after a change lands. Not the presubmit. |
+| **lkgr** (last known good) | The newest `main` commit whose post-submit builders all passed. Not the canary channel. |
+| **Canary** | The daily release channel, built from lkgr; dev and stable come later. Not lkgr itself. |
 
 ## quirq terms
 
-| Term | What it means | Do not confuse with |
-|---|---|---|
-| **quirq** | A *proposed* unit of **verified work** ([the idea](/docs/quirq)). Nothing counts quirqs yet. | qq, the infra |
-| **Definition of done** | A machine-checkable end state a human owner writes before the work starts. | A prompt |
-| **Budget (B)** | The price the owner would pay for the outcome to exist. The task carries B *potential* quirqs. | What the work cost |
-| **Completion (V)** | A score from 0 to 1, from comparing the world before (S₀) and after (S₁) against the definition of done. | The agent's own report |
-| **Mint** | Recording V · B quirqs of delivered work in a tamper-evident ledger, with everything production consumed. | |
+| Term | What it means |
+|---|---|
+| **quirq** | A *proposed* unit of **verified work** ([the idea](/docs/quirq)). Nothing counts quirqs yet. Not qq, the infra. |
+| **Definition of done** | A machine-checkable end state a human owner writes before the work starts. Not a prompt. |
+| **Budget (B)** | The price the owner would pay for the outcome to exist. The task carries B *potential* quirqs. Not what the work cost. |
+| **Completion (V)** | A score from 0 to 1, from comparing the world before (S₀) and after (S₁) against the definition of done. Not the agent's own report. |
+| **Mint** | Recording V · B quirqs of delivered work in a tamper-evident ledger, with everything production consumed. |
 
 <Callout type="info">
   **One sentence to remember:** **qq** decides whether code lands and ships; **a quirq** is a

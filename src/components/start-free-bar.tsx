@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAISearchContext } from "@/components/ai/search";
 import { cn } from "@/lib/cn";
@@ -17,6 +18,7 @@ const BAR_HEIGHT_PX = 60;
 export function StartFreeBar() {
   const [awayFromFooter, setAwayFromFooter] = useState(true);
   const { open, setOpen } = useAISearchContext();
+  const onStartPage = usePathname() === "/docs/start";
 
   useEffect(() => {
     const update = () => {
@@ -70,19 +72,18 @@ export function StartFreeBar() {
           className="inline-flex items-center gap-1.5 rounded-lg border border-fd-border bg-fd-background px-3 py-1.5 text-sm font-semibold text-fd-foreground transition-colors hover:bg-fd-muted"
           tabIndex={showBar ? 0 : -1}
         >
-          <span
-            className="icon-[ph--chat-circle] size-4"
-            aria-hidden="true"
-          />
+          <span className="icon-[ph--chat-circle] size-4" aria-hidden="true" />
           Ask AI
         </button>
-        <a
-          href="/docs/start"
-          className="inline-flex items-center rounded-lg bg-fd-primary px-4 py-1.5 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-90"
-          tabIndex={showBar ? 0 : -1}
-        >
-          Start here
-        </a>
+        {!onStartPage && (
+          <a
+            href="/docs/start"
+            className="inline-flex items-center rounded-lg bg-fd-primary px-4 py-1.5 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-90"
+            tabIndex={showBar ? 0 : -1}
+          >
+            Start here
+          </a>
+        )}
       </div>
     </section>
   );
