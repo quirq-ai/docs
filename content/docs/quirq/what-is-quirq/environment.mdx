@@ -1,5 +1,4 @@
 ---
-date: "2026-07-22"
 title: The environment is the key part
 description: "The environment owns the ground truth: it is the specification, the scorekeeper, and the binding constraint."
 icon: Cpu
@@ -11,8 +10,8 @@ A unit of work cannot exist in a vacuum. Its definition of done is meaningless
 unless something captures the *before* state; its verification is impossible
 unless something captures the *after* state; its budget is unenforceable unless
 something meters spend as it happens; its record is untrustworthy if the agent
-writes its own history. All four of those somethings are the environment: the
-space with its runtime, memory, files, tools, budget, and record.
+writes its own history. All four of those somethings are the environment, with
+its runtime, memory, files, tools, budget, and record.
 
 <UowEnvironment />
 
@@ -31,7 +30,7 @@ their training environment actually measures, not what their designers intended,
 and flaws in the environment surface as flaws in behavior, from
 [reward hacking under imperfect proxies](https://arxiv.org/abs/2210.10760) to
 [broad emergent misalignment when production environments are exploitable](https://arxiv.org/abs/2511.18397).
-The production analogue is direct: if the space's definition of done is
+The production analogue is direct: if the environment's definition of done is
 gameable (tests that can be edited, checks that trust the agent's own report),
 agents will eventually satisfy the letter of the check rather than the intent of
 the work. Hardening the environment is how you harden the outcome.
@@ -40,8 +39,8 @@ the work. Hardening the environment is how you harden the outcome.
 party doing the work is not the party keeping score. The environment is the
 natural scorekeeper: it observes every tool call, file change, and token spent as
 a side effect of hosting the work, so its record is produced *by construction*
-rather than by testimony. This is why the space, not the model, is the trust
-boundary, and why the boundary travels with the space wherever it runs,
+rather than by testimony. This is why the environment, not the model, is the trust
+boundary, and why the boundary travels with the environment wherever it runs,
 including inside your own cloud.
 
 **Environment quality, not agent quality, is the binding constraint.** Recent
@@ -53,7 +52,7 @@ the evaluation environment itself. The same shift is underway in production
 agentic work: models improve on their own schedule and are swappable per unit,
 but the environment, meaning what state is captured, what done means, and what
 gets metered, is the part you own. It is also where the compounding happens: every unit of
-work executed in a space leaves behind memory, records, and sharpened
+work executed in an environment leaves behind memory, records, and sharpened
 definitions of done that make the next unit cheaper and safer.
 
 <SplitCompare
@@ -76,6 +75,5 @@ verifiable, billable, improvable work. A brilliant agent in a poor environment
 produces plausible text.
 
 That is the machinery. The numbers built on it (the calculus, the dashboard,
-gaming, validation, and the playbook) live in the canonical
-[quirq section](/quirq). To continue the narrative:
-[Phase 2, the new era of collaboration](/future-of-work/phase-2-collaboration).
+gaming, validation, and the playbook) live in the rest of the
+[quirq section](/docs/quirq). Next: [how to calculate it](/docs/quirq/how-to-calculate).

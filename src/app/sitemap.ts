@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/shared";
-import { researchSource, source } from "@/lib/source";
+import { source } from "@/lib/source";
 
 export const revalidate = false;
 
@@ -16,8 +16,5 @@ function mapPages(
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    ...mapPages(source.getPages()),
-    ...mapPages(researchSource.getPages()),
-  ];
+  return [...mapPages(source.getPages())];
 }

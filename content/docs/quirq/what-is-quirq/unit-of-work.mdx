@@ -1,18 +1,17 @@
 ---
-date: "2026-06-05"
 title: Unit of work
-description: "The contract that replaces the prompt: a job with a definition of done, a budget, and a single owner, living in a space."
+description: "The contract that replaces the prompt: a job with a definition of done, a budget, and a single owner, living in an environment."
 icon: Blocks
 ---
 
-<Lead>Phase 1 said businesses hire agents and pay for outcomes. This page defines the thing they actually hand over: not a prompt, a job.</Lead>
+<Lead>Businesses hire agents and pay for outcomes. This page defines the thing they actually hand over: not a prompt, a job.</Lead>
 
 A prompt is a single instruction with no memory, no files, no tools, no budget,
 and no record once the reply scrolls away. Whatever an agent does in response is
 unowned and unverifiable, and every serious deficiency of prompt-driven work
 traces back to that statelessness. A unit of work is the opposite: a job that is
 owned from start to finish, executed, checked, and paid for. None of that fits
-in an instruction; it fits in a space.
+in an instruction; it fits in an environment.
 
 <SplitCompare
 	left={{
@@ -22,7 +21,7 @@ in an instruction; it fits in a space.
 	}}
 	right={{
 		icon: "cube",
-		title: "A space",
+		title: "An environment",
 		items: ["Owns the whole outcome", "Memory and files persist", "Tools to reach your systems", "Budget, state, and record built in"],
 	}}
 />
@@ -47,7 +46,7 @@ in an instruction; it fits in a space.
 	steps={[
 		{ icon: "target", title: "Define", desc: "Name the outcome and the end state you want." },
 		{ icon: "budget", title: "Budget", desc: "Set what that outcome is worth." },
-		{ icon: "robot", title: "Execute", desc: "The agent works inside the space." },
+		{ icon: "robot", title: "Execute", desc: "The agent works inside the environment." },
 		{ icon: "eye", title: "Verify", desc: "Compare the state, before against after." },
 		{ icon: "scales", title: "Settle", desc: "Budget against the AI spend on your model." },
 	]}
@@ -84,7 +83,7 @@ measure available, because it is the outcome itself.
 <Flow
 	steps={[
 		{ icon: "chat", title: "Intent", desc: "What the business wants: a definition of done plus a budget." },
-		{ icon: "robot", title: "Action", desc: "Execution inside the space, by a person or an agent." },
+		{ icon: "robot", title: "Action", desc: "Execution inside the environment, by a person or an agent." },
 		{ icon: "check", title: "Impact", desc: "The verified state change, settled against the budget." },
 	]}
 />
@@ -98,6 +97,6 @@ same queue, carry the same kind of budget, and be judged by the same check as
 work done by people.
 
 The contract defines and verifies the job. What it does not do, by itself, is
-give the delivered work a unit of account. Next:
-[the quirq](/future-of-work/phase-1-agentic-workforce/quirq), the unit minted
-when this lifecycle completes.
+give the delivered work a unit of account. That is [the quirq](/docs/quirq/what-is-quirq),
+the unit minted when this lifecycle completes. Next:
+[the environment](/docs/quirq/what-is-quirq/environment), the part that carries the system.

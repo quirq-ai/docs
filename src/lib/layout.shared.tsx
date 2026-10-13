@@ -11,7 +11,6 @@ const logo = (
 
 const tabLinks: LinkItemType[] = [
   { text: "Guides", url: "/docs", active: "nested-url" },
-  { text: "Research", url: "/research", active: "nested-url" },
 ];
 
 export const socialLinks: LinkItemType[] = [

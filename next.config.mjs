@@ -17,13 +17,33 @@ const config = {
         destination: "/docs/start",
         permanent: false,
       },
+      // Research pages that moved into the quirq section stay on this site.
       {
-        source: "/future-of-work/:path*",
-        destination: "/research/:path*",
-        permanent: true,
+        source: "/research/phase-1-agentic-workforce/unit-of-work",
+        destination: "/docs/quirq/what-is-quirq/unit-of-work",
+        permanent: false,
+      },
+      {
+        source:
+          "/research/phase-1-agentic-workforce/unit-of-work-research/environment",
+        destination: "/docs/quirq/what-is-quirq/environment",
+        permanent: false,
+      },
+      {
+        source: "/future-of-work/phase-1-agentic-workforce/unit-of-work",
+        destination: "/docs/quirq/what-is-quirq/unit-of-work",
+        permanent: false,
+      },
+      {
+        source:
+          "/future-of-work/phase-1-agentic-workforce/unit-of-work-research/environment",
+        destination: "/docs/quirq/what-is-quirq/environment",
+        permanent: false,
       },
       // XO docs moved to docs.xo.builders; send old links there.
       ...[
+        ["/future-of-work/:path*", "/research/:path*"],
+        ["/research/:path*", "/research/:path*"],
         ["/agents/:path*", "/docs/agents/:path*"],
         ["/more/:path*", "/more/:path*"],
         ["/getting-started", "/docs/cloud"],

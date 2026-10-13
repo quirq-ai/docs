@@ -1,5 +1,11 @@
 {
   "title": "quirq Foundations",
   "icon": "Coins",
-  "pages": ["two-meters", "denominator", "related-units"]
+  "pages": [
+    "two-meters",
+    "denominator",
+    "related-units",
+    "unit-of-work",
+    "environment"
+  ]
 }
