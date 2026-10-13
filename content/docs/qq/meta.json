@@ -1,0 +1,28 @@
+{
+  "title": "qq",
+  "icon": "Workflow",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "roadmap",
+    "---Build and test---",
+    "cli",
+    "sync",
+    "recipes",
+    "toolchains",
+    "remote-build",
+    "---Policy and landing---",
+    "infra-config",
+    "gate",
+    "test-pipelines",
+    "---Keep main green and ship---",
+    "gardener",
+    "rollers",
+    "release",
+    "installer",
+    "perf",
+    "---Tools---",
+    "setup",
+    "monitoring"
+  ]
+}

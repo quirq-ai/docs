@@ -1,0 +1,85 @@
+---
+title: "perf"
+description: "Records build size and benchmark numbers for every main commit of xo-space and innernet. A record, never a gate or an alert."
+icon: Gauge
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  perf records performance on every post-submit commit, so v1 can alert on
+  regressions and v2 can bisect them. In v0 it only records numbers: it does
+  not alert, bisect or gate anything.
+</Lead>
+
+<Callout type="info">
+  **Today:** as of 2026-10-13 the newest record on `perf-data` is from
+  2026-10-09; GitHub is skipping or delaying the scheduled runs.
+</Callout>
+
+## What it measures
+
+| Metric | Repo | What |
+|---|---|---|
+| `build-size` | innernet | the `.next` output: static bytes, JS and CSS raw and gzipped, the JS every route loads first, and more |
+| `xo-space-server-start` | xo-space | seconds until the server answers, over 5 starts |
+| `innernet-search` | innernet | milliseconds per search request, 30 requests over 3 queries |
+
+The benchmarks are declared in infra-config `config/perf.toml` and run
+through recipes' `build` and `bench` adapters, on the pinned Python, Node
+and pnpm.
+
+## How it works
+
+- **Raw numbers only.** Each number is stored with its unit and runner type.
+  Shared CI runners are noisy, and v0 has one measurement per commit with no
+  baseline, so do not gate or alert on these numbers.
+- **One commit per run.** The `perf` workflow runs every 30 minutes and
+  measures the newest `main` commit with no record yet, so a backlog drains
+  one commit per run.
+- **No commit drops out.** Every `main` commit since the oldest recorded one
+  is owed a record.
+- **Failures retry**, up to three failed records per commit.
+
+### Where records go
+
+1. `perf` appends each record to the `perf-data` branch as JSON Lines,
+   `<repo>/<metric>.jsonl` (schema `qq-perf-record/1`). Lines are never
+   edited.
+2. `perf-publish` turns each run's records into test-pipelines results
+   bundles.
+3. test-pipelines' scorecard collects them into the results store, the
+   system of record.
+
+The measuring jobs run product code, so they only read. A separate `store`
+job checks the values and pushes `perf-data`.
+
+## What you do with it
+
+```sh
+# history from a checkout of perf-data
+qqperf history --store DIR --repo innernet [--value static_js_gzip_bytes] [--json]
+# landed commits with no record
+qqperf pending --store DIR --repo innernet --checkout PATH
+# how many are owed, and the oldest
+qqperf backlog --store DIR --repo innernet --checkout PATH
+```
+
+GitHub turns off a scheduled workflow after 60 days without repo activity.
+If that happens, re-enable `perf` in the repo's Actions tab.
+
+## Files and schedules
+
+| Thing | Where |
+|---|---|
+| `perf` workflow | at :17 and :47 every hour, or by hand |
+| `perf-publish` workflow | after each `perf` run on `main` |
+| Records | `perf-data` branch |
+| Benchmark list | infra-config `config/perf.toml` |
+
+## Go deeper
+
+- [perf README](https://github.com/quirq-ai/perf/blob/main/README.md): every
+  `qqperf` command, recording by hand and the trust rules.
+- [test-pipelines](/docs/qq/test-pipelines) for the scorecard.
+- [recipes](/docs/qq/recipes) for the `build` and `bench` capabilities.

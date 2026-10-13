@@ -59,8 +59,9 @@ import { Callout } from "fumadocs-ui/components/callout";
    channel. **Today:** GitHub often skips scheduled runs here, so a daily
    backstop routine (07:37 UTC), run outside these repos, starts any missed
    lkgr or canary run. The first canary, started by hand on 2026-10-05,
-   shipped both products. lkgr and the channel are recorded only in
-   release's `release-state` branch.
+   shipped both products. lkgr and the channel are recorded on release's
+   `release-state` branch and, since 2026-10-09, mirrored as git refs
+   (`lkgr`, `channels/canary`) in xo-space and innernet.
 6. **Install from a channel.** `qqinstall` names a channel's commit and
    digest. **Today:** every install, including xo-space's `install.sh` and
    in-app updater, follows `main`; canary test machines are not set up yet.
@@ -188,23 +189,18 @@ qq run 'set -e; rm -rf ~/qq-ci-venv; python3 -m venv ~/qq-ci-venv; . ~/qq-ci-ven
 On a Mac, `qq run` uses the tools on your `PATH`: in the xo-space command, write
 `python3.14` in place of `python3`.
 
-Moving CI onto the recipes is open v0 work (the second row under
-[Where qq stands](#where-qq-stands)). Moving CI onto the toolchains `qq sync`
+Moving CI onto the recipes is open v0 work (see the
+[roadmap](/docs/qq/roadmap)). Moving CI onto the toolchains `qq sync`
 fetches is planned for v1.
 
 <Accordions>
   <Accordion id="exit-codes" title="Exit codes and common errors">
 
 `qq sync`, `qq build` and `qq test` exit 0 when everything passed, 1 when a
-step failed, and 2 when `infra/repo.toml` is missing or invalid. Every `FAIL` line
-names its log file.
-
-`qq run` and `qq NAME` exit with the command's own code. When qq itself fails
-they exit 125: `qq run` with nothing to run or outside a repo, or a command file
-qq cannot read or refuses to run. A command that is not found gives 127, and one
-that cannot run gives 126. A name the repo has no command for is an unknown qq
-command and exits 2. `qq create` exits 2 on bad usage or outside a repo, and 1
-when it cannot create the command (the name is taken, the file exists).
+step failed or a target cannot be planned (for example an unknown kind), and 2
+when there is no `infra/repo.toml` here or above, or it is invalid. Every
+`FAIL` line names its log file. The exit codes of every command are on the
+[qq command line](/docs/qq/cli#exit-codes) page.
 
 | You see | Do this |
 |---|---|
@@ -288,8 +284,8 @@ Then put it under qq's landing rules, in this order:
 ( mkdir -p ~/qq-apply && cd ~/qq-apply && rm -rf qq-gate && git clone -q https://github.com/quirq-ai/gate qq-gate && cd ./qq-gate && git checkout -q <COMMIT> && scripts/apply.sh )
 ```
 
-Release does not act as its executor App yet. Once it does, every repo it
-lists needs the App installed, or release's lkgr job fails for every repo. So
+Release acts as its executor App (since 2026-10-09), so every repo it lists
+needs the App installed, or release's lkgr job fails for every repo. So
 install the release executor App on the repo and add the repo to gate's
 `executor_repos` before release moves its infra-config pin past this change. Dependency rolls
 (Dependabot and the rollers App) are optional and can come later.
@@ -310,28 +306,33 @@ these rules:
 - Builders that run pull request code get no secrets.
 - Repos are public.
 
-suraj owns the org, the 13 infra repos and policy. Review is advisory: no
-approvals are required, except suraj's code-owner review on toolchains' build
-and promotion paths.
+suraj owns the org, the 13 infra repos and policy. The 13 infra repos need no
+approval to land; product repos (xo-space, innernet, website) need one; and
+toolchains' build and promotion paths need suraj's code-owner review.
 
 <Accordions>
-  <Accordion title="The 13 repos">
+  <Accordion id="repos" title="The 13 repos and two tools">
+
+Each name opens its page in this guide; each page links to its repo. The last
+two rows, setup and monitoring, are tools built on qq, not part of its 13 repos.
 
 | Repo | Its job |
 |---|---|
-| [qq](https://github.com/quirq-ai/qq) (was depot) | the `qq` command line |
-| [sync](https://github.com/quirq-ai/sync) | the `infra/repo.toml` format and its only reader, `qqsync` |
-| [recipes](https://github.com/quirq-ai/recipes) | how to build and test each kind of target |
-| [toolchains](https://github.com/quirq-ai/toolchains) | Python and Node builds, pinned by digest |
-| [remote-build](https://github.com/quirq-ai/remote-build) | where build steps will run; nothing calls it yet |
-| [infra-config](https://github.com/quirq-ai/infra-config) | every policy and builder, as data |
-| [gate](https://github.com/quirq-ai/gate) | required checks, repo settings, the merge queue |
-| [test-pipelines](https://github.com/quirq-ai/test-pipelines) | stored test results and failure records |
-| [gardener](https://github.com/quirq-ai/gardener) | keeps `main` green |
-| [rollers](https://github.com/quirq-ai/rollers) | keeps dependencies and toolchains current |
-| [perf](https://github.com/quirq-ai/perf) | performance numbers per commit, never a gate |
-| [release](https://github.com/quirq-ai/release) | lkgr, channels, the canary, rollback |
-| [installer](https://github.com/quirq-ai/installer) | lets installs follow a channel instead of `main` |
+| [qq](/docs/qq/cli) (was depot) | the `qq` command line |
+| [sync](/docs/qq/sync) | the `infra/repo.toml` format and its only reader, `qqsync` |
+| [recipes](/docs/qq/recipes) | how to build and test each kind of target |
+| [toolchains](/docs/qq/toolchains) | Python and Node builds, pinned by digest |
+| [remote-build](/docs/qq/remote-build) | where build steps will run; nothing calls it yet |
+| [infra-config](/docs/qq/infra-config) | every policy and builder, as data |
+| [gate](/docs/qq/gate) | required checks, repo settings, the merge queue |
+| [test-pipelines](/docs/qq/test-pipelines) | stored test results and failure records |
+| [gardener](/docs/qq/gardener) | keeps `main` green |
+| [rollers](/docs/qq/rollers) | keeps dependencies and toolchains current |
+| [perf](/docs/qq/perf) | performance numbers per commit, never a gate |
+| [release](/docs/qq/release) | lkgr, channels, the canary, rollback |
+| [installer](/docs/qq/installer) | lets installs follow a channel instead of `main` |
+| [setup](/docs/qq/setup) | one command that checks your tools and prints the steps to use qq |
+| [monitoring](/docs/qq/monitoring) | a read-only dashboard of what changed and what state everything is in |
 
   </Accordion>
 </Accordions>
@@ -339,30 +340,21 @@ and promotion paths.
 ## Where qq stands
 
 v0's goal is a thin, working version of every repo, end to end on GitHub.
-Its code is built. Its GitHub settings were last applied at gate `6610664`, which
-covered the 13 infra repos plus xo-space and innernet. Gate #23, #24, #25, #26
-and #28 (website onboarding) are merged but not applied yet, and the
-release-state rules are in gate #27, which is still open. Its exit
-test has not passed. v1 (automatic canary rollback, the dev channel, fuzzing)
-and v2 (remote execution, the stable channel) come after. The exit test, as of
-2026-10-07:
-
-| Test | Status |
-|---|---|
-| Generated presubmits and merge queues on every repo | Partly: infra repos' presubmits are hand-written |
-| Products gated through recipes; a red pull request refused | Partly: stand-in commands; no refusal recorded |
-| 7 unattended daily canaries, a held canary, a rollback drill | Not yet |
-| A planted break reverted automatically | Not started: needs the gardener App |
-| A scorecard computed by a script | Built |
+Its code is built, and its GitHub settings were last applied on 2026-10-09
+([gate](/docs/qq/gate)). Its exit test has not passed: the 7-day unattended
+canary and the automatic revert are not done yet. The test, row by row, and
+what v1 and v2 add are on the [roadmap](/docs/qq/roadmap).
 
 **Limits today:** Linux x86_64 toolchains only; no `qq` release tag; CI does
-not run a repo's own commands; nothing lands on its own; scheduled jobs run late, so lkgr, perf
-and the canary lag (perf has not recorded since 2026-10-05).
+not run a repo's own commands; nothing lands on its own; GitHub skips or
+delays scheduled jobs, so lkgr, perf and the canary lag (as of 2026-10-13
+the newest perf record is from 2026-10-09).
 
 ## Go deeper
 
 - Feedback on qq or this page: [file an alpha issue](https://github.com/quirq-ai/wiki/issues/new?template=alpha.yml) in quirq-ai/wiki.
-- The v0 plan: infra-config [`docs/v0.md`](https://github.com/quirq-ai/infra-config/blob/main/docs/v0.md); each repo's README.
+- What v0, v1 and v2 deliver: the [roadmap](/docs/qq/roadmap). The full v0 plan: infra-config [`docs/v0.md`](https://github.com/quirq-ai/infra-config/blob/main/docs/v0.md).
+- One page per repo, from the [command line](/docs/qq/cli) to the [installer](/docs/qq/installer), in the sidebar under qq.
 - Running xo-space, Mac steps, every error: [build and run guide](https://github.com/quirq-ai/research/blob/main/infra/output/report/2026-10-05-qq-build-run-locally.md).
 - Onboarding with screenshots: [operator guide](https://github.com/quirq-ai/research/blob/main/infra/output/report/2026-10-05-qq-onboard-website.md) and gate's [apply guide](https://github.com/quirq-ai/gate/blob/main/docs/apply-settings.md).
 - The longer guide this page was cut from (2026-10-06 snapshot): [research qq guide](https://github.com/quirq-ai/research/blob/main/infra/output/report/2026-10-06-qq-guide.md).

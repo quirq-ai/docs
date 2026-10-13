@@ -1,0 +1,104 @@
+---
+title: "gardener"
+description: "Watches every main commit and publishes whether each repo's tree is open or closed. Culprit finding and reverts wait on its GitHub App."
+icon: Activity
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+
+<Lead>
+  The gardener watches the post-submit run on every `main` commit of every
+  onboarded repo and publishes a tree status: open or closed. Today it
+  reports only. Finding the culprit and reverting it, within caps set in
+  infra-config, is built but not switched on.
+</Lead>
+
+<Callout type="info">
+  **Today:** it reports only. The tree status is live for xo-space and
+  innernet. Reverts wait on the gardener's GitHub App, which does not exist
+  yet, and on a first `ledger` branch. No revert has happened on a real repo.
+  No revert lands on its own until a repo is listed in `auto_land_repos`,
+  which is empty in v0.
+</Callout>
+
+## How it works
+
+infra-config generates a post-submit builder for each onboarded repo, as
+`.github/workflows/qq-<builder>.yml`. The gardener reads each repo's
+first-parent `main` history and those runs, and works out:
+
+| What | Meaning |
+|---|---|
+| State per commit | green, red, pending, missing or cancelled |
+| Tree status | `closed` if any builder's newest verdict is red, `open` if all are green, else `unknown` |
+| Red range | last green .. first red, with the suspects in it |
+| Coverage | every `main` commit needs a result; a hole fails the check |
+
+A missing signal is never treated as healthy.
+
+**Backfill.** A push of several commits runs only the newest; the gardener
+dispatches the builder for each skipped commit.
+
+## What you do with it
+
+Read the tree status on the gardener's `tree-status` branch, as
+`status/<repo>.json` (schema `qq-tree-status/1`). The branch commits only
+when something changes, so its log is the tree's open and close history.
+
+```sh
+# live tree status, read from GitHub
+qqgarden status --config <infra-config checkout>
+# what the workflow runs
+qqgarden status --config ... --out status/ --require-coverage
+```
+
+To stop the 5-minute chain without a code change, set the repo variable
+`QQ_TREE_STATUS_CHAIN` to `off`.
+
+## Files and schedules
+
+| Thing | Where |
+|---|---|
+| `tree-status` workflow | every 5 minutes; a cron restarts the chain if it stops |
+| Tree status | `tree-status` branch, `status/<repo>.json` |
+| Revert records | `ledger` branch (not created yet) |
+| Caps | infra-config `auto_revert.toml` |
+
+<Accordions>
+<Accordion title="Once reverts are switched on">
+
+**Grouping.** `qqgarden groups` turns red builders into failure groups, one
+per regression range, typed `build`, `test`, `infra` or `unknown`. `infra`
+and `unknown` are never reverted.
+
+**Culprit.** For a range of one commit, `qqgarden cycle` verifies the
+culprit on GitHub's own runs. A longer range needs `qqgarden bisect`.
+
+**Caps**, all from infra-config `auto_revert.toml`:
+
+| Cap | Value |
+|---|---|
+| Reverts, all repos | at most 10 per rolling 24 hours |
+| Build breaks that land alone | at most 4 a day, culprits under 6 hours old |
+| Test failures | proposed only |
+
+**Rules.** Clean reverts only, each reserved in `ledger` before its PR
+exists. Still red after a revert means a person looks.
+
+```sh
+# failure groups from the results store
+qqgarden groups --config <infra-config> --store <results checkout>
+# bisect a range by hand
+qqgarden bisect --config <infra-config> --repo-dir <clone> --good <sha> --bad <sha> --run 'qq test'
+```
+
+</Accordion>
+</Accordions>
+
+## Go deeper
+
+- [gardener README](https://github.com/quirq-ai/gardener/blob/main/README.md):
+  every rule, the App's permissions and the ledger bootstrap.
+- [How a change moves](/docs/qq#how-a-change-moves) in the qq guide.
+- [release](/docs/qq/release), whose lkgr uses the same verdicts.

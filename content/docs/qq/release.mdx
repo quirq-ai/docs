@@ -1,0 +1,109 @@
+---
+title: "release"
+description: "Moves lkgr and release channels and runs the daily canary; holds and rollback are built but not yet used on a real repo."
+icon: Rocket
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+
+<Lead>
+  release moves builds through channels. A channel is a pointer: it names a
+  commit and the digest of the artifact built from it. Only the release
+  executor moves a pointer, and it records an operation key first, so a retry
+  never acts twice.
+</Lead>
+
+<Callout type="info">
+  **Today:** xo-space and innernet have an lkgr since 2026-10-04, and the
+  first canary shipped both on 2026-10-05. Since 2026-10-09 release
+  acts as its executor App, so lkgr and canary are also written as git refs
+  (`refs/heads/lkgr`, `refs/heads/channels/canary`) in xo-space and innernet.
+  Not yet done: 7 daily canaries in a row with no human touch, a held canary
+  of a real repo, and a rollback drill on a real repo. website has no canary.
+</Callout>
+
+## The pointers
+
+| Pointer | What it names | Who moves it |
+|---|---|---|
+| `lkgr` | the newest `main` commit whose required post-submit builders are all green | `lkgr` workflow, every 10 minutes |
+| `channels/canary` | lkgr's commit, after the daily canary passes | `canary` workflow, daily |
+| `channels/dev` | declared, off in v0 | |
+| `channels/stable` | suraj promotes; v2 | |
+
+"Green" is the gardener's definition. A missing signal holds lkgr where it
+is.
+
+Since 2026-10-09 only the release executor App can push `release-state`
+(gate's `qq-release-state` ruleset). Undo is the break-glass pair in gate's
+[`docs/apply-settings.md`](https://github.com/quirq-ai/gate/blob/main/docs/apply-settings.md).
+
+## The daily canary
+
+The `canary` workflow runs daily at 06:17 UTC for every repo with a canary
+release builder. The first failing stage holds the canary, and the previous
+one stays.
+
+| Stage | What |
+|---|---|
+| select, build | lkgr's commit, built through recipes |
+| verify, fuzz smoke | the full test suites, then again with 1,000 examples |
+| deploy, probe | start it on the CI runner and run every `health.toml` probe |
+| promote | the executor moves `channels/canary` |
+
+A pipeline error is not a hold, until 3 such runs for the same commit.
+`canary-watchdog` restarts a missed run. Each day's report is an issue
+labelled `canary-report`.
+
+## What you do with it
+
+```sh
+# see every channel
+qqrelease channel show --state ...
+# compute lkgr
+qqrelease lkgr --config <infra-config checkout> --state <state dir> [--publish] [--dry-run]
+# roll a channel back (or run the channel-rollback workflow)
+qqrelease channel rollback --config ... --state ... --repo NAME --channel canary --reason "..." --from COMMIT
+```
+
+A rollback points the channel at the newest earlier commit it was never
+rolled back from; nothing is rebuilt.
+
+**Release a hold** with the `canary-release-hold` workflow.
+
+## Files and schedules
+
+| Workflow | When |
+|---|---|
+| `lkgr` | every 10 minutes, off the hour |
+| `canary` | daily, 06:17 UTC |
+| `canary-watchdog` | 09:43 and 13:43 UTC |
+| `channel-rollback`, `canary-release-hold` | on demand |
+
+<Accordions>
+<Accordion title="The release-state branch">
+
+Every move is an operation, recorded before any ref moves.
+
+| File | Schema |
+|---|---|
+| `pointers/<repo>/<ref>.json` | `qq-pointer/1` |
+| `ops/<key>.json` | `qq-operation/1` |
+| `channels.json` | `qq-channels/1` |
+| `canary/<repo>/runs/<date>.json` | `qq-canary-run/1` |
+| `canary/<repo>/held/<commit>.json` | hold record |
+| `reports/<date>.md` | daily report |
+
+Read `channels.json` from
+`https://raw.githubusercontent.com/quirq-ai/release/refs/heads/release-state/channels.json`.
+
+</Accordion>
+</Accordions>
+
+## Go deeper
+
+- [release README](https://github.com/quirq-ai/release/blob/main/README.md):
+  the executor, the error cap and the v1 plans.
+- [gardener](/docs/qq/gardener) for the verdicts lkgr uses,
+  [installer](/docs/qq/installer) for following a channel.

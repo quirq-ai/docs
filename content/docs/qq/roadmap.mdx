@@ -1,0 +1,92 @@
+---
+title: "Roadmap"
+description: "What each qq version delivers, v0's exit test and what is built, and what v1 and v2 add after it."
+icon: Map
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+
+<Lead>
+  qq is built in three versions. v0 gives all 13 infra repos a thin, working
+  base version on GitHub. v1 makes the daily canary run unattended and opens
+  the dev channel. v2 moves execution to Launchpad, quirq's own cloud, and
+  adds stable and the installer.
+</Lead>
+
+<Callout type="info">
+  **As of 2026-10-13:** v0's code is largely built, but its exit test has not
+  passed. v1 and v2 are plans only; nothing in them is built.
+</Callout>
+
+## The three versions
+
+| Version | Delivers | Items |
+|---|---|---|
+| **v0** | all 13 repos in a base version; products gated; daily canary; auto-revert | 51 |
+| **v1** | unattended canary, dev channel, fuzzing, PostHog, flakes, hermetic builds | about 45 |
+| **v2** | Launchpad, remote execution, perf bisection, stable, installer | 25 |
+
+The v1 count is approximate: infra-config's plan lists 44 items, and a
+later count has 45. Only v0's items are published.
+
+## v0: the exit test
+
+All five must hold together:
+
+1. All 13 repos exist and are public, each with CODEOWNERS, a generated
+   presubmit and a merge queue.
+   **Today:** partly; the infra repos' presubmits are hand-written.
+2. xo-space and innernet are gated from their `infra/repo.toml`, and a
+   deliberately red pull request is refused in each.
+   **Today:** partly; CI runs stand-in commands, not the recipes, and no
+   refusal is recorded yet.
+3. A daily canary runs 7 days in a row with no human touch; a planted bad
+   canary is held; a rollback drill takes under 10 minutes.
+   **Today:** not yet.
+4. A planted breaking commit is reverted automatically.
+   **Today:** not started; it needs the gardener App.
+5. The scorecard is computed by a script, not typed.
+   **Today:** built.
+
+## What is built
+
+| Part | State |
+|---|---|
+| The 13 repos, infra-config and its `validate` check | built |
+| Builders delivered to xo-space, innernet and website | built; org-wide drift check off (GitHub Free) |
+| gate's rulesets and merge queue | applied, last on 2026-10-09; product pull requests need one approval |
+| release as its executor App | since 2026-10-09; lkgr and canary also mirrored as refs in xo-space and innernet; `release-state` locked to the App |
+| Scorecard | built |
+| gardener | reports only; its App is not created, so no reverts |
+| 7-day canary, hold, rollback, auto-revert | none has happened on a real repo |
+
+<Accordions>
+  <Accordion title="v1 and v2 in more detail">
+    **v1:** the canary gains soak time, automatic rollback and a circuit
+    breaker (the bar: 14 green canaries in a row with no human touch). Dev is
+    promoted weekly with human approval. PostHog is a health signal, never
+    the gate. Hermetic builds aim at 90% cache hits.
+
+    **v2** moves execution to Launchpad, adds remote execution (the bar:
+    gate p50 under 10 minutes and p90 under 20 for 4 weeks) and perf
+    bisection of a planted 10% regression, and puts agents on every
+    rotation. Stable is a two-week target with each promotion approved by
+    suraj.
+
+    The likely critical path through v0: manifests, adapters, builders,
+    gate, onboarding, gardener, lkgr, channels, then the daily canary.
+  </Accordion>
+</Accordions>
+
+## Still open
+
+suraj settled the compute ceiling, the canary hour (06:17 UTC) and the
+revert cap on 2026-10-06; they are not in config yet. Still open: who uses the canary
+beyond quirq's test environments, PostHog's plan and scope, and whether an
+agent may roll stable back alone on a health breach.
+
+## Go deeper
+
+- The v0 work items: infra-config [`docs/v0.md`](https://github.com/quirq-ai/infra-config/blob/main/docs/v0.md)
+- The full plan: infra-config [`docs/plan.md`](https://github.com/quirq-ai/infra-config/blob/main/docs/plan.md)

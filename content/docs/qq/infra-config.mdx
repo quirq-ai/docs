@@ -1,0 +1,98 @@
+---
+title: "infra-config"
+description: "The one repo that declares qq as data: repos, builders, landing rules, channels and revert caps, checked and turned into workflows by qqcfg."
+icon: Settings
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+
+<Lead>
+  infra-config declares all of qq as data: which repos are onboarded, what
+  builds them, how a change lands, how releases move through channels, and
+  what agents may do alone. A change here is a pull request through the same
+  gate as code, and you revert it like code. Its tool, `qqcfg`, checks the
+  files and generates each product repo's CI workflows from them.
+</Lead>
+
+<Callout type="info">
+  **Today:** a v0 skeleton. Each file says whether it is a `seed` (values
+  decided) or a `stub` (shape only). Presubmit and post-submit builders are
+  generated and delivered to xo-space, innernet and website. The org-wide
+  drift check is off, because quirq-ai is on GitHub Free, which has no org
+  rulesets. `fuzz` and `perf` have no reader yet. suraj decided the canary
+  hour, revert-cap counting and compute ceiling on 2026-10-06, but those
+  values are not written into config yet.
+</Callout>
+
+## How it works
+
+Every policy lives in `config/`, one TOML file per area, parsed and never
+executed. Each area has a JSON Schema in `schema/` that rejects unknown keys.
+`tools/qqcfg.py validate` checks schemas, cross-file references, the policy
+rules and that `generated/` is up to date, on every pull request.
+
+| File | What it decides |
+|---|---|
+| `org.toml` | roles, runner pools, budget, rotations, the 13 infra repos |
+| `kinds.toml` | toolchains and target kinds |
+| `repos.toml` | onboarded repos |
+| `pipelines.toml` | presubmit, post-submit and release builders |
+| `gate.toml` | the landing gate and who may land what |
+| `channels.toml` | canary, dev, stable; promotion and rollback |
+| others | flakes, revert caps, rollers, health, fuzz, postmortems, perf |
+
+Every Python reader ([gate](/docs/qq/gate), [release](/docs/qq/release) and
+others) goes through `qqcfg.load`; [monitoring](/docs/qq/monitoring) parses its two files
+itself.
+
+## Rules config cannot loosen
+
+These live in `tools/qqcfg.py`, a policy path, so changing one needs suraj.
+
+- Dev and stable promotion need a human owner's approval. Only canary
+  promotes without one.
+- Agents may land only clean reverts, dependency rolls and docs alone.
+- At most 10 reverts per rolling 24 hours, clean reverts only. In v0 every
+  revert is proposed and a person merges it.
+- Builders that run code from an open change get no secrets.
+
+## The qqcfg command
+
+You need Python 3.11 or newer.
+
+```sh
+python3 -m pip install -r requirements.txt
+# the CI check; exit 1 on any error
+python3 tools/qqcfg.py validate
+# rewrite generated/ after editing config/
+python3 tools/qqcfg.py generate
+# copy a product's workflows into its checkout
+python3 tools/qqcfg.py deliver xo-space ../xo-space
+# the drift check against a delivered checkout
+python3 tools/qqcfg.py check-delivered xo-space ../xo-space
+```
+
+Delivered steps are interim commands from `kinds.toml`, which is why
+[your local result can differ from CI](/docs/qq#when-your-result-differs-from-ci).
+A user's own org uses `--root DIR` for its own `qq-config` (see
+[setup](/docs/qq/setup)).
+
+<Accordions>
+  <Accordion title="Changing a policy (contributors)">
+    Edit `config/`, run `generate` and `validate`, and open a pull request
+    saying what changed and how to roll it back. By policy,
+    suraj approves changes to `config/`, `schema/`, `tools/`, `generated/`,
+    `tests/` and `.github/` (no ruleset enforces it); Markdown-only changes
+    and clean reverts need nobody. A change reaches product pull requests
+    only after gate moves its pin and the workflows are redelivered. The
+    full steps are in the
+    [README](https://github.com/quirq-ai/infra-config/blob/main/README.md).
+  </Accordion>
+</Accordions>
+
+## Go deeper
+
+- [infra-config README](https://github.com/quirq-ai/infra-config/blob/main/README.md) and [`config/`](https://github.com/quirq-ai/infra-config/tree/main/config)
+- [Add a repo](/docs/qq#add-a-repo)
+- The plan behind it: [Roadmap](/docs/qq/roadmap)

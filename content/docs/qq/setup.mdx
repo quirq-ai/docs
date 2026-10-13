@@ -1,0 +1,92 @@
+---
+title: "setup"
+description: "One npx command checks your tools, asks in a local form what you want, then shows the plan or prints the commands. This version only reads."
+icon: UserPlus
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  qq-setup is one command for two jobs: put qq on your machine and work on a
+  repo that already uses it, or set up repos in a GitHub org you own. The
+  terminal checks your tools, a short form in your browser asks which job,
+  and the terminal then shows the plan or prints the commands.
+</Lead>
+
+<Callout type="info">
+  **Today: this version only reads.** It shows the plan or prints commands
+  and stops. It creates no repo, opens no pull request, changes no setting
+  and installs nothing. The version that carries the plan out comes after
+  review. It is not on npm yet; publishing there is a later step suraj
+  decides.
+</Callout>
+
+## Run it
+
+```sh
+# <commit> is the full id of the latest commit on main
+npx --allow-remote=root https://codeload.github.com/quirq-ai/setup/tar.gz/<commit>
+```
+
+Always pin the [latest `main` commit](https://github.com/quirq-ai/setup/commits/main):
+the link then serves exactly that commit. npm 12 needs `--allow-remote=root`
+to run a tarball link; it is harmless on older npm.
+
+| Flag | What it does |
+|---|---|
+| `--no-browser` | prints the form's link instead of opening it |
+| `--port N` | serves the form on `127.0.0.1:N` |
+
+Over SSH, forward the same port with `ssh -L N:127.0.0.1:N <host>`.
+
+## What it checks
+
+| Tool | Needs |
+|---|---|
+| Node | 22 or later |
+| `git` | installed |
+| `gh` | logged in, with the `repo` and `read:org` scopes |
+| Python | 3.11 or later |
+
+It refuses to run while `GH_TOKEN`, `GITHUB_TOKEN`, `GH_ENTERPRISE_TOKEN` or
+`GITHUB_ENTERPRISE_TOKEN` is set, so it only ever acts as your own `gh` login.
+
+## The two choices in the form
+
+**Install qq on my machine and work on a repo.** The terminal prints the
+install commands from the [qq guide](/docs/qq#use-qq-on-your-machine) and
+`qq fetch` for the repo you name. It runs none of them. On a Mac it shows `git clone`
+instead, since qq fetches toolchains for Linux x86_64 only.
+
+**Set up repos in an org I own.** You pick an org and the repos to put under
+qq. A repo is offered only when it can run
+its qq kind's commands as it is:
+
+| Kind | What the repo needs |
+|---|---|
+| Python service | `requirements.txt` |
+| pytest | `requirements-dev.txt` listing pytest |
+| Next.js app | pnpm, with `build` and `typecheck` scripts |
+| Gatsby site | pnpm, with `build` and `test` scripts |
+
+v0 sets up public repos only. It then warns about existing protection in
+qq's way and prints the plan, with how to undo it.
+
+## Your login stays safe
+
+Every GitHub call is `gh api --method GET`, and it never reads your token.
+The form listens on `127.0.0.1` only, and its link works once.
+
+## Exit codes
+
+| Code | Meaning |
+|---|---|
+| 0 | done |
+| 1 | a failed check, or no request from the form for 30 minutes |
+| 2 | error |
+| 130 | stopped with Ctrl-C |
+
+## Go deeper
+
+- The [setup README](https://github.com/quirq-ai/setup/blob/main/README.md).
+- [Add a repo](/docs/qq#add-a-repo): the manual onboarding steps.

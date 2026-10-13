@@ -1,0 +1,94 @@
+---
+title: "qq command line"
+description: "Every qq command, its exit codes, how qq pins its own version, and how it calls sync, recipes and toolchains."
+icon: Terminal
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+
+<Lead>
+  `qq` is the quirq infra command line, kept in the
+  [qq repo](https://github.com/quirq-ai/qq) (called `depot` until 2026-10-09;
+  the old URL redirects). It fetches a repo's toolchains, builds and tests it,
+  runs its commands, and sends changes through the gate. It wraps `git` and
+  `gh` and calls the other qq repos by pinned commit.
+</Lead>
+
+<Callout type="info">
+  **Today:** qq is `0.1.0` with no release tag yet. Toolchains exist for Linux x86_64 only.
+  Product CI does not run `qq build` or `qq test` yet, so a local result can
+  differ from CI. A live `qq try` or `qq land` on a product repo has not been
+  shown yet. To install qq, follow
+  [Use qq on your machine](/docs/qq#use-qq-on-your-machine).
+</Callout>
+
+## Commands
+
+```sh
+# clone a repo, then qq sync in it
+qq fetch URL
+# fetch and check every pin, link it under .qq/
+qq sync
+# build all targets (or name some) through recipes
+qq build
+# build and test them; results in .qq/out
+qq test
+# run from the repo root, pinned toolchains on PATH
+qq run "COMMAND"
+# save a repo command as infra/commands/NAME.sh
+qq create NAME COMMAND
+# run that saved command
+qq NAME
+# push this branch, open or update its pull request
+qq upload
+# upload, print a run ID and exit; verdict comes later
+qq try
+# merge queue once the gate passes
+qq land
+# the gate's verdict now
+qq status
+```
+
+`try`, `land` and `status` take a pull request number, URL or branch
+(default this branch's). See
+[Add your own commands](/docs/qq#add-your-own-commands).
+
+## Exit codes
+
+| Command | Exit codes |
+|---|---|
+| sync | 0 done; 1 a fetch failed; 2 no `infra/repo.toml`, or it is invalid |
+| fetch | 0 done; 1 a clone, fetch or manifest problem in the cloned repo |
+| build, test | 0 all passed; 1 a step failed or a target cannot be planned; 2 no `infra/repo.toml`, or it is invalid |
+| run, NAME | the command's own code; 125 qq itself failed; 126 not runnable; 127 not found |
+| create | 2 bad usage or outside a repo; 1 the name is taken or the file exists |
+| status | 0 pass or landed; 1 refused or closed; 2 error; 3 pending |
+| upload, try | 0 done; 2 error |
+| land | 0 queued or being watched; 1 the gate already refused it; 2 error |
+| unknown name | 2 |
+
+"A target cannot be planned" includes an unknown kind. With `QQ_PINNED=1`,
+an invalid manifest gives 1 instead of 2.
+
+## How qq picks its version
+
+Each repo pins its qq as `[qq] version` in the manifest, and inside that
+repo `qq` runs exactly that version, installed on first run under
+`$QQ_HOME/versions` (`QQ_HOME` defaults to `~/.cache/qq`). A roll that moves
+the pin is how qq updates. With no `v0.1.0` tag yet, a bare `0.1.0` pin runs
+your own qq checkout. A pin installs only from the qq repo or a source in
+`$QQ_TRUSTED_SOURCES`, and a `source` needs a `digest`.
+
+<Accordions>
+  <Accordion title="Verdicts and QQ_PINNED">
+    `try` and `land` need `gh` signed in. A watcher writes the verdict to
+    `$QQ_HOME/verdicts/<run ID>.json`; if it dies, `qq status` still
+    answers. `QQ_PINNED=1` runs this `qq` as is, ignoring the pin.
+  </Accordion>
+</Accordions>
+
+## Go deeper
+
+- The [qq README](https://github.com/quirq-ai/qq/blob/main/README.md).
+- [sync](/docs/qq/sync), [recipes](/docs/qq/recipes), [gate](/docs/qq/gate).
