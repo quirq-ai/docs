@@ -1,85 +1,48 @@
 ---
 title: Glossary
-description: Platform terms for XO Space, XO Cloud, agents, and measured work.
+description: Terms for qq, quirq's infra, and for quirq, the proposed unit of agent work.
 icon: BookOpen
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-XO uses a small set of product words. Use this page as the single definition
-source. Onboarding paths link here instead of redefining terms.
+Use this page as the single definition source. Guides link here instead of redefining terms.
 
-## Universal terms
-
-These apply whether you run locally or on Managed Cloud.
+## qq terms
 
 | Term | What it means | Do not confuse with |
 |---|---|---|
-| **XO Space** | The core open-source product engine (`cowork-api`). The workspace environment, observability platform, and session runtime where your agents run and work gets measured. | An XO account, or the word “quirq” |
-| **`cowork-api`** | The FastAPI control plane and event broker running inside every Space instance (local or cloud). Manages agent sessions, secrets, connectors, and trace streaming. | Upstream cloud API (`xo-swarm-api`) |
-| **Self-Hosted Local Space** | An XO Space instance running on your local machine (`http://localhost:5002/space/`). | Cloud dashboard |
-| **Managed Cloud Space** | An XO Space instance hosted on an isolated cloud VM managed via [app.xo.builders](https://app.xo.builders). | Local offline space |
-| **Agent** | The software runtime doing the work (OpenClaw, Claude Code, Hermes, Antigravity, XO Cowork, and others). Each offers a different interface and workflow. | The VM or the dashboard item |
-| **Work project** / **project directory** | A folder *inside* a Space where the agent keeps files and context for a particular piece of work. | An **XO project** (Cloud dashboard item) |
-| **Model provider** | The AI model account that powers the agent (API key or OAuth). | XO billing / plan |
-| **Channel** | A messaging app through which people can reach an agent (for example Telegram or Slack). Support varies by agent. | The Space UI itself |
-| **Data source** | An external account (Google Drive, GitHub, and similar) connected so an agent can read relevant information. | The Space filesystem |
-| **quirq** | A *proposed* unit of **verified work** ([the idea](/docs/quirq)). XO Space does not count quirqs yet. | The name of the Space product or the local installer paths |
+| **qq** | quirq infra: how quirq builds, tests and lands code, and its command line, `qq`. See [the qq guide](/docs/qq). | **a quirq**, the proposed unit of work |
+| **`infra/repo.toml`** | The one file a product repo writes by hand. It lists the repo's targets; its CI is generated from config. | infra-config, which holds every policy |
+| **infra-config** | The config repo that holds every policy as TOML. Changing one is a pull request there. | A repo's own `infra/repo.toml` |
+| **gate** | The repo that applies required checks, repo settings and the merge queue. | infra-config |
+| **v0** | The first, thin version of qq, being finished now. | |
+| **Pinned by digest** | Named by the hash of its exact bytes, so every machine that fetches it gets the same bytes. | A version number |
+| **Presubmit** | The blocking check on a pull request. | Post-submit |
+| **Merge queue** | Tests each pull request merged onto the latest `main` before it lands. | |
+| **Post-submit** | The builder that runs on `main` after a change lands. | Presubmit |
+| **lkgr** (last known good) | The newest `main` commit whose post-submit builders all passed. | The canary channel |
+| **Canary** | The daily release channel, built from lkgr; dev and stable come later. | lkgr |
+
+## quirq terms
+
+| Term | What it means | Do not confuse with |
+|---|---|---|
+| **quirq** | A *proposed* unit of **verified work** ([the idea](/docs/quirq)). Nothing counts quirqs yet. | qq, the infra |
+| **Definition of done** | A machine-checkable end state a human owner writes before the work starts. | A prompt |
+| **Budget (B)** | The price the owner would pay for the outcome to exist. The task carries B *potential* quirqs. | What the work cost |
+| **Completion (V)** | A score from 0 to 1, from comparing the world before (S₀) and after (S₁) against the definition of done. | The agent's own report |
+| **Mint** | Recording V · B quirqs of delivered work in a tamper-evident ledger, with everything production consumed. | |
 
 <Callout type="info">
-  **One sentence to remember:** **XO Space** is the core open-source engine (`cowork-api`) where agents run. Run that Space on your laptop (**Self-Hosted**) or on XO’s hosted machines (**Managed Cloud**).
+  **One sentence to remember:** **qq** decides whether code lands and ships; **a quirq** is a
+  proposed way to count what agents deliver.
 </Callout>
-
-## XO Space (local)
-
-| Term | What it means |
-|---|---|
-| **XO Space** | A Space running **on your machine** (typically at `http://localhost:5002/space/`). No XO account is required just to install and run it. |
-| **Local install** | The Space binary/environment started from the install script (or via an agent skill). Keep the terminal session running while you use Space. |
-| **Space UI** | The browser interface for your local Space. This is what “this is a Space” refers to in the local walkthrough. |
-
-XO Labs makes XO Space, and quirq is the name on our GitHub org and website, so
-the name quirq also appears in logs and install URLs (`quirq.ai/install`,
-`~/.quirq/`). Those refer to **Space**, not a separate product.
-
-**Start here:** [XO Space overview](/docs/space) → [Install](/docs/space/install-space) → [Your first Space](/docs/space/first-space).
-
-## XO Cloud
-
-| Term | What it means |
-|---|---|
-| **XO Cloud** | XO’s hosted runtime and dashboard. Your Space runs on an isolated **workspace machine** you control from [app.xo.builders](https://app.xo.builders). |
-| **XO account** | Your identity on XO. It owns the projects you create and controls which projects you can access. |
-| **XO project** | The dashboard item you create from an agent template. It ties an agent to its remote workspace machine. |
-| **Workspace machine** | The isolated remote machine provisioned for the XO project. It runs the agent and supporting services and can be started, stopped, or restarted. |
-| **Service** | A process inside the Cloud workspace (for example Cowork API or OpenClaw Gateway). A service must be ready before its interface can open. |
-| **Setup tab** | Cloud UI area to connect models, data sources, channels, and other credentials for the selected agent. |
-| **Launch tab** | Cloud UI area to open the agent interface, browser IDE, or service controls. |
-
-### Two meanings of “project” (Cloud)
-
-1. An **XO project** is the dashboard item that owns the remote workspace and agent.
-2. A **work project** or **project directory** is a folder inside that workspace where the agent keeps files for a piece of work.
-
-Creating an inner work project does **not** provision another machine.
-
-**Start here:** [XO Cloud overview](/docs/cloud) → [Create an account](/docs/cloud/create-account) → [Launch your first agent](/docs/cloud/launch-first-agent).
-
-## Where you control things (Cloud)
-
-| Area | Use it for |
-|---|---|
-| **Setup** | Connect models, data sources, channels, and credentials exposed by the agent. |
-| **Launch** | Open the agent interface, browser IDE, or service controls. |
-| **Workspace IDE** | Inspect files and run commands on the remote machine. |
-
-Exact controls vary by agent. See [Choose an agent](/docs/cloud/choose-an-agent) and the [Agents](/docs/agents) catalog.
 
 ## Related paths
 
 | If you want to… | Go to |
 |---|---|
-| Run locally | [XO Space](/docs/space) |
-| Run hosted | [XO Cloud](/docs/cloud) |
-| Pick a harness | [Agents](/docs/agents) |
+| Build, test and land code | [qq](/docs/qq) |
 | Measure verified work | [quirq](/docs/quirq) |
+| Read about XO Space or XO Cloud | [docs.xo.builders](https://docs.xo.builders) |

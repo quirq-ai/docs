@@ -1,5 +1,0 @@
-{
-  "title": "Dockerfile Examples",
-  "icon": "Docker",
-  "pages": ["python", "node-js", "next-js", "vite"]
-}

@@ -17,32 +17,6 @@ export const docs = defineDocs({
   },
 });
 
-export const apiDocs = defineDocs({
-  dir: "content/api",
-  docs: {
-    schema: pageSchema,
-    postprocess: {
-      includeProcessedMarkdown: true,
-    },
-  },
-  meta: {
-    schema: metaSchema,
-  },
-});
-
-export const templatesDocs = defineDocs({
-  dir: "content/templates",
-  docs: {
-    schema: pageSchema,
-    postprocess: {
-      includeProcessedMarkdown: true,
-    },
-  },
-  meta: {
-    schema: metaSchema,
-  },
-});
-
 const researchPageSchema = pageSchema.extend({
   tags: z.array(z.string()).optional(),
   date: z.string().optional(),

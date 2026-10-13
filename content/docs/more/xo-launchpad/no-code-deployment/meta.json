@@ -1,9 +1,0 @@
-{
-  "title": "Deployment Methods",
-  "icon": "Rocket",
-  "pages": [
-    "deploying-from-local",
-    "deploying-from-github-repository",
-    "deploying-from-lovable"
-  ]
-}

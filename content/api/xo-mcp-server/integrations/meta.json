@@ -1,5 +1,0 @@
-{
-  "title": "AI Tool Integrations",
-  "icon": "Plug2",
-  "pages": ["cursor", "claude", "claude-code", "chatgpt", "devin", "manus"]
-}

@@ -41,29 +41,9 @@ export function AISearchPanelHeader({
     >
       <div className="px-3 py-2 flex-1">
         <p className="text-sm font-medium mb-2">AI Chat</p>
-        <p className="text-xs text-fd-muted-foreground mb-3">
+        <p className="text-xs text-fd-muted-foreground">
           AI can be inaccurate, please verify the answers.
         </p>
-        <div className="flex gap-2">
-          <a
-            href="https://t.me/xo_ask_bot"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-1.5 bg-[#2AABEE] hover:bg-[#229ED9] text-white rounded-lg py-2 text-xs font-medium transition-colors"
-          >
-            <span className="icon-[ph--telegram-logo-fill] size-4" />
-            Telegram
-          </a>
-          <a
-            href="https://wa.me/19342604260"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#1DA851] text-white rounded-lg py-2 text-xs font-medium transition-colors"
-          >
-            <span className="icon-[ph--whatsapp-logo-fill] size-4" />
-            WhatsApp
-          </a>
-        </div>
       </div>
 
       <button
@@ -283,7 +263,7 @@ function Input(props: ComponentProps<"textarea">) {
 
 const roleName: Record<string, string> = {
   user: "you",
-  assistant: "XO AI",
+  assistant: "quirq AI",
 };
 
 function Message({
@@ -450,9 +430,9 @@ export function AISearchPanel() {
 }
 
 const SUGGESTED_PROMPTS = [
-  "What can I run on XO today?",
-  "Is XO free?",
-  "How do I launch my first agent?",
+  "What is qq?",
+  "How do I add a repo to qq?",
+  "What is a quirq?",
 ] as const;
 
 function EmptyChatSuggestions() {

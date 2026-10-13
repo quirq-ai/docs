@@ -1,30 +1,16 @@
 import type { BaseLayoutProps, LinkItemType } from "fumadocs-ui/layouts/shared";
-import Image from "next/image";
+import { BrandIcon } from "@/components/brand-icon";
 import { appName, gitConfig } from "./shared";
 
 const logo = (
-  <>
-    <Image
-      src="/xo-light.svg"
-      alt={appName}
-      className="h-7 w-auto rounded-md block dark:hidden"
-      width={500}
-      height={500}
-    />
-    <Image
-      src="/xo.svg"
-      alt={appName}
-      className="h-7 w-auto rounded-md hidden dark:block"
-      width={500}
-      height={500}
-    />
-  </>
+  <span className="inline-flex items-center gap-2" aria-label={appName}>
+    <BrandIcon name="quirq" size={24} />
+    <span className="whitespace-nowrap text-base font-bold">quirq</span>
+  </span>
 );
 
 const tabLinks: LinkItemType[] = [
   { text: "Guides", url: "/docs", active: "nested-url" },
-  { text: "Space API Reference", url: "/api-reference", active: "nested-url" },
-  // { text: "Templates", url: "/templates", active: "nested-url" },
   { text: "Research", url: "/research", active: "nested-url" },
 ];
 
@@ -39,42 +25,18 @@ export const socialLinks: LinkItemType[] = [
   },
   {
     type: "icon",
-    label: "xo.builders",
-    text: "xo.builders",
+    label: "quirq.ai",
+    text: "quirq.ai",
     icon: <span className="icon-[ph--globe-fill] size-3.5" />,
-    url: "https://xo.builders",
+    url: "https://www.quirq.ai",
     external: true,
   },
   {
     type: "icon",
-    label: "X (Twitter)",
-    text: "X",
-    icon: <span className="icon-[lineicons--x] size-3.5" />,
-    url: "https://x.com/xo_builders",
-    external: true,
-  },
-  {
-    type: "icon",
-    label: "Instagram",
-    text: "Instagram",
-    icon: <span className="icon-[ph--instagram-logo-fill] size-3.5" />,
-    url: "https://www.instagram.com/xo_builders/",
-    external: true,
-  },
-  {
-    type: "icon",
-    label: "LinkedIn",
-    text: "LinkedIn",
-    icon: <span className="icon-[ph--linkedin-logo-fill] size-3.5" />,
-    url: "https://linkedin.com/company/xo-builders",
-    external: true,
-  },
-  {
-    type: "icon",
-    label: "YouTube",
-    text: "YouTube",
-    icon: <span className="icon-[ph--youtube-logo-fill] size-3.5" />,
-    url: "https://www.youtube.com/@xo_builders",
+    label: "XO docs",
+    text: "XO docs",
+    icon: <span className="icon-[ph--book-open-fill] size-3.5" />,
+    url: "https://docs.xo.builders",
     external: true,
   },
 ];

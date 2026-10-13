@@ -1,5 +1,0 @@
-{
-  "title": "Data Sources",
-  "icon": "Database",
-  "pages": ["google-drive", "onedrive", "github", "vercel"]
-}

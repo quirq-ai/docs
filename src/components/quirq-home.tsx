@@ -4,15 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { BrandIcon } from "@/components/brand-icon";
-import { SystemSequence } from "@/components/system-sequence";
 import { socialLinks } from "@/lib/layout.shared";
 
-const SIGN_UP_URL = "https://app.xo.builders/sign-up?ref=docs.quirq.dev";
-const GITHUB_REPO_URL = "https://github.com/quirq-ai/xo-space";
+const GITHUB_REPO_URL = "https://github.com/quirq-ai/qq";
 
 export function QuirqHome() {
   const [copied, setCopied] = useState(false);
-  const curlCmd = "curl -fsSL https://quirq.ai/install | sh";
+  const curlCmd = "qq build && qq test";
 
   const copyCommand = () => {
     navigator.clipboard.writeText(curlCmd);
@@ -30,7 +28,7 @@ export function QuirqHome() {
         >
           <BrandIcon name="quirq" size={24} />
           <span className="whitespace-nowrap text-base font-bold">
-            XO Space
+            quirq
           </span>
         </Link>
         <nav aria-label="Primary" className="flex items-center gap-4 text-sm">
@@ -47,10 +45,10 @@ export function QuirqHome() {
             Docs
           </Link>
           <Link
-            href="/docs/space/space-walk"
+            href="/docs/qq"
             className="hidden whitespace-nowrap text-fd-muted-foreground transition-colors hover:text-fd-foreground sm:inline-block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
           >
-            Space UI
+            qq
           </Link>
           <Link
             href="/docs/quirq"
@@ -67,12 +65,12 @@ export function QuirqHome() {
             <BrandIcon name="github" size={16} />
             GitHub
           </a>
-          <a
-            href={SIGN_UP_URL}
+          <Link
+            href="/docs/qq"
             className="rounded-lg bg-fd-primary px-4 py-2 font-medium text-fd-primary-foreground transition-opacity sm:whitespace-nowrap hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
           >
-            Launch Cloud
-          </a>
+            qq guide
+          </Link>
         </nav>
       </header>
 
@@ -88,26 +86,26 @@ export function QuirqHome() {
             <span>Open source</span>
             <span className="text-fd-muted-foreground">•</span>
             <span className="text-fd-muted-foreground">
-              On your computer or in the cloud
+              Alpha, Linux x86_64 first
             </span>
           </div>
 
           <h1 className="text-balance text-4xl font-bold tracking-[-0.05em] sm:text-6xl lg:text-7xl">
-            A place for your AI agents to work.
+            Build, test and land code with qq.
           </h1>
 
           <Link
             href="/docs/start"
             className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl border border-fd-border bg-fd-background px-5 py-2 text-balance text-sm font-semibold text-fd-foreground shadow-sm transition-colors hover:bg-fd-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
           >
-            New to XO Space? Start here: the main links on one page
+            New here? Start here: the main links on one page
             <span className="icon-[ph--arrow-right-bold] size-3.5" />
           </Link>
 
           <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-7 text-fd-muted-foreground sm:text-lg">
-            XO Space shows what your agents are doing, keeps your projects and
-            history in one place, and runs on your computer or in the cloud. You
-            bring your own agent and model key.
+            qq (quirq infra) is how quirq builds, tests and lands code. You
+            write code as usual, human or agent. qq decides whether it lands,
+            keeps main green and moves tested commits into release channels.
           </p>
 
           {/* Terminal Install Snippet */}
@@ -121,7 +119,7 @@ export function QuirqHome() {
                 type="button"
                 onClick={copyCommand}
                 className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-fd-border bg-fd-muted px-3 py-1.5 text-xs font-medium text-fd-foreground transition-colors hover:bg-fd-accent"
-                aria-label="Copy install command"
+                aria-label="Copy command"
               >
                 {copied ? (
                   <>
@@ -139,27 +137,27 @@ export function QuirqHome() {
               </button>
             </div>
             <p className="mt-2 text-xs text-fd-muted-foreground">
-              Opens at <code>localhost:5002</code> · Finds Claude Code,
-              OpenClaw, Hermes, Antigravity and Cursor
+              After you install qq, in any repo that has{" "}
+              <code>infra/repo.toml</code>
             </p>
           </div>
 
           {/* Actions */}
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Link
-              href="/docs/space/install-space"
+              href="/docs/qq#use-qq-on-your-machine"
               className="rounded-lg bg-fd-primary px-6 py-3 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
             >
               <span className="icon-[ph--monitor-fill] mr-2 inline-block size-4 align-[-0.125em]" />
-              Install on my computer
+              Install qq
             </Link>
-            <a
-              href={SIGN_UP_URL}
+            <Link
+              href="/docs/qq#add-a-repo"
               className="rounded-lg border border-fd-border bg-fd-background/80 px-6 py-3 text-sm font-semibold transition-colors hover:bg-fd-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
             >
-              <span className="icon-[ph--rocket-fill] mr-2 inline-block size-4 align-[-0.125em] text-fd-primary" />
-              Use XO Cloud
-            </a>
+              <span className="icon-[ph--git-pull-request-fill] mr-2 inline-block size-4 align-[-0.125em] text-fd-primary" />
+              Add a repo
+            </Link>
             <a
               href={GITHUB_REPO_URL}
               target="_blank"
@@ -173,21 +171,18 @@ export function QuirqHome() {
         </div>
       </section>
 
-      {/* 5-Stage Sequence Visual */}
-      <SystemSequence />
-
-      {/* Two Deployment Targets (Decoupled Architecture) */}
+      {/* Where qq runs */}
       <section className="border-y border-fd-border bg-fd-muted px-5 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-fd-muted-foreground">
-              Two ways to run it
+              Where it runs
             </p>
             <h2 className="mt-3 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-              Your computer or our cloud.
+              Your machine and GitHub.
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-fd-muted-foreground sm:text-base">
-              It is the same XO Space either way. Pick the one that suits you.
+              The same infra/repo.toml drives both.
             </p>
           </div>
 
@@ -196,7 +191,7 @@ export function QuirqHome() {
             <div className="group relative isolate min-h-[30rem] overflow-hidden rounded-2xl border border-fd-border bg-[#05080c] p-7 text-white sm:p-10">
               <Image
                 src="/images/system-local.png"
-                alt="A local Space running on a personal machine"
+                alt="A personal machine"
                 fill
                 sizes="(min-width: 768px) 45vw, 100vw"
                 className="object-contain object-right-bottom p-3 opacity-85 transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none"
@@ -209,32 +204,32 @@ export function QuirqHome() {
                 </span>
                 <div className="mt-auto">
                   <p className="text-xs font-semibold uppercase tracking-wider text-fd-primary">
-                    On your computer
+                    On your machine
                   </p>
                   <h3 className="mt-2 text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">
-                    Free and open source.
+                    Build, test, run.
                   </h3>
                   <p className="mt-3 text-sm leading-6 text-white/70">
-                    Run Space on your own machine. It finds the agents you
-                    already use and keeps its data in a <code>.quirq</code>{" "}
-                    folder next to your projects.
+                    <code>qq sync</code> fetches the pinned toolchains and
+                    checks their digests. <code>qq build</code> and{" "}
+                    <code>qq test</code> build and test the repo&apos;s targets.
                   </p>
                   <Link
-                    href="/docs/space/install-space"
+                    href="/docs/qq#use-qq-on-your-machine"
                     className="mt-6 inline-flex items-center rounded-lg bg-fd-primary px-5 py-2.5 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
                   >
-                    Install Space
+                    Use qq locally
                     <span className="icon-[ph--arrow-right-bold] ml-2 size-3.5" />
                   </Link>
                 </div>
               </div>
             </div>
 
-            {/* Cloud Card */}
+            {/* GitHub Card */}
             <div className="group relative isolate min-h-[30rem] overflow-hidden rounded-2xl border border-fd-border bg-[#05080c] p-7 text-white sm:p-10">
               <Image
                 src="/images/system-cloud.png"
-                alt="A Space running across connected cloud infrastructure"
+                alt="Connected cloud infrastructure"
                 fill
                 sizes="(min-width: 768px) 45vw, 100vw"
                 className="object-contain object-right-bottom p-3 opacity-85 transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none"
@@ -247,22 +242,22 @@ export function QuirqHome() {
                 </span>
                 <div className="mt-auto">
                   <p className="text-xs font-semibold uppercase tracking-wider text-fd-primary">
-                    XO Cloud
+                    On GitHub
                   </p>
                   <h3 className="mt-2 text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">
-                    Nothing to install.
+                    Presubmit to canary.
                   </h3>
                   <p className="mt-3 text-sm leading-6 text-white/70">
-                    We run XO Space for you on a cloud machine, with VS Code in
-                    your browser and project sharing.
+                    The presubmit and the merge queue decide what lands. lkgr
+                    and the daily canary move tested commits toward release.
                   </p>
-                  <a
-                    href={SIGN_UP_URL}
+                  <Link
+                    href="/docs/qq#how-a-change-moves"
                     className="mt-6 inline-flex items-center rounded-lg bg-fd-primary px-5 py-2.5 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
                   >
-                    Start with XO Cloud
+                    How a change moves
                     <span className="icon-[ph--arrow-right-bold] ml-2 size-3.5" />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -270,7 +265,7 @@ export function QuirqHome() {
         </div>
       </section>
 
-      {/* Suraj's 4 Layers Definition */}
+      {/* The four pieces */}
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
@@ -278,43 +273,36 @@ export function QuirqHome() {
               How it fits together
             </p>
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">
-              Your machine, your Space, your agent.
+              One config repo decides everything.
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-fd-muted-foreground">
-              Space sits between the machine and the agent, so you can change
-              either one.
+              A product repo writes one file by hand. Everything else comes
+              from config.
             </p>
           </div>
           <dl className="grid gap-x-8 gap-y-7 sm:grid-cols-2">
             <div>
-              <dt className="font-semibold text-fd-foreground">1. Machine</dt>
+              <dt className="font-semibold text-fd-foreground">1. infra-config</dt>
               <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
-                Where the work runs: your computer, your own server or an XO
-                cloud machine.
+                Holds every policy as TOML. Changing one is a pull request there.
               </dd>
             </div>
             <div>
-              <dt className="font-semibold text-fd-foreground">2. XO Space</dt>
+              <dt className="font-semibold text-fd-foreground">2. infra/repo.toml</dt>
               <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
-                Holds your projects, agent sessions and history, and shows them
-                to you.
+                The one file a product repo writes by hand. Its CI is generated from config.
               </dd>
             </div>
             <div>
-              <dt className="font-semibold text-fd-foreground">3. Agent</dt>
+              <dt className="font-semibold text-fd-foreground">3. qq</dt>
               <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
-                The agent you choose: Claude Code, OpenClaw, Hermes, Antigravity
-                or Cursor.
+                The command line. It builds and tests any repo the same way.
               </dd>
             </div>
             <div>
-              <dt className="font-semibold text-fd-foreground">
-                4. Work, and quirqs (proposed)
-              </dt>
+              <dt className="font-semibold text-fd-foreground">4. gate</dt>
               <dd className="mt-2 text-sm leading-6 text-fd-muted-foreground">
-                What your agents deliver. A quirq is a proposed unit for
-                counting checked, delivered work. XO Space does not count quirqs
-                yet.
+                Applies each repo&apos;s required checks, settings and merge queue.
               </dd>
             </div>
           </dl>
@@ -329,27 +317,27 @@ export function QuirqHome() {
           </p>
           <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Link
-              href="/docs/space/install-space"
+              href="/docs/qq#use-qq-on-your-machine"
               className="rounded-xl border border-fd-border bg-fd-card p-5 transition-colors hover:bg-fd-accent/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
             >
               <span className="mb-3 flex size-8 items-center justify-center rounded-lg border border-fd-border bg-fd-muted text-fd-primary">
                 <span className="icon-[ph--monitor-fill] size-4" />
               </span>
-              <span className="font-semibold">Install Space</span>
+              <span className="font-semibold">Install qq</span>
               <span className="mt-2 block text-sm text-fd-muted-foreground">
-                One command to install.
+                qq and qqsync on your machine.
               </span>
             </Link>
             <Link
-              href="/docs/space/space-walk"
+              href="/docs/qq#add-a-repo"
               className="rounded-xl border border-fd-border bg-fd-card p-5 transition-colors hover:bg-fd-accent/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
             >
               <span className="mb-3 flex size-8 items-center justify-center rounded-lg border border-fd-border bg-fd-muted text-fd-primary">
-                <span className="icon-[ph--map-trifold-fill] size-4" />
+                <span className="icon-[ph--git-pull-request-fill] size-4" />
               </span>
-              <span className="font-semibold">Space UI</span>
+              <span className="font-semibold">Add a repo</span>
               <span className="mt-2 block text-sm text-fd-muted-foreground">
-                A tour of the app.
+                Put a repo under qq&apos;s landing rules.
               </span>
             </Link>
             <Link
@@ -373,7 +361,7 @@ export function QuirqHome() {
               </span>
               <span className="font-semibold">All docs</span>
               <span className="mt-2 block text-sm text-fd-muted-foreground">
-                Every guide and the API reference.
+                Every guide and the glossary.
               </span>
             </Link>
           </div>
@@ -383,7 +371,7 @@ export function QuirqHome() {
       {/* Footer */}
       <footer className="border-t border-fd-border bg-fd-muted/30 px-5 py-8 sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col gap-5 text-sm text-fd-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>XO Space — Open-source agent workspace & observability engine.</p>
+          <p>quirq docs: qq, quirq&apos;s infra, and quirq, a proposed unit of agent work.</p>
           <nav aria-label="Social links" className="flex items-center gap-2">
             {socialLinks.map((link, idx) => {
               if (!("url" in link) || typeof link.url !== "string") return null;

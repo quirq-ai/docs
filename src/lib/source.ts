@@ -1,4 +1,4 @@
-import { apiDocs, docs, researchDocs, templatesDocs } from "collections/server";
+import { docs, researchDocs } from "collections/server";
 import { loader } from "fumadocs-core/source";
 import { createElement } from "react";
 import { BrandIcon } from "@/components/brand-icon";
@@ -132,18 +132,6 @@ function iconifyIconsPlugin() {
 export const source = loader({
   baseUrl: docsRoute,
   source: docs.toFumadocsSource(),
-  plugins: [iconifyIconsPlugin()],
-});
-
-export const apiSource = loader({
-  baseUrl: "/api-reference",
-  source: apiDocs.toFumadocsSource(),
-  plugins: [iconifyIconsPlugin()],
-});
-
-export const templatesSource = loader({
-  baseUrl: "/templates",
-  source: templatesDocs.toFumadocsSource(),
   plugins: [iconifyIconsPlugin()],
 });
 
