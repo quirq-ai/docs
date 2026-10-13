@@ -16,7 +16,7 @@ import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 </Lead>
 
 <Callout type="info">
-  **Today:** qq is `0.1.0` with no release tag yet, Linux x86_64 only.
+  **Today:** qq is `0.1.0` with no release tag yet. Toolchains exist for Linux x86_64 only.
   Product CI does not run `qq build` or `qq test` yet, so a local result can
   differ from CI. A live `qq try` or `qq land` on a product repo has not been
   shown yet. To install qq, follow
@@ -26,17 +26,28 @@ import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 ## Commands
 
 ```sh
-qq fetch URL                 # clone a repo, then qq sync in it
-qq sync                      # fetch and check every pin, link it under .qq/
-qq build                     # build all targets (or name some) through recipes
-qq test                      # build and test them; results in .qq/out
-qq run "COMMAND"             # run from the repo root, pinned toolchains on PATH
-qq create NAME COMMAND       # save a repo command as infra/commands/NAME.sh
-qq NAME                      # run that saved command
-qq upload                    # push this branch, open or update its pull request
-qq try                       # upload, print a run ID and exit; verdict comes later
-qq land                      # merge queue once the gate passes
-qq status                    # the gate's verdict now
+# clone a repo, then qq sync in it
+qq fetch URL
+# fetch and check every pin, link it under .qq/
+qq sync
+# build all targets (or name some) through recipes
+qq build
+# build and test them; results in .qq/out
+qq test
+# run from the repo root, pinned toolchains on PATH
+qq run "COMMAND"
+# save a repo command as infra/commands/NAME.sh
+qq create NAME COMMAND
+# run that saved command
+qq NAME
+# push this branch, open or update its pull request
+qq upload
+# upload, print a run ID and exit; verdict comes later
+qq try
+# merge queue once the gate passes
+qq land
+# the gate's verdict now
+qq status
 ```
 
 `try`, `land` and `status` take a pull request number, URL or branch

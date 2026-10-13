@@ -36,12 +36,18 @@ All five must hold together:
 
 1. All 13 repos exist and are public, each with CODEOWNERS, a generated
    presubmit and a merge queue.
+   **Today:** partly; the infra repos' presubmits are hand-written.
 2. xo-space and innernet are gated from their `infra/repo.toml`, and a
    deliberately red pull request is refused in each.
+   **Today:** partly; CI runs stand-in commands, not the recipes, and no
+   refusal is recorded yet.
 3. A daily canary runs 7 days in a row with no human touch; a planted bad
    canary is held; a rollback drill takes under 10 minutes.
+   **Today:** not yet.
 4. A planted breaking commit is reverted automatically.
+   **Today:** not started; it needs the gardener App.
 5. The scorecard is computed by a script, not typed.
+   **Today:** built.
 
 ## What is built
 
@@ -50,12 +56,10 @@ All five must hold together:
 | The 13 repos, infra-config and its `validate` check | built |
 | Builders delivered to xo-space, innernet and website | built; org-wide drift check off (GitHub Free) |
 | gate's rulesets and merge queue | applied, last on 2026-10-09; product pull requests need one approval |
-| release as its executor App | since 2026-10-09; lkgr and canary also mirrored as refs in the products; `release-state` locked to the App |
+| release as its executor App | since 2026-10-09; lkgr and canary also mirrored as refs in xo-space and innernet; `release-state` locked to the App |
 | Scorecard | built |
 | gardener | reports only; its App is not created, so no reverts |
 | 7-day canary, hold, rollback, auto-revert | none has happened on a real repo |
-
-Per exit-test line, see [Where qq stands](/docs/qq#where-qq-stands).
 
 <Accordions>
   <Accordion title="v1 and v2 in more detail">
@@ -71,7 +75,7 @@ Per exit-test line, see [Where qq stands](/docs/qq#where-qq-stands).
     suraj.
 
     The likely critical path through v0: manifests, adapters, builders,
-    gate, onboarding, lkgr, channels, then the daily canary.
+    gate, onboarding, gardener, lkgr, channels, then the daily canary.
   </Accordion>
 </Accordions>
 
