@@ -1,10 +1,11 @@
 ---
-title: "remote-build: where actions run"
+title: "remote-build"
 description: "The executor interface and local action cache that will let qq run build steps anywhere and reuse their results. Nothing calls it yet."
 icon: Cloud
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 
 <Lead>
   The [remote-build repo](https://github.com/quirq-ai/remote-build) defines
@@ -24,69 +25,59 @@ import { Callout } from "fumadocs-ui/components/callout";
 ## How it works
 
 - **An action** is a [recipes](/docs/qq/recipes) `Action`: a command, an
-  input root digest, environment, declared outputs and platform. Its digest
-  is its key. A request (`qq-exec-request/1`) adds the files of the input
-  root and, for remote backends, the git repository and commit to fetch
-  them from. Actions are shaped like REAPI's `Action` and `ActionResult`;
-  v0 needs no gRPC.
+  input root digest, environment, outputs and platform. Its digest is its
+  key. A request (`qq-exec-request/1`) adds the input files and, for remote
+  backends, the git commit to fetch them from. v0 needs no gRPC.
 - **An executor** runs one request and returns the exit code and the digest
   of every output. A non-zero exit code is a result, not an error.
-- **Inputs are checked first.** Every executor checks that the files it sees
-  hash to the input root digest and that it is on the action's platform. A
-  mismatch is a typed error, never a silent run on the wrong inputs.
-- **Backends are modules.** `qqrbe.executor.load(backend)` imports
-  `qqrbe.backends.<backend>`, so a new backend (`launchpad`, quirq's own
-  cloud, or Buildbarn) is one new module.
+- **Inputs are checked first.** A file that does not match the input root
+  digest, or the wrong platform, is a typed error, never a silent run.
+- **Backends are modules** (`qqrbe.backends.<backend>`), so a new backend is
+  one new module.
 
 | Backend | Runs the action |
 |---|---|
 | `local` | here, through recipes' runner |
-| `github` | on a GitHub Actions runner: it dispatches the `execute` workflow, which checks out the commit, verifies the inputs, runs the action and returns the result as an artifact |
+| `github` | on a GitHub Actions runner, through the `execute` workflow |
 
 The `github` backend needs a token with `actions: write` (`QQ_GITHUB_TOKEN`
-or `GITHUB_TOKEN`). v0 uses git as the input store.
+or `GITHUB_TOKEN`).
 
 ## The action cache
 
-- `exec` and `selftest` look the action digest up in `<repo>/.qq/cache`
-  first. A hit restores the outputs, log and JUnit and prints `cache: hit`.
-  A miss runs the action and stores the result if it succeeded.
-- Actions marked `cacheable = false`, or run on a toolchain from `PATH`,
-  always run and print `cache: uncacheable`. `--no-cache` turns the cache
-  off.
+`exec` and `selftest` look the action digest up in `<repo>/.qq/cache` first.
+A hit restores the outputs and prints `cache: hit`; a successful miss is
+stored. Actions marked `cacheable = false`, or run on a toolchain from
+`PATH`, always run (`cache: uncacheable`).
 
-## Fallback
-
-With `--fallback local`, an action the backend cannot run
-(`backend-unavailable`, `remote-execution-failed`) runs locally instead.
-Every fallback prints a `FALLBACK` line, is marked in the result, and is
-counted by backend pair and reason in `.qq/cache/stats.json`. Wrong inputs,
-a wrong platform or a bad request never fall back, since they would fail
-anywhere.
+With `--fallback local`, an action the backend cannot run runs locally
+instead, with a `FALLBACK` line, and is counted in `.qq/cache/stats.json`.
+Wrong inputs, a wrong platform or a bad request never fall back.
 
 ## Commands
 
-| Command | What it does |
-|---|---|
-| `qqrbe backends` | list backends (`local`, `github`, ...) |
-| `qqrbe selftest --backend local` | run a small deterministic action |
-| `qqrbe exec --request req.json --backend github` | run a `qq-exec-request/1` |
-| `qqrbe compare local.json github.json` | same action, same output digests? |
-| `qqrbe selftest --backend github --fallback local` | fall back to local if GitHub cannot run it |
-| `qqrbe stats` | cache hits and misses, fallbacks by reason |
+```sh
+qqrbe backends                                     # list backends
+qqrbe selftest --backend local                     # run a small deterministic action
+qqrbe exec --request req.json --backend github     # run a qq-exec-request/1
+qqrbe compare local.json github.json               # same output digests?
+qqrbe selftest --backend github --fallback local   # fall back if GitHub cannot run it
+qqrbe stats                                        # cache hits, misses, fallbacks
+```
 
-`exec` and `selftest` exit 0 when the action passed, 1 when it did not, and 2 when the executor could not run it (a typed error).
+`exec` and `selftest` exit 0 when the action passed, 1 when it did not, and
+2 when the executor could not run it.
 
-## How CI proves it
-
-- The `cross-backend` job runs `qqrbe selftest` on both backends, and
-  `qqrbe compare` fails it unless both give the same action digest and the
-  same output digests.
-- A second selftest run must be a cache hit.
-- A run on `github` with no token must fall back and be counted.
+<Accordions>
+  <Accordion title="How CI proves it">
+    The `cross-backend` job runs `qqrbe selftest` on both backends, and
+    `qqrbe compare` fails it unless both give the same action and output
+    digests. A second selftest must be a cache hit, and a `github` run with
+    no token must fall back and be counted.
+  </Accordion>
+</Accordions>
 
 ## Go deeper
 
 - The [remote-build README](https://github.com/quirq-ai/remote-build/blob/main/README.md).
-- [recipes](/docs/qq/recipes): where actions come from.
 - [roadmap](/docs/qq/roadmap): the shared cache (v1) and remote execution (v2).

@@ -1,5 +1,5 @@
 ---
-title: "installer: follow a channel instead of main"
+title: "installer"
 description: "qqinstall reads which commit and digest a release channel names, puts a checkout on exactly that commit and verifies it."
 icon: Download
 ---
@@ -16,43 +16,36 @@ import { Callout } from "fumadocs-ui/components/callout";
 <Callout type="info">
   **Today:** `qqinstall resolve` works live for xo-space and innernet on
   canary since the first canary on 2026-10-05. Every real install still
-  follows `main`. In v0 only test installs, in quirq's research and test
-  environments, are meant to follow canary, and those machines are not named
-  yet. Installer work is low priority in v0.
+  follows `main`. In v0 only test installs are meant to follow canary, and
+  those machines are not named yet. Installer work is low priority in v0.
 </Callout>
 
 ## How it works
 
 The channel manifest is release's `channels.json` (schema `qq-channels/1`)
 on its `release-state` branch. Per repo and channel it gives the commit, the
-artifact digest and the generation. Only release's executor writes it, after
-every channel move.
+artifact digest and the generation.
 
-`qqinstall` refuses the whole file if anything in it is unexpected: the
-schema, a 40-hex commit, a `sha256:` digest, a positive generation, no
-duplicate keys, at most 1 MiB, https only. The commit always comes from the
+`qqinstall` refuses the whole file if anything in it is unexpected. The commit always comes from the
 manifest, never from the checkout being checked.
-
-The digest is for artifact installs (v1 and v2). A git install is identified
-by its commit.
 
 ## What you do with it
 
-Install it from a commit you reviewed:
-
 ```sh
+# install from a commit you reviewed
 pip install "qqinstall @ git+https://github.com/quirq-ai/installer@<commit>"
-```
-
-Then:
-
-```sh
-qqinstall resolve  --repo xo-space --channel canary                 # commit, digest, generation
-qqinstall resolve  --repo xo-space --channel canary --format env    # QQ_CHANNEL_COMMIT=... for scripts
-qqinstall resolve  --repo xo-space --channel canary --at <release-state commit>   # a fixed read
-qqinstall checkout --repo xo-space --channel canary --remote <git URL> --dest ./xo-space   # put an install on it
+# commit, digest, generation
+qqinstall resolve  --repo xo-space --channel canary
+# QQ_CHANNEL_COMMIT=... for scripts
+qqinstall resolve  --repo xo-space --channel canary --format env
+# a fixed read
+qqinstall resolve  --repo xo-space --channel canary --at <release-state commit>
+# put an install on the channel's commit
+qqinstall checkout --repo xo-space --channel canary --remote <git URL> --dest ./xo-space
+# check an install
 qqinstall verify   --repo xo-space --channel canary --checkout ./xo-space [--remote <git URL>]
-qqinstall show                                                      # every channel
+# every channel
+qqinstall show
 ```
 
 ### Exit codes
@@ -61,91 +54,46 @@ Scripts should decide on the exit code, never on the text.
 
 | Code | Meaning |
 |---|---|
-| `0` | resolved; for `checkout` and `verify`, the checkout is exactly the channel's commit with no local changes |
+| `0` | resolved; for `checkout` and `verify`, exactly the channel's commit with no local changes |
 | `1` | mismatch or local changes |
-| `2` | error: bad manifest, bad arguments, broken checkout or remote, or an older generation |
-| `3` | not published yet: no manifest, or it does not name that repo and channel |
-
-Treat anything but `0` as "not verified". Python itself exits `1` if
-qqinstall cannot start. website has no canary channel, so it answers `3`.
+| `2` | error: bad manifest, bad arguments, broken checkout, or an older generation |
+| `3` | not published yet (website has no canary, so it answers `3`) |
 
 ### What checkout does
 
-- Clones the first time, fetches after that, then detaches at the manifest's
-  commit by its id, never by a branch or tag name.
-- Refuses a commit that is not on the remote's `--branch` (default `main`),
-  so a manifest cannot name an unmerged commit.
-- Refuses symlinks to paths outside the commit's tree, and shallow checkouts.
-- Removes a first checkout that fails, so the next run starts clean.
-- Records the manifest's generation in the checkout's git config and refuses
-  (exit `2`) a later `channels.json` with a lower generation. A replayed old
-  manifest cannot move an install back. A rollback is a new move with a
-  higher generation, so it goes through.
-
-`resolve`, `verify` and `show` keep no state, so they cannot make the
-generation check.
+- Detaches at the manifest's commit by its id, never by a branch or tag.
+- Refuses a commit that is not on the remote's `--branch` (default `main`).
+- Records the manifest's generation and refuses (exit `2`) a later
+  `channels.json` with a lower one, so a replayed old manifest cannot move
+  an install back. A rollback is a new move with a higher generation.
 
 ## Following canary on a test machine
 
-The rule is check, then run: a test install runs only a checkout `qqinstall`
-has already verified. Once, on the test machine (Python 3.11+ and git):
-
-```sh
-python3 -m venv ~/.qqinstall && ~/.qqinstall/bin/pip install \
-  "qqinstall @ git+https://github.com/quirq-ai/installer@<reviewed installer commit>"
-```
-
-Then, from a directory used only for this test install, every time you
-install or update:
-
-```sh
-~/.qqinstall/bin/qqinstall checkout --repo xo-space --channel canary \
-  --remote https://github.com/quirq-ai/xo-space.git --dest ./xo-space \
-  && ./xo-space/install.sh
-```
-
-Running it again follows promotions and rollbacks alike. Run
-`./xo-space/install.sh` from the test directory, not from inside the
-checkout. What install.sh downloads afterwards is not verified.
-
-Do not follow canary with `QUIRQ_SOURCE_REF=channels/canary` or the in-app
-updaters. They fetch the short name `channels/canary`, which git can resolve
-to a planted ref or tag, and they verify nothing.
-
-**If every run exits `2`** because release-state was reset (generations
-restart at 1) or a bad manifest raised the record, check what canary
-should be, then clear the generation record and run again:
-
-```sh
-git -C xo-space config --local --unset-all qqinstall.xo-space/canary.generation
-```
+A test install runs only a checkout `qqinstall` has already verified. The
+steps and every caveat are in
+[Test installs on canary](https://github.com/quirq-ai/installer/blob/main/docs/xo-space-canary.md).
 
 ## Limits
 
-- `verify` trusts the checkout's own `.git` (filters, excludes,
-  `core.fileMode`). It checks an install you control, not a hostile tree. It
-  does not check the digest or submodules.
+- `verify` trusts the checkout's own `.git`. It does not check the digest or
+  submodules.
 - Reads go through GitHub's CDN and can lag a channel move by a few minutes.
-  `--at <release-state commit>` reads a fixed version.
-- The trust root is `channels.json` on `release-state`. Until a ruleset lets
-  only the release executor App push it (open gate PR #27), anyone with push
-  on quirq-ai/release can change what a channel resolves to.
+- The trust root is `channels.json` on `release-state`, which since
+  2026-10-09 only the release executor App can push.
 
 ## Files and schedules
 
 | Thing | What |
 |---|---|
-| `live-manifest` workflow | reads the live manifest every 6 hours at :17; not a required check |
-| `tools/contract_check.py` | release's own code ships two canaries and rolls one back; `resolve` must name the right commit each time; presubmit runs it |
-| `tools/canary_install_drill.py` | the test install flow against a local stand-in repo, offline; presubmit runs it |
+| `live-manifest` workflow | reads the live manifest every 6 hours at :17 |
+| `tools/contract_check.py` | checks `resolve` against release's own code; presubmit runs it |
+| `tools/canary_install_drill.py` | the test install flow, offline; presubmit runs it |
 
-The live half of the test install waits on suraj: naming the canary test
-machines, and protecting `release-state`. Test installs following dev are v1;
-real installs following a channel are v2.
+The live test install waits only on suraj naming the canary test machines.
+Test installs following dev are v1; real installs following a channel are
+v2.
 
 ## Go deeper
 
 - [installer README](https://github.com/quirq-ai/installer/blob/main/README.md).
-- [Test installs on canary](https://github.com/quirq-ai/installer/blob/main/docs/xo-space-canary.md):
-  every caveat of the test install flow.
 - [release](/docs/qq/release) for how channels move and roll back.

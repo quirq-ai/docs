@@ -1,139 +1,83 @@
 ---
-title: "qq: the command line"
+title: "qq command line"
 description: "Every qq command, its exit codes, how qq pins its own version, and how it calls sync, recipes and toolchains."
 icon: Terminal
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 
 <Lead>
   `qq` is the quirq infra command line, kept in the
   [qq repo](https://github.com/quirq-ai/qq) (called `depot` until 2026-10-09;
   the old URL redirects). It fetches a repo's toolchains, builds and tests it,
-  runs its commands, and sends changes through the gate. It stays thin: it
-  wraps `git` and `gh` and calls the other qq repos by pinned commit.
+  runs its commands, and sends changes through the gate. It wraps `git` and
+  `gh` and calls the other qq repos by pinned commit.
 </Lead>
 
 <Callout type="info">
-  **Today:** qq reports `qq 0.1.0` and has no release tag yet. Toolchains
-  exist for Linux x86_64 only. Product CI does not run `qq build` or
-  `qq test` yet, so a local result can differ from CI. To install qq, follow
+  **Today:** qq is `0.1.0` with no release tag yet, Linux x86_64 only.
+  Product CI does not run `qq build` or `qq test` yet, so a local result can
+  differ from CI. A live `qq try` or `qq land` on a product repo has not been
+  shown yet. To install qq, follow
   [Use qq on your machine](/docs/qq#use-qq-on-your-machine).
 </Callout>
 
-## How it fits with the other repos
-
-| qq calls | For | Page |
-|---|---|---|
-| `sync` (`qqsync`) | reading `infra/repo.toml`; qq never parses it itself | [sync](/docs/qq/sync) |
-| `toolchains` | the pinned Python and Node that `qq sync` fetches | [toolchains](/docs/qq/toolchains) |
-| `recipes` (`qqrecipes`) | planning and running `qq build` and `qq test` | [recipes](/docs/qq/recipes) |
-| `gate` (`qqgate`) | deciding whether a change may land | [gate](/docs/qq/gate) |
-
-Commands that start long work (`qq try`, `qq land`) print a run ID and exit
-at once. The verdict arrives later, so no agent holds a tool call open
-during a build.
-
 ## Commands
 
-| Command | What it does |
-|---|---|
-| `qq fetch URL [DIR]` | clone a repo, then `qq sync` in it |
-| `qq sync` | fetch every pin in the manifest, check its digest, link it under `.qq/` |
-| `qq build [TARGET ...]` | build the targets (default all) through recipes |
-| `qq test [TARGET ...]` | build and test them; results in `.qq/out` |
-| `qq run "COMMAND"` | run a command once from the repo root, pinned toolchains first on `PATH` |
-| `qq run PROGRAM [ARG ...]` | the same, but `PROGRAM` runs directly, with no shell |
-| `qq create NAME COMMAND` | save a repo command as `infra/commands/NAME.sh` |
-| `qq NAME [ARG ...]` | run that saved command |
-| `qq upload [--title T] [--draft]` | push this branch and open or update its pull request |
-| `qq try [CHANGE] [--notify CMD]` | upload, print a run ID and exit |
-| `qq land [CHANGE] [--notify CMD]` | land through the merge queue once the gate passes |
-| `qq status [CHANGE]` | the gate's verdict now |
-| `qq --version` | prints `qq 0.1.0` |
+```sh
+qq fetch URL                 # clone a repo, then qq sync in it
+qq sync                      # fetch and check every pin, link it under .qq/
+qq build                     # build all targets (or name some) through recipes
+qq test                      # build and test them; results in .qq/out
+qq run "COMMAND"             # run from the repo root, pinned toolchains on PATH
+qq create NAME COMMAND       # save a repo command as infra/commands/NAME.sh
+qq NAME                      # run that saved command
+qq upload                    # push this branch, open or update its pull request
+qq try                       # upload, print a run ID and exit; verdict comes later
+qq land                      # merge queue once the gate passes
+qq status                    # the gate's verdict now
+```
 
-`qq build` and `qq test` also take `--toolchain NAME=ROOT`, `--out DIR` and
-`--keep-going`. `CHANGE` is a pull request number, URL or branch; it defaults
-to this branch's. `qq upload` also takes `--base` and `--body`, and `qq land`
-takes `--method` (`merge`, `squash` or `rebase`). Writing your own commands
-is covered in [Add your own commands](/docs/qq#add-your-own-commands).
+`try`, `land` and `status` take a pull request number, URL or branch
+(default this branch's). See
+[Add your own commands](/docs/qq#add-your-own-commands).
 
 ## Exit codes
 
 | Command | Exit codes |
 |---|---|
-| `qq sync`, `qq fetch` | 0 done; 1 a fetch, clone or manifest problem; 2 (`sync`) no `infra/repo.toml` here or above |
-| `qq build`, `qq test` | 0 all passed; 1 a step failed or the manifest is invalid; 2 no `infra/repo.toml` |
-| `qq run`, `qq NAME` | the command's own code; 125 when qq itself fails; 126 not runnable; 127 not found |
-| `qq create` | 2 bad usage or outside a repo; 1 the name is taken or the file exists |
-| `qq status` | 0 pass or landed; 1 refused or closed; 2 error; 3 pending |
-| `qq upload`, `qq try` | 0 done (for `try`, the run ID is printed); 2 on an error |
-| `qq land` | 0 queued or being watched; 1 the gate already refused it; 2 on an error |
-| A name the repo has no command for | 2, as an unknown qq command |
+| sync | 0 done; 1 a fetch failed; 2 no `infra/repo.toml`, or it is invalid |
+| fetch | 0 done; 1 a clone, fetch or manifest problem in the cloned repo |
+| build, test | 0 all passed; 1 a step failed or a target cannot be planned; 2 no `infra/repo.toml`, or it is invalid |
+| run, NAME | the command's own code; 125 qq itself failed; 126 not runnable; 127 not found |
+| create | 2 bad usage or outside a repo; 1 the name is taken or the file exists |
+| status | 0 pass or landed; 1 refused or closed; 2 error; 3 pending |
+| upload, try | 0 done; 2 error |
+| land | 0 queued or being watched; 1 the gate already refused it; 2 error |
+| unknown name | 2 |
 
-Every `FAIL` line from `qq build` and `qq test` names its log file. Common
-errors and fixes are in [Exit codes](/docs/qq#exit-codes) in the guide.
+"A target cannot be planned" includes an unknown kind. With `QQ_PINNED=1`,
+an invalid manifest gives 1 instead of 2.
 
 ## How qq picks its version
 
-Each repo pins the qq it runs in its manifest:
+Each repo pins its qq as `[qq] version` in the manifest, and inside that
+repo `qq` runs exactly that version, installed on first run under
+`$QQ_HOME/versions` (`QQ_HOME` defaults to `~/.cache/qq`). A roll that moves
+the pin is how qq updates. With no `v0.1.0` tag yet, a bare `0.1.0` pin runs
+your own qq checkout. A pin installs only from the qq repo or a source in
+`$QQ_TRUSTED_SOURCES`, and a `source` needs a `digest`.
 
-```toml
-[qq]
-version = "0.1.0"
-```
-
-Inside that repo, `qq` runs exactly that version. The first run installs it
-under `$QQ_HOME` (default `~/.cache/qq/versions/<version>`) and checks it
-reports the pinned version. When a roll moves the pin, the next `qq`
-installs the new one: that is how qq updates. Since no `v0.1.0` tag exists
-yet, a pin of `0.1.0` with no `source` or `digest` runs your own qq
-checkout. Outside a repo, qq runs your checkout too.
-
-A pin installs qq only from the qq repo or from a source you list in
-`$QQ_TRUSTED_SOURCES`, so a pull request that edits the manifest cannot make
-qq run code from a host it picked. A `source` needs a `digest` (`git:` a
-commit, or `sha256:` an archive). PyPI packages install only by hash from
-qq's lock file, and other qq repos by pinned commit.
-
-| Variable | Meaning |
-|---|---|
-| `QQ_HOME` | where launchers and pinned versions live |
-| `QQ_PYTHON` | the interpreter the bootstrap uses (default `python3`) |
-| `QQ_TRUSTED_SOURCES` | extra sources a `[qq]` pin may install from |
-| `QQ_DEPOT_URL` | where version tags come from (default the qq repo) |
-| `QQ_PINNED=1` | run this `qq` as is, ignoring the pin, for one process |
-| `QQ_BACKEND` | the change backend (default `github`) |
-| `QQ_NOTIFY` | the default `--notify` command |
-
-## Sending a change
-
-These need `gh` signed in (`gh auth login`). `qq try` and `qq land` start a
-watcher that follows the change and writes the verdict (pass, refused,
-landed, dequeued, superseded, closed, timed-out or error) to
-`$QQ_HOME/verdicts/<run ID>.json`. It also runs the `--notify` command with
-the verdict JSON on stdin and `QQ_VERDICT` set. The command line shows in
-`ps`, so pass secrets through the environment. If the watcher dies, `qq
-status` still gives the verdict.
-
-qq does not decide what must pass. It runs gate's `qqgate` at a pinned
-commit. A repo infra-config does not list is judged only by its own checks:
-at least one, all successful, none still running. `qq land` queues nothing
-until the gate passes.
-
-**Today:** a live `qq try` or `qq land` on xo-space or innernet has not been
-shown yet.
-
-## Commands from other repos
-
-A package adds a subcommand through the `qq.commands` entry point group. The
-`release` repo defines `qq channel rollback`, but qq's own environment does
-not install release's package yet, so `qq --help` does not list it.
+<Accordions>
+  <Accordion title="Verdicts and QQ_PINNED">
+    `try` and `land` need `gh` signed in. A watcher writes the verdict to
+    `$QQ_HOME/verdicts/<run ID>.json`; if it dies, `qq status` still
+    answers. `QQ_PINNED=1` runs this `qq` as is, ignoring the pin.
+  </Accordion>
+</Accordions>
 
 ## Go deeper
 
-- The [qq README](https://github.com/quirq-ai/qq/blob/main/README.md): every
-  detail of pinning, sync and repo commands.
-- [The qq guide](/docs/qq): install, first run, adding a repo.
-- Next: [sync](/docs/qq/sync), [recipes](/docs/qq/recipes),
-  [toolchains](/docs/qq/toolchains), [gate](/docs/qq/gate).
+- The [qq README](https://github.com/quirq-ai/qq/blob/main/README.md).
+- [sync](/docs/qq/sync), [recipes](/docs/qq/recipes), [gate](/docs/qq/gate).

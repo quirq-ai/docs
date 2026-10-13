@@ -1,10 +1,11 @@
 ---
-title: "test-pipelines: stored results and failure records"
-description: "test-pipelines turns test output into stored results and verdicts, records every held canary and revert, and computes the scorecard."
+title: "test-pipelines"
+description: "test-pipelines turns test output into stored results and verdicts, computes the scorecard, and will record held canaries and reverts."
 icon: FlaskConical
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 
 <Lead>
   test-pipelines turns test output into stored results and mechanical
@@ -24,17 +25,13 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 | Record | What it is |
 |---|---|
-| **Result** | one test outcome, write-once, normalized from JUnit XML |
-| **Run** | one presubmit, gate or post-submit attempt that produced Results |
-| **Verdict** | pass or fail, computed mechanically from Results |
-| **Failure** | one record per held canary, canary rollback or auto-revert, mirrored to a GitHub issue |
+| **Result** | one test outcome, write-once, from JUnit XML |
+| **Run** | one presubmit, gate or post-submit attempt |
+| **Verdict** | pass or fail, computed from Results |
+| **Failure** | one per held canary, rollback or auto-revert, mirrored to an issue |
 
-Records use schema `quirq-results/1`. Test ids are `<classname>::<name>`. The
-run kind comes from the GitHub event: `merge_group` is `gate`,
-`pull_request` is `presubmit`, a push to `main` is `postsubmit`.
-
-**A missing signal is not a pass.** A job with no test reports still stores a
-run, marked as having no results and failing.
+Records use schema `quirq-results/1`. **A missing signal is not a pass:** a
+job with no test reports still stores a run, marked as failing.
 
 ## Store a job's results
 
@@ -47,114 +44,64 @@ Add the sink after a builder's test steps, pinned by commit:
     junit: .qq/out/junit/*.xml
 ```
 
-It stores the run as a workflow artifact named `qq-results-<run id>`.
-Failing tests never fail the sink step; a report that is not JUnit XML does.
+It stores the run as an artifact named `qq-results-<run id>`. Failing tests
+never fail the sink step.
 
 <Callout type="warn">
-  **What you store is public forever.** Each Result keeps structured fields
-  and only the first 20 lines and 200 characters of its failure message.
-  Captured output is never stored unless you pass `keep-raw-junit: "true"`.
-  Only do that if everything your tests print may be public.
+  **What you store is public forever.** Each Result keeps only the first 20
+  lines and 200 characters of its failure message. Captured output is stored
+  only if you pass `keep-raw-junit: "true"`; do that only if everything your
+  tests print may be public.
 </Callout>
-
-The same from a shell:
-
-```sh
-qqresults sink --backend local --repo quirq-ai/xo-space --commit HEAD --junit '.qq/out/junit/*.xml' --out .qq/results
-qqresults show .qq/results/qq-results-...
-```
 
 ## The results store
 
 The store is a write-once tree on this repo's `results` branch. The
 `scorecard` workflow, every 6 hours at :23, collects every `qq-results-*`
-artifact into it and commits only new files. Gate's `qq-state-branches`
-ruleset stops anyone force-pushing or deleting the branch.
-
-`collect` takes who produced an artifact from GitHub, never from the
-artifact itself. It refuses runs from forks, from workflows outside
-`qq-*.yml` and `presubmit.yml`, and bundles whose contents disagree with
-their run.
-
-Query it:
+artifact into it. Gate's `qq-state-branches` ruleset stops anyone
+force-pushing or deleting the branch.
 
 ```sh
+# check out the store
 git fetch origin +refs/heads/results:refs/remotes/origin/results && git worktree add .qq/store refs/remotes/origin/results
+# failed post-submit runs of one repo
 qqresults query runs --store .qq/store --repo quirq-ai/xo-space --kind postsubmit --failed
-qqresults query results --store .qq/store --run <run id> --unexpected
+# one test's history
 qqresults query history --store .qq/store --test 'tests.test_greet::test_hello'
 ```
 
-## Retry, then compare with base
-
-When a builder gives the sink a `rerun` command, failed tests are rerun with
-the change (`retry_failed`, default 1, from infra-config's `flakes.toml`),
-then rerun on the base commit. With more than 20 failures (the default
-`max_failures_to_retry`), nothing is retried and the change fails.
-
-| Outcome | Means | Blocks? |
-|---|---|---|
-| FLAKY | passed on a retry | no |
-| EXONERATED | failed the same way with the change and on every base run | no |
-| UNEXPECTED | anything else: passes on base, crashes, fails differently, or a new test | yes |
-
-A timeout, abort, signal or crash never exonerates. Neither does a failure
-whose kind cannot be read from an exception class. The rule is a heuristic:
-it cannot tell two failures of the same kind apart.
-
-## Failure records
-
-Every held canary, canary rollback and auto-revert opens one write-once
-record, mirrored to one issue labelled `qq-failure` and
-`qq-failure:<kind>`. Kinds: `canary-held`, `canary-rollback`, `auto-revert`,
-`red-run`, `fuzz`.
-
-```yaml
-- uses: quirq-ai/test-pipelines/failure@<commit>     # needs issues: write
-  with:
-    kind: canary-held
-    subject: ${{ steps.build.outputs.digest }}
-    summary-file: ${{ runner.temp }}/qq-summary.txt
-    stage: probe
-    signal: health
-```
-
-- **One event, one record.** The id comes from kind, repo and subject, so a
-  retried pipeline does not open a second issue.
-- **Pass the summary as a file.** GitHub prints every action input in the
-  public run log.
-- **Links close it.** The `link` action adds `culprit`, `fix` and
-  `covering-test`. A record closes only when all three are linked.
-- **Free text stays private.** Issues show only ids, commits, known labels
-  and GitHub links; anything else shows as `withheld`.
-- **Security never goes public.** Records that look security-related, and
-  every `fuzz` record, are kept but never mirrored to a public issue. Where
-  they go instead is still open.
-
 ## The scorecard
 
-`scorecard.md` and `scorecard.json` sit on the `results` branch next to the
-runs. Per repo, they measure:
-
-- gate time to green, p50 and p90 (from [gate](/docs/qq/gate)'s timing step)
-- main-red minutes per week
-- flake rate
-- pass rates of gate, post-submit and presubmit runs
-- runs that stored no results
-- held canaries, rollbacks, auto-reverts and fuzz findings, and the share of
-  records fully linked
-
-Every other plan metric is listed as not measured, with the work item that
-will measure it. Nothing unmeasured shows as zero. If collect skipped
-anything, the card says "Collect incomplete". The planted demo record from
-`failure-demo` is never counted.
+`scorecard.md` and `scorecard.json` sit on the `results` branch. Per repo
+they measure gate time to green (p50 and p90), main-red minutes per week,
+flake rate, pass rates, runs that stored no results, and failure records.
+Nothing unmeasured shows as zero, and the planted demo record is never
+counted.
 
 ```sh
-qqresults scorecard --store .qq/store --days 7     # --json for machines
+# last 7 days; add --json for machines
+qqresults scorecard --store .qq/store --days 7
 ```
+
+<Accordions>
+  <Accordion title="Retry and failure records (not in any product gate yet)">
+    When a builder gives the sink a `rerun` command, failed tests are rerun
+    with the change, then on the base commit (values from infra-config's
+    `flakes.toml`). A test that passed on a retry is FLAKY, one that failed
+    the same way on base is EXONERATED, and anything else is UNEXPECTED and
+    blocks. A timeout or crash never exonerates.
+
+    Each held canary, rollback and auto-revert opens one write-once record,
+    mirrored to an issue labelled `qq-failure`, through the
+    `quirq-ai/test-pipelines/failure` action. A record closes only when its
+    culprit, fix and covering test are linked. Security-related and `fuzz`
+    records are never mirrored to a public issue. The trust rules are in the
+    [README](https://github.com/quirq-ai/test-pipelines/blob/main/README.md).
+  </Accordion>
+</Accordions>
 
 ## Go deeper
 
-- [test-pipelines README](https://github.com/quirq-ai/test-pipelines/blob/main/README.md): the full verdict and trust rules
+- [test-pipelines README](https://github.com/quirq-ai/test-pipelines/blob/main/README.md)
 - Retry values: infra-config [`config/flakes.toml`](https://github.com/quirq-ai/infra-config/blob/main/config/flakes.toml)
 - Who reads the scorecard: [monitoring](/docs/qq/monitoring)

@@ -1,5 +1,5 @@
 ---
-title: "perf: performance numbers per commit"
+title: "perf"
 description: "Records build size and benchmark numbers for every main commit of xo-space and innernet. A record, never a gate or an alert."
 icon: Gauge
 ---
@@ -13,98 +13,73 @@ import { Callout } from "fumadocs-ui/components/callout";
 </Lead>
 
 <Callout type="info">
-  **Today:** as of 2026-10-07, the newest record on `perf-data` is from
-  2026-10-05. GitHub is throttling the scheduled runs, so commits since then
-  are still pending.
+  **Today:** as of 2026-10-13 the newest record on `perf-data` is from
+  2026-10-09; GitHub is skipping or delaying the scheduled runs.
 </Callout>
 
 ## What it measures
 
 | Metric | Repo | What |
 |---|---|---|
-| `build-size` | innernet | the `.next` output: client static bytes and files, JS and CSS raw and gzipped, fonts, server bytes, the JS every route loads first, and more |
-| `xo-space-server-start` | xo-space | seconds from starting the server until it answers, over 5 starts (p50, p90, min, max) |
-| `innernet-search` | innernet | milliseconds per search request on the demo build, 30 requests over 3 queries |
+| `build-size` | innernet | the `.next` output: static bytes, JS and CSS raw and gzipped, the JS every route loads first, and more |
+| `xo-space-server-start` | xo-space | seconds until the server answers, over 5 starts |
+| `innernet-search` | innernet | milliseconds per search request, 30 requests over 3 queries |
 
-The benchmarks are declared in infra-config `config/perf.toml`. Builds and
-benchmarks run through recipes' adapters (`build`, and `bench`), on the
-pinned Python, Node and pnpm. Benchmark code for a kind of project belongs in
-recipes, not here.
+The benchmarks are declared in infra-config `config/perf.toml` and run
+through recipes' `build` and `bench` adapters, on the pinned Python, Node
+and pnpm.
 
 ## How it works
 
-- **Raw numbers only.** Every number is stored with its unit and the runner
-  type it was measured on, because shared CI runners are noisy. Comparing
-  numbers is v1's job.
-- **Not a regression signal.** v0 has one measurement per commit, on shared
-  runners, with few samples and no baseline run beside it. Do not gate or
-  alert on these numbers.
-- **One commit per run.** The `perf` workflow runs every 30 minutes. For each
-  measurement it takes the newest commit on the product's `main` (first parent)
-  that has no record yet. So a backlog drains one commit per run, at most 48
-  a day.
-- **No commit drops out.** Every `main` commit since the oldest one recorded
-  is owed a record, however far back it falls. The newest go first, so the
-  oldest wait longest. Commits that landed before perf first measured a
-  stream are not owed one.
-- **Failures retry.** A failed build or benchmark is recorded as failed and
-  retried by later runs, up to three failed records per commit. Then that
-  commit is given up.
-- Each run writes the backlog to its summary, and warns when more than a day
-  of runs is pending.
+- **Raw numbers only.** Each number is stored with its unit and runner type.
+  Shared CI runners are noisy, and v0 has one measurement per commit with no
+  baseline, so do not gate or alert on these numbers.
+- **One commit per run.** The `perf` workflow runs every 30 minutes and
+  measures the newest `main` commit with no record yet, so a backlog drains
+  one commit per run.
+- **No commit drops out.** Every `main` commit since the oldest recorded one
+  is owed a record.
+- **Failures retry**, up to three failed records per commit.
 
 ### Where records go
 
-1. The `perf` workflow appends each record to this repo's `perf-data`
-   branch, as JSON Lines, one file per repo and metric
-   (`<repo>/<metric>.jsonl`, schema `qq-perf-record/1`). Lines are never
-   edited, and a commit gets at most one `ok` record.
-2. The `perf-publish` workflow runs after each `perf` run on `main`, and
-   turns that run's records into test-pipelines results bundles.
-3. test-pipelines' scorecard collects them into the results store, which is
-   the system of record.
+1. `perf` appends each record to the `perf-data` branch as JSON Lines,
+   `<repo>/<metric>.jsonl` (schema `qq-perf-record/1`). Lines are never
+   edited.
+2. `perf-publish` turns each run's records into test-pipelines results
+   bundles.
+3. test-pipelines' scorecard collects them into the results store, the
+   system of record.
 
-**Trust.** The jobs that measure run product code, so they get read access
-only and their records are claims. A separate `store` job, which runs no
-product code, accepts only finite values of at least 0, for commits still
-pending, then pushes `perf-data`. Until rulesets protect `perf-data` and
-`main` tags, whoever can push to `perf-data` or create a `main` tag can still
-publish numbers.
+The measuring jobs run product code, so they only read. A separate `store`
+job checks the values and pushes `perf-data`.
 
 ## What you do with it
 
-Read the history from a checkout of `perf-data`:
-
 ```sh
+# history from a checkout of perf-data
 qqperf history --store DIR --repo innernet [--value static_js_gzip_bytes] [--json]
-qqperf pending --store DIR --repo innernet --checkout PATH        # landed commits with no record
-qqperf backlog --store DIR --repo innernet --checkout PATH        # how many are owed, and the oldest
+# landed commits with no record
+qqperf pending --store DIR --repo innernet --checkout PATH
+# how many are owed, and the oldest
+qqperf backlog --store DIR --repo innernet --checkout PATH
 ```
 
-Record by hand, as the workflow does:
-
-```sh
-qqperf record build-size --store DIR --repo innernet --checkout PATH --dist PATH/.next --runner LABEL
-qqperf record bench --store DIR --repo xo-space --checkout PATH --benchmark xo-space-server-start \
-  --target server --bench-dir OUT/bench --runner LABEL
-```
-
-GitHub turns off a scheduled workflow after 60 days without repo activity. If
-that happens, re-enable `perf` in the repo's Actions tab.
+GitHub turns off a scheduled workflow after 60 days without repo activity.
+If that happens, re-enable `perf` in the repo's Actions tab.
 
 ## Files and schedules
 
 | Thing | Where |
 |---|---|
-| `perf` workflow | `.github/workflows/perf.yml`, at :17 and :47 every hour, or by hand |
-| `perf-publish` workflow | `.github/workflows/perf-publish.yml`, after each `perf` run on `main` |
-| Records | `perf-data` branch, `<repo>/<metric>.jsonl` |
+| `perf` workflow | at :17 and :47 every hour, or by hand |
+| `perf-publish` workflow | after each `perf` run on `main` |
+| Records | `perf-data` branch |
 | Benchmark list | infra-config `config/perf.toml` |
 
 ## Go deeper
 
 - [perf README](https://github.com/quirq-ai/perf/blob/main/README.md): every
-  `qqperf` command and the trust rules.
-- [test-pipelines](/docs/qq/test-pipelines) for the results store and the
-  scorecard.
+  `qqperf` command, recording by hand and the trust rules.
+- [test-pipelines](/docs/qq/test-pipelines) for the scorecard.
 - [recipes](/docs/qq/recipes) for the `build` and `bench` capabilities.

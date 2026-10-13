@@ -1,7 +1,7 @@
 ---
-title: "rollers: keeps dependencies and toolchains current"
+title: "rollers"
 description: "Moves toolchain pins and lockfiles forward through the same gate as any other change. Today every roll stops at an open pull request."
-icon: Wrench
+icon: RotateCcw
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
@@ -14,99 +14,71 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 <Callout type="info">
   **Today:** nothing lands on its own. Dependabot PRs and toolchain roll PRs
-  both stop at an open pull request for a person to merge. Auto-land waits on
-  admin settings and a gate no workflow can fake (see
-  [What blocks auto-land](#what-blocks-auto-land)).
+  both stop at an open pull request for a person to merge (see
+  [What keeps auto-land off](#what-keeps-auto-land-off)).
 </Callout>
 
 ## What it rolls
 
 | Roller | Moves | How |
 |---|---|---|
-| Toolchain pins | `[toolchains.*]` pins in each repo's `infra/repo.toml` | reads the digests toolchains promoted, edits the manifest only through `qqsync` |
-| Lockfiles | Python requirements, `pnpm-lock.yaml` | Dependabot, configured from infra-config `rollers.toml` |
+| Toolchain pins | `[toolchains.*]` in each `infra/repo.toml` | to the digests toolchains promoted, through `qqsync` |
+| Lockfiles | Python requirements, `pnpm-lock.yaml` | Dependabot, configured from `rollers.toml` |
 
-Which repos get which roller, and how often, is config: `config/rollers.toml`
-in infra-config.
+Which repos get which roller, and how often, is infra-config
+`config/rollers.toml`.
 
 ## Lockfile updates
 
-Every repo a Dependabot roller covers gets two generated files, kept in
-rollers under `generated/github/<repo>/` and copied into that repo as is:
+Each covered repo gets two generated files from
+`generated/github/<repo>/`: `.github/dependabot.yml`, and
+`.github/workflows/qq-roll-land.yml`, which turns on auto-merge for a clean
+Dependabot PR. The check is
+[`src/qqroll/land_check.py`](https://github.com/quirq-ai/rollers/blob/main/src/qqroll/land_check.py).
 
-- `.github/dependabot.yml`: one update per roller, with its ecosystem,
-  directory, cadence and open-PR limit.
-- `.github/workflows/qq-roll-land.yml`: turns on auto-merge for a clean
-  Dependabot PR. The check is
-  [`src/qqroll/land_check.py`](https://github.com/quirq-ai/rollers/blob/main/src/qqroll/land_check.py),
-  embedded in the workflow byte for byte.
-
-A roll is clean only when all of these hold:
-
-- Dependabot opened the PR, with exactly one commit made by GitHub for
-  Dependabot.
-- Every changed file is modified (no adds, deletes or renames), at most 20,
-  and is a dependency file in the roller's directory.
-- Every changed line is a version. In `pnpm-lock.yaml`, only that dependency
-  moves, and every added package's integrity matches what registry.npmjs.org
-  publishes.
-- It bumps one dependency by a patch or minor version. Below 1.0 a minor
-  bump counts as major.
-- The base branch has a gate a workflow cannot fake, and the PR branch cannot
-  be swapped after the check.
-
-Anything else turns auto-merge off and leaves the PR to a person. Even with
-auto-merge on, GitHub merges only once the required checks pass.
-
-Regenerate or check the generated files:
+A roll is clean only when Dependabot made exactly one commit, it changes at
+most 20 existing dependency files, every changed line is a version, and it
+bumps one dependency by a patch or minor version (below 1.0 a minor counts
+as major). Anything else leaves the PR to a person.
 
 ```sh
-qqroll dependabot --infra-config ../infra-config --write   # regenerate generated/
-qqroll dependabot --infra-config ../infra-config           # check: exit 1 if stale (presubmit runs this)
+# regenerate generated/
+qqroll dependabot --infra-config ../infra-config --write
+# check only: exit 1 if stale (presubmit runs this)
+qqroll dependabot --infra-config ../infra-config
 ```
 
 ## Toolchain pins
 
-toolchains records each promoted toolchain by digest in `promoted.toml`. The
-roller moves every repo's `[toolchains.*]` pins to those digests, editing the
-manifest only through `qqsync`, so a roll changes just the pin and its
+The roller moves every repo's `[toolchains.*]` pins to the digests in
+toolchains' `promoted.toml`, so a roll changes just the pin and its
 `version` label.
 
 - It only moves pins a manifest already has. It never adds a toolchain.
 - It stays inside the org-wide pin in infra-config `kinds.toml` (python
-  `3.14`, node `24`). A new minor or major version means moving that pin
-  first, which is a policy change for suraj.
-- A pin it leaves alone is reported and makes the command exit 1. A skipped
-  pin needs a person.
-- Before writing, it checks each new pin again, failing closed: the manifest
-  fetched with `oras` hashes to the pinned digest, and `gh attestation verify`
-  finds build provenance from toolchains' build workflow on `main`.
+  `3.14`, node `24`). Moving that pin is a policy change for suraj.
+- A pin it leaves alone is reported and makes the command exit 1.
+- Before writing, it checks each new pin again and fails closed: the digest
+  must match, and `gh attestation verify` must find provenance from
+  toolchains' build workflow on `main`.
 
 ```sh
+# edit one local manifest
 qqroll roll --toolchains ../toolchains --manifest infra/repo.toml --infra-config ../infra-config
-qqroll rotation --infra-config ../infra-config --toolchains ../toolchains   # dry run: checks and diffs, opens nothing
+# dry run: checks and diffs, opens nothing
+qqroll rotation --infra-config ../infra-config --toolchains ../toolchains
 ```
 
-`qqroll roll` edits one local manifest. `qqroll rotation` fetches each listed
-repo's manifest and opens or refreshes one PR on the branch
-`qq-roll/toolchains`.
-
 The `roll-toolchains` workflow runs the rotation weekly (Monday 06:23 UTC),
-on a `toolchain-promoted` repository dispatch, and by hand. Roll PRs need the
-quirq rollers App; without its secrets the workflow is a dry run. The
-registry checks read ghcr anonymously, so until the toolchain packages are
-public every roll fails closed. Auto-merge stays off until toolchains
-enforces review of promotions on its `main`.
+on a `toolchain-promoted` dispatch, and by hand. It opens or refreshes one
+PR per repo on the branch `qq-roll/toolchains`, as the quirq rollers App.
 
-## What blocks auto-land
+## What keeps auto-land off
 
 | Roller | Waiting on |
 |---|---|
-| Lockfiles | a gate no workflow can fake: a required workflow pinned by sha needs org rulesets, which quirq-ai's GitHub Free plan does not offer, so only a check bound to a non-Actions app could provide it; and the `dependabot/**` branch rule, which gate's settings leave off for both repos |
-| Toolchain pins | toolchains enforcing promotion review (gate #25's `promotion-gate`, merged in gate but not applied yet) |
-
-The land check is already delivered to xo-space and innernet. xo-space has no
-Python lockfile yet, so its pip rolls only move `requirements*.txt` floors.
+| Lockfiles | a gate no workflow can fake, which needs org rulesets (not on quirq-ai's GitHub Free plan) or a check from a non-Actions app; and the `dependabot/**` branch rule, which gate leaves off |
+| Toolchain pins | nothing technical: toolchains' `promotion-gate` has been required since 2026-10-09. Turning on auto-merge for rolls is suraj's call |
 
 ## Files and schedules
 
@@ -114,13 +86,11 @@ Python lockfile yet, so its pip rolls only move `requirements*.txt` floors.
 |---|---|
 | Roller config | infra-config `config/rollers.toml` |
 | Generated Dependabot files | `generated/github/<repo>/` |
-| infra-config commit they come from | `infra-config.commit` |
-| Toolchain roll | `.github/workflows/roll-toolchains.yml`, weekly, branch `qq-roll/toolchains` |
+| Toolchain roll | `roll-toolchains` workflow, weekly |
 
 ## Go deeper
 
 - [rollers README](https://github.com/quirq-ai/rollers/blob/main/README.md):
-  the full land check, the admin steps per repo and the token rules.
-- [toolchains](/docs/qq/toolchains) for how a toolchain is built and promoted.
-- [sync](/docs/qq/sync) for the `infra/repo.toml` format.
+  the full land check and the admin steps per repo.
+- [toolchains](/docs/qq/toolchains) for how a toolchain is promoted.
 - [gate](/docs/qq/gate) for the rulesets auto-land needs.

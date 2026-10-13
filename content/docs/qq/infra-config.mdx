@@ -1,10 +1,11 @@
 ---
-title: "infra-config: every qq policy as TOML"
+title: "infra-config"
 description: "The one repo that declares qq as data: repos, builders, landing rules, channels and revert caps, checked and turned into workflows by qqcfg."
 icon: Settings
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 
 <Lead>
   infra-config declares all of qq as data: which repos are onboarded, what
@@ -26,129 +27,72 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 ## How it works
 
-Every policy lives in `config/`, one TOML file per area. Files are parsed,
-never executed. Each starts with the same `[area]` header: `name`, `status`
-(`seed` or `stub`), `schema`, `owners`, `read_by` and `chromium` (the
-Chromium counterpart to read first). Each area has a JSON Schema in
-`schema/` that rejects unknown keys.
-
-`tools/qqcfg.py validate` checks five things:
-
-1. The TOML parses.
-2. Every area matches its schema.
-3. Every reference resolves across files.
-4. The policy rules hold (below).
-5. `generated/` matches what `generate` would write.
-
-`.github/workflows/validate.yml` runs it with the tests on every pull request
-and in the merge queue. A golden test (`tests/golden/`) pins the generated
-output byte for byte.
-
-## The config files
+Every policy lives in `config/`, one TOML file per area, parsed and never
+executed. Each area has a JSON Schema in `schema/` that rejects unknown keys.
+`tools/qqcfg.py validate` checks schemas, cross-file references, the policy
+rules and that `generated/` is up to date, on every pull request.
 
 | File | What it decides |
 |---|---|
-| `org.toml` | system name, backends, roles, runner pools, secret scopes, budget, rotations, the 13 infra repos |
-| `kinds.toml` | toolchains and target kinds: `python-service`, `pytest`, `node-app`, `gatsby-site`, `static-docs` (year one); `container-image` later |
-| `repos.toml` | onboarded repos: xo-space, innernet, website |
-| `pipelines.toml` | builders: presubmit, post-submit, release |
-| `gate.toml` | the landing gate, the verification surface, who may land what |
-| `flakes.toml` | retries, exoneration, quarantine with expiry |
-| `auto_revert.toml` | gardener's revert caps |
-| `rollers.toml` | machine-written dependency updates |
-| `channels.toml` | canary, dev, stable; promotion and rollback rules |
-| `fuzz.toml` | fuzz engines and schedules (v1 for real fuzzing) |
-| `postmortem.toml` | postmortem policy and failure tracking |
-| `health.toml` | health signals that gate promotion (CI and canary probes in v0; PostHog in v1) |
-| `perf.toml` | benchmarks and alert thresholds (still a `stub`) |
+| `org.toml` | roles, runner pools, budget, rotations, the 13 infra repos |
+| `kinds.toml` | toolchains and target kinds |
+| `repos.toml` | onboarded repos |
+| `pipelines.toml` | presubmit, post-submit and release builders |
+| `gate.toml` | the landing gate and who may land what |
+| `channels.toml` | canary, dev, stable; promotion and rollback |
+| others | flakes, revert caps, rollers, health, fuzz, postmortems, perf |
 
-Who reads them, as checked on 2026-10-07:
-
-| Reader | Areas |
-|---|---|
-| [gate](/docs/qq/gate) | `gate`, `kinds`, `org`, `pipelines`, `repos` |
-| [rollers](/docs/qq/rollers) | `rollers`, `kinds`, `org`, `repos` |
-| [recipes](/docs/qq/recipes), [sync](/docs/qq/sync) | `kinds` |
-| [test-pipelines](/docs/qq/test-pipelines) | `flakes` |
-| [gardener](/docs/qq/gardener) | `auto_revert`, `postmortem`, `pipelines`, `repos`, `org` |
-| [release](/docs/qq/release) | `channels`, `health`, `pipelines`, `repos` |
-| [monitoring](/docs/qq/monitoring) | `channels`, `repos` (raw files) |
-
-Every Python reader goes through `qqcfg.load`; nobody writes a second parser.
+Every Python reader ([gate](/docs/qq/gate), [release](/docs/qq/release) and
+others) goes through `qqcfg.load`; [monitoring](/docs/qq/monitoring) parses its two files
+itself.
 
 ## Rules config cannot loosen
 
 These live in `tools/qqcfg.py`, a policy path, so changing one needs suraj.
 
-- Stable promotion needs the policy owner. Dev and stable need a human
-  owner's approval. Only canary, which is agents-only, promotes without one.
+- Dev and stable promotion need a human owner's approval. Only canary
+  promotes without one.
 - Agents may land only clean reverts, dependency rolls and docs alone.
-- At most 10 reverts created per rolling 24 hours, clean reverts only.
-  `auto_land_repos` is empty in v0, so every revert is proposed and a person
-  merges it.
+- At most 10 reverts per rolling 24 hours, clean reverts only. In v0 every
+  revert is proposed and a person merges it.
 - Builders that run code from an open change get no secrets.
-- Post-submit builders are never cancelled. Repos are public only.
 
-It also checks the files against each other: every repo needs a blocking
-presubmit on `change` and `queue` and a post-submit builder, and a blocking
-builder must fit within the gate's time limit.
-
-## The qqcfg generator
+## The qqcfg command
 
 You need Python 3.11 or newer.
 
 ```sh
 python3 -m pip install -r requirements.txt
-python3 tools/qqcfg.py validate                # the CI check; exit 1 on any error
-python3 tools/qqcfg.py validate --todos        # also list every open decision
-python3 tools/qqcfg.py generate                # rewrite generated/ after editing config/
-python3 tools/qqcfg.py get org budget          # one area or value as JSON
-python3 tools/qqcfg.py deliver xo-space ../xo-space          # copy its workflows into a checkout
-python3 tools/qqcfg.py check-delivered xo-space ../xo-space  # the qq-drift check
-python3 -m unittest discover -s tests
+# the CI check; exit 1 on any error
+python3 tools/qqcfg.py validate
+# rewrite generated/ after editing config/
+python3 tools/qqcfg.py generate
+# copy a product's workflows into its checkout
+python3 tools/qqcfg.py deliver xo-space ../xo-space
+# the drift check against a delivered checkout
+python3 tools/qqcfg.py check-delivered xo-space ../xo-space
 ```
 
-`generate` writes each product's workflows to `generated/github/<repo>/`
-(for example `qq-xo-space-presubmit.yml`). `deliver` copies them into the
-product repo. Each delivered file carries a `# qq-digest:` line and a fast
-in-repo drift step. Steps are still interim commands from `kinds.toml` until
-the recipes adapters replace them, which is why
+Delivered steps are interim commands from `kinds.toml`, which is why
 [your local result can differ from CI](/docs/qq#when-your-result-differs-from-ci).
+A user's own org uses `--root DIR` for its own `qq-config` (see
+[setup](/docs/qq/setup)).
 
-Triggers have neutral names (`change`, `queue`, `land`, `schedule`); the
-GitHub generator maps them to `pull_request`, `merge_group` and `push`.
-Anything GitHub-specific sits in a sub-table such as `[pool.github]`, so a
-later move to Launchpad, quirq's own cloud, does not rewrite every area.
-
-A user's own org uses `--root DIR` to check and generate its own data-only
-`qq-config` (see [setup](/docs/qq/setup)).
-
-## How to change a policy
-
-1. Edit the TOML in `config/`. If you add a field, add it to that area's
-   schema in the same pull request.
-2. Run `python3 tools/qqcfg.py generate` if anything feeding `generated/`
-   changed. Never edit `generated/` by hand.
-3. Run `validate` and the unit tests. Both must pass.
-4. Open a pull request saying which area changed, why, what reads it, and how
-   to roll it back (normally a revert).
-
-| You changed | Who approves |
-|---|---|
-| `config/`, `schema/`, `tools/`, `generated/`, `tests/`, `.github/` | suraj (policy owner) |
-| `README.md`, `docs/`, `templates/` Markdown only | nobody; an agent may land it once green |
-| a clean revert of a landed pull request | nobody |
-
-After it merges, deliver changed workflows to each product repo and move
-each tool's infra-config pin. A change reaches product pull requests only
-when gate moves its pin: merge here, have gate repin, then redeliver.
-
-To add a repo, follow [Add a repo](/docs/qq#add-a-repo). Leave `owners` and
-rotation `members` empty; suraj assigns people.
+<Accordions>
+  <Accordion title="Changing a policy (contributors)">
+    Edit `config/`, run `generate` and `validate`, and open a pull request
+    saying what changed and how to roll it back. By policy,
+    suraj approves changes to `config/`, `schema/`, `tools/`, `generated/`,
+    `tests/` and `.github/` (no ruleset enforces it); Markdown-only changes
+    and clean reverts need nobody. A change reaches product pull requests
+    only after gate moves its pin and the workflows are redelivered. The
+    full steps are in the
+    [README](https://github.com/quirq-ai/infra-config/blob/main/README.md).
+  </Accordion>
+</Accordions>
 
 ## Go deeper
 
-- [infra-config README](https://github.com/quirq-ai/infra-config/blob/main/README.md) and [AGENTS.md](https://github.com/quirq-ai/infra-config/blob/main/AGENTS.md)
-- The config files: [`config/`](https://github.com/quirq-ai/infra-config/tree/main/config)
-- The plan behind it: [Roadmap: v0, v1, v2](/docs/qq/roadmap)
-- How the rules show up on GitHub: [gate](/docs/qq/gate)
+- [infra-config README](https://github.com/quirq-ai/infra-config/blob/main/README.md) and [`config/`](https://github.com/quirq-ai/infra-config/tree/main/config)
+- [Add a repo](/docs/qq#add-a-repo)
+- The plan behind it: [Roadmap](/docs/qq/roadmap)
