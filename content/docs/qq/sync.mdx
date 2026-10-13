@@ -1,0 +1,146 @@
+---
+title: "sync: the repo manifest and its one reader"
+description: "The infra/repo.toml format (quirq-repo/1) and qqsync, the only tool allowed to read, edit and check it."
+icon: Settings
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  Every repo qq builds keeps one manifest, `infra/repo.toml`. It pins the
+  repo's qq version, toolchains and dependencies, and lists its targets. The
+  [sync repo](https://github.com/quirq-ai/sync) owns its schema and `qqsync`,
+  the one library that reads and edits it. Nothing else may parse it.
+</Lead>
+
+<Callout type="info">
+  **Today:** the schema, the parser and editor, the pin check and the "no
+  other parser" guard are all merged. xo-space and innernet carry their own
+  `infra/repo.toml`, but sync's presubmit still validates fixture copies of
+  them, not the repos' own files.
+</Callout>
+
+## The manifest: `quirq-repo/1`
+
+```toml
+schema = "quirq-repo/1"
+
+[qq]
+version = "0.1.0"
+
+[toolchains.python]
+version = "3.14.8"         # a label; the digest is what is checked
+source = "https://..."
+digest = "sha256:<64 hex>" # or git:<commit>
+
+[toolchains.node]          # or one source and digest per platform
+platforms.linux-x86_64 = { source = "https://...", digest = "sha256:<64 hex>" }
+
+[deps.something]           # anything else fetched before a build
+source = "https://..."
+digest = "git:<40 hex>"
+
+[[targets]]
+name = "server"
+kind = "python-service"    # opaque; recipes gives it meaning
+srcs = ["server.py", "services/**"]
+
+[[targets]]
+name = "tests"
+kind = "pytest"
+deps = ["server"]          # other targets in this manifest
+params = { shards = "auto" } # passed to the adapter as is
+```
+
+| Part | Rule |
+|---|---|
+| `[qq]` | the qq version this repo runs (see [the command line](/docs/qq/cli#how-qq-picks-its-version)) |
+| `[toolchains.*]`, `[deps.*]` | every pin needs a digest; names match infra-config's `kinds.toml` |
+| `kind` | an opaque string; [recipes](/docs/qq/recipes) gives it meaning |
+| `srcs`, `outs` | relative to the repo root; no leading `/`, no `..` |
+| `cacheable = false` | the target always runs and is never reused |
+
+Unknown keys are errors. Target names must be unique, `deps` must name
+targets in the same file, and the targets must not form a cycle.
+`quirq-repo/1` only grows in backward compatible ways; anything else becomes
+`quirq-repo/2`. The full schema is
+[`quirq-repo-1.schema.json`](https://github.com/quirq-ai/sync/blob/main/src/qqsync/schema/quirq-repo-1.schema.json).
+
+## What you do with it
+
+To install `qqsync` next to `qq`, follow
+[Use qq on your machine](/docs/qq#use-qq-on-your-machine).
+
+| Command | What it does |
+|---|---|
+| `qqsync validate infra/repo.toml` | PASS, or exit 1 with every problem |
+| `qqsync validate infra/repo.toml --kind pytest` | also require each kind to be one you list |
+| `qqsync show infra/repo.toml` | the manifest as JSON |
+| `qqsync pin toolchains python --digest sha256:<64 hex> --version 3.15.0` | change one pin |
+| `qqsync pins [--strict] infra/repo.toml` | list pins; `--strict` rejects all-zero placeholders |
+| `qqsync fetch toolchains python --dest .qq/python.tar.zst` | download a pin and check it |
+| `qqsync verify toolchains python .qq/python.tar.zst` | check a file against a `sha256` pin |
+| `qqsync verify deps recipes .qq/recipes` | check a checkout is at its pinned commit, unchanged |
+| `qqsync guard .` | fail if anything else parses the manifest |
+| `qqsync init . --kind ...` | write a new repo's manifest |
+
+Tools in other languages call `qqsync show` and read JSON. Python tools use
+the library (`qqsync.manifest`: `load`, `Manifest.read`, `set_pin`,
+`set_qq_version`, `add_target`, `write`).
+
+**Edits are exact.** Reading and writing back unchanged gives the same
+bytes, comments and CRLF included. An edit changes only the lines it must.
+If the standard TOML parser and the editor disagree about the file, the edit
+is refused. An edit that would make the manifest invalid is undone.
+
+## Pins are checked on every fetch
+
+`fetch` downloads to a temporary file, hashes it as it goes, and moves it
+into place only when the digest matches. A mismatch raises `PinMismatch`,
+leaves any older good copy alone, and stops the build.
+
+| Source | Digest | Checked as |
+|---|---|---|
+| `https://…`, `file://…` | `sha256:` | the bytes at that URL |
+| `oci://REGISTRY/REPO@sha256:<manifest>` | `sha256:<layer>` | the manifest must match its digest and list the layer; the layer must match the pin |
+| a git URL | `git:<commit>` | checked out by `qq`, then `verify` |
+
+An `oci://` source without `@sha256:<manifest>`, or a pin equal to the
+manifest digest, is rejected: either would leave the bytes unpinned.
+Redirects are followed only to `https://`. Registry packages must be public:
+`fetch` asks for an anonymous token and never sends credentials.
+
+## No other parser: `qqsync guard`
+
+Any repo's presubmit can run `qqsync guard .`. It fails, with `file:line`,
+when a file reads TOML near a place that names the manifest. Skip reviewed
+paths with `--allow 'vendor/*'`, or mark one line with a
+`qqsync-guard: allow <reason>` comment. The fix is always the same: read the
+manifest with `qqsync show` or the library.
+
+It is a heuristic. It does not catch a parser that reads the file as plain
+text (sed, grep, regex), a path built at run time, or a path passed through
+a config key or another function.
+
+## Start a new repo: `qqsync init`
+
+```sh
+qqsync init . --kind python-service --kind pytest \
+  --kinds infra-config/config/kinds.toml \
+  --promoted toolchains/promoted.toml \
+  --qq-version 0.1.0
+qqsync validate infra/repo.toml --kind python-service --kind pytest
+```
+
+It writes one target per kind, the toolchain pins those kinds need (from
+toolchains' `promoted.toml`) and `[qq] version`. It never replaces an
+existing manifest. New targets have no `srcs` yet and start as
+`cacheable = false`; add `srcs`, then delete that line.
+
+## Go deeper
+
+- The [sync README](https://github.com/quirq-ai/sync/blob/main/README.md),
+  including every rule the guard uses.
+- [Add a repo](/docs/qq#add-a-repo) in the qq guide.
+- Next: [recipes](/docs/qq/recipes) (what each kind does) and
+  [toolchains](/docs/qq/toolchains) (where the pins come from).

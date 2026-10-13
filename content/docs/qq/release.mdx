@@ -1,0 +1,150 @@
+---
+title: "release: lkgr, channels and the daily canary"
+description: "Moves lkgr and release channels, runs the daily canary, holds bad commits and rolls channels back. Every move is recorded on release-state."
+icon: Rocket
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  release moves builds through channels. A channel is a pointer: it names a
+  commit and the digest of the artifact built from it. Only the release
+  executor moves a pointer, and it records an operation key first, so a retry
+  never acts twice.
+</Lead>
+
+<Callout type="info">
+  **Today:** xo-space and innernet have an lkgr since 2026-10-04. The first
+  canary, started by hand on 2026-10-05, shipped both, and `release-state` has
+  a record for each day since. Not yet done: 7 daily canaries in a row with no
+  human touch, a held canary of a real repo, and a rollback drill on a real
+  repo. The release executor App exists, but release does not act as it yet,
+  so the git refs in product repos are not written; the pointers move only on
+  `release-state`. website has no canary.
+</Callout>
+
+## The pointers
+
+| Pointer | What it names | Who moves it |
+|---|---|---|
+| `lkgr` | the newest `main` commit whose required post-submit builders are all green | the `lkgr` workflow, every 10 minutes |
+| `channels/canary` | lkgr's commit, after the daily canary passes | the `canary` workflow, daily |
+| `channels/dev` | declared, off in v0 | |
+| `channels/stable` | suraj promotes; v2 | |
+
+"Required" and "green" are the gardener's definitions, read through its code
+at a pinned commit. Pending, missing and cancelled are not green, so a
+missing signal holds lkgr where it is. lkgr moves forward along `main`, and
+never names a red commit.
+
+## The release-state branch
+
+Every move is an **operation**. Its key hashes the intent and the pointer's
+generation, and is pushed to release's `release-state` branch before anything
+else changes. Then the target ref moves (compare-and-swap), then the pointer
+and the applied operation are recorded together. A pending operation is
+settled before a new one is planned.
+
+| File on `release-state` | Schema | Holds |
+|---|---|---|
+| `pointers/<repo>/<ref>.json` | `qq-pointer/1` | what lkgr and each channel name, with history |
+| `ops/<key>.json` | `qq-operation/1` | every operation: recorded, applied or failed |
+| `channels.json` | `qq-channels/1` | per repo and channel: commit, digest, generation, operation and time |
+| `canary/<repo>/runs/<date>.json` | `qq-canary-run/1` | each day's canary run |
+| `canary/<repo>/held/<commit>.json` | | a held commit |
+| `reports/<date>.md` | | each day's canary report |
+
+Read `channels.json` from
+`https://raw.githubusercontent.com/quirq-ai/release/refs/heads/release-state/channels.json`.
+The `refs/heads/` form means a tag named `release-state` can never be served
+instead. The [installer](/docs/qq/installer) reads it this way.
+
+<Callout type="warn">
+  `release-state` is the trust root installs read, and today it is only as
+  safe as push access to the release repo. The ruleset that lets only the
+  executor App push it is open gate PR #27, and "command 2", which makes
+  release act as the App, has not run.
+</Callout>
+
+## The daily canary
+
+The `canary` workflow runs daily at 06:17 UTC (the schedule in infra-config
+`channels.toml`), for every repo with a canary release builder. The first
+failing stage holds the canary, and the previous one stays.
+
+| Stage | What |
+|---|---|
+| select | lkgr's commit; if it is already the canary, was held, or there is no lkgr, a recorded no-op |
+| build | every target through its recipes adapter; the digest names the build actions and outputs |
+| verify | the full test suites |
+| fuzz smoke | the suites again with 1,000 examples and a daily seed (property tests until v1 adds fuzzers) |
+| deploy, probe | start the artifact (on the CI runner in v0) and run every `health.toml` probe; a probe that did not run holds the canary |
+| promote | the executor moves `channels/canary`, recording the operation first |
+
+**A held commit** gets `canary/<repo>/held/<commit>.json`, so it is not
+retried, a failure record mirrored to a `qq-failure` issue, and a postmortem
+draft issue labelled `postmortem`. The next canary waits for lkgr to move or
+for the hold to be released.
+
+**An error is not a hold.** When the pipeline itself fails (a lost worker,
+missing results, a command that could not start), nothing is held and the
+day counts as not yet run. After 3 such runs for the same commit, it is held,
+tagged `possible runner fault`. So a runner outage of about a day holds every
+canary repo's current lkgr commit.
+
+**Missed runs.** GitHub often drops scheduled runs on these quiet repos. The
+`canary-watchdog` workflow checks at 09:43 and 13:43 UTC that every canary
+repo has a verdict for today, and starts `canary` if not. A daily backstop
+routine at 07:37 UTC, run outside these repos, dispatches `lkgr` and then
+`canary-watchdog`.
+
+**The report.** After each canary, one issue `Canary report <date>`, labelled
+`canary-report`, says what shipped, what was held and why, and what canary
+names now. The same text is kept as `reports/<date>.md`.
+
+## What you do with it
+
+**Roll a channel back.** Run the `channel-rollback` workflow, or:
+
+```sh
+qqrelease channel rollback --config ... --state ... --repo NAME --channel canary --reason "..." --from COMMIT
+```
+
+It points the channel at the newest earlier commit and digest it was never
+rolled back from. Nothing is rebuilt. `--from` must be the full commit the
+channel names now, so a second dispatch is refused instead of rolling back
+twice. A rolled-back value is never shipped again by a promotion.
+
+**Release a hold** once the machine is fixed: run the `canary-release-hold`
+workflow with the repo, the full held commit, `released_before` (0 for the
+commit's first hold) and a one-line reason. The next canary builds the commit
+again. Close the hold's failure issue by hand with what was wrong.
+
+**See the channels:**
+
+```sh
+qqrelease channel show --state ...
+qqrelease lkgr --config <infra-config checkout> --state <state dir> [--publish] [--dry-run]
+```
+
+## Files and schedules
+
+| Workflow | When |
+|---|---|
+| `lkgr` | every 10 minutes, off the hour |
+| `canary` | daily, 06:17 UTC |
+| `canary-watchdog` | 09:43 and 13:43 UTC |
+| `channel-rollback` | on demand |
+| `canary-release-hold` | on demand |
+
+Rules come from infra-config `channels.toml` and `health.toml`, at the commit
+in `pins.toml`. Out of scope for v0: soak, automatic rollback, the fuzz stage
+and the dev channel (v1); stable and staged rollout (v2).
+
+## Go deeper
+
+- [release README](https://github.com/quirq-ai/release/blob/main/README.md):
+  the executor, the error cap and the open v1 findings.
+- [gardener](/docs/qq/gardener) for the verdicts lkgr uses,
+  [installer](/docs/qq/installer) for following a channel.
+- [How a change moves](/docs/qq#how-a-change-moves) in the qq guide.

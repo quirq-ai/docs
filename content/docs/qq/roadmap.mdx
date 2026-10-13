@@ -1,0 +1,154 @@
+---
+title: "Roadmap: v0, v1, v2"
+description: "What each qq version delivers, v0's exit test and what is built, and what v1 and v2 add after it."
+icon: Map
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  qq is built in three versions. v0 gives all 13 infra repos a thin, working
+  base version on GitHub. v1 makes the daily canary run unattended and opens
+  the dev channel. v2 moves execution to Launchpad, quirq's own cloud, and
+  adds stable and the installer.
+</Lead>
+
+<Callout type="info">
+  **As of:** the plan and the v0 work items are dated 2026-10-03. The build
+  status below is from infra-config's README, checked 2026-10-07. v0's code
+  is largely built, but its exit test has not passed. v1 and v2 are plans
+  only; nothing in them is built.
+</Callout>
+
+## The three versions
+
+| Version | Delivers | Work items |
+|---|---|---|
+| **v0** | A base version of all 13 repos. xo-space and innernet gated from their manifests on GitHub. An agent-run daily canary with hold and rollback. Auto-revert within the cap of 10. Property tests | 51 |
+| **v1** | An unattended canary (soak, automatic rollback, circuit breaker), the dev channel, fuzzing per kind, failure classes and postmortem drafts, PostHog signals and flags, flake handling, hermetic builds and a shared cache, container and docs kinds | 44 |
+| **v2** | Launchpad as the backend, remote execution, perf bisection, deeper fuzzing, agents on every rotation. Stable and the installer, at low priority | 25 |
+
+Only v0's work items are published. The v1 and v2 lists are not copied into
+infra-config, so the rows above are all the detail they have here.
+
+## v0: a base version of every repo
+
+**Goal.** Every one of the 13 infra repos exists, is public, sits behind its
+own gate and does a first, thin version of its job. A change to a product
+repo is built from its manifest, gated on the exact merge result, watched
+after it lands, and shipped to the canary channel by agents every day.
+
+**Scope rules:**
+
+- Latest stable Python and latest stable Next.js only. Containers and
+  docs-only kinds come in v1.
+- Public repos only.
+- Runs on GitHub (merge queue and Actions), behind an interface so Launchpad
+  can replace it later.
+- Only the canary channel is live. Dev is declared but off.
+
+### The exit test
+
+All five must hold at once:
+
+1. All 13 repos exist and are public, each with CODEOWNERS, a generated
+   presubmit and a merge queue.
+2. xo-space and innernet are gated from their `infra/repo.toml` and the
+   central builders in [infra-config](/docs/qq/infra-config), through shared
+   adapters. A deliberately red pull request is refused in each.
+3. A daily canary of both runs 7 days in a row with no human touch. A planted
+   bad canary is held and gets a failure record, and a rollback drill restores
+   the previous canary in under 10 minutes.
+4. A planted build-breaking commit is reverted automatically within the caps,
+   with a failure record linking culprit and fix.
+5. The scorecard is computed by a script, not typed.
+
+### What is built
+
+From infra-config's v0 status, checked 2026-10-07:
+
+| Part | State |
+|---|---|
+| infra-config skeleton, validator and required `validate` check | built |
+| The 13 repos | built |
+| Builders generated and delivered to xo-space, innernet and website | built; the org-wide drift check is off (GitHub Free) |
+| Stub areas filled in | built, except `fuzz` and `perf`, which have no reader yet |
+| suraj's v0 decisions (canary hour, revert-cap counting, compute ceiling) | decided 2026-10-06, not yet written into config |
+| Owners of every area, repo and rotation | suraj owns `org` and the 13 infra repos; the rest are still empty |
+| One source for policy | partly: gardener and release read infra-config; release's fuzz smoke bounds are still in its code |
+
+For the live state of each exit-test line, see
+[Where qq stands](/docs/qq#where-qq-stands). In short: the scorecard is
+built; presubmits and product gating are partly done; the 7-day canary run
+and the automatic revert are not.
+
+### Order of work
+
+The critical path runs: manifest schema, then the adapter loader, then the
+Python and Next.js adapters, then infra-config's builders, then required
+checks in gate, then onboarding xo-space and innernet, then post-submit on
+every commit, then lkgr, then channel pointers, then the daily canary. Other
+items run in parallel once their dependencies land.
+
+Items marked as admin work (creating repos, turning on the merge queue) need
+an org admin. Owners are left blank on purpose: suraj assigns them.
+
+## v1: an unattended canary and the dev channel
+
+v1 finishes the parts of the plan that v0 only starts:
+
+- **Canary without people:** soak time, automatic rollback and a circuit
+  breaker. The plan's bar is 14 green canaries in a row with no human touch,
+  and a planted bad canary rolled back on its own within its soak.
+- **Dev channel:** promoted weekly, with human approval.
+- **Fuzzing per kind,** with a planted fuzz crash becoming one issue that
+  closes only after its fix's replay passes.
+- **Failure classes and postmortem drafts:** a failure class that recurs must
+  end in a new test, fuzz target or gate.
+- **PostHog** as a soak-time health signal and the feature-flag tool, never
+  the gate.
+- **Flake handling:** quarantine with an issue and an expiry date.
+- **Hermetic builds and a shared cache,** aiming at 90% cache hits on an
+  unchanged commit.
+- **Container and docs kinds.**
+
+## v2: own cloud, speed and stable
+
+- **Launchpad** as the execution backend, replacing GitHub.
+- **Remote execution** for heavy targets. The plan's bar: gate p50 under 10
+  minutes and p90 under 20 minutes for 4 weeks.
+- **Perf bisection:** a planted 10% regression is alerted and bisected to its
+  culprit.
+- **Deeper fuzzing.**
+- **Agents on every rotation** (gardener, roller, release). Humans own only
+  policy and stable promotion.
+- **Stable and the installer,** at low priority. Stable is a two-week target,
+  each promotion approved by suraj. The installer lets xo-space's install and
+  updater follow a channel instead of `main`.
+
+## What stays the same in every version
+
+- The model proposes; deterministic machinery disposes. Nothing lands because
+  an agent said it works.
+- No core file names a language. Each repo keeps a manifest; per-kind
+  adapters do the work.
+- Agents may land only clean reverts, dependency rolls and docs on their own.
+  Policy changes and stable promotion need suraj.
+- The canary goes only to quirq's research and test environments, never to
+  users.
+
+## Still open
+
+From the plan (2026-10-03) and infra-config's open decisions (2026-10-07).
+suraj has since settled the compute ceiling (no new compute spend), the
+canary hour (06:17 UTC) and the revert cap; these are not in config yet.
+
+- Who uses the canary beyond quirq's test environments.
+- PostHog's plan, project and scope.
+- Whether an agent may roll stable back alone on a health breach.
+
+## Go deeper
+
+- The v0 work items: infra-config [`docs/v0.md`](https://github.com/quirq-ai/infra-config/blob/main/docs/v0.md)
+- The full plan: infra-config [`docs/plan.md`](https://github.com/quirq-ai/infra-config/blob/main/docs/plan.md)
+- Today's state of qq: [Where qq stands](/docs/qq#where-qq-stands)

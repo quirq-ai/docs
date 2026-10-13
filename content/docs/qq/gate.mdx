@@ -1,0 +1,151 @@
+---
+title: "gate: what must pass before a change lands"
+description: "gate computes each repo's required checks from infra-config, holds the merge queue and rulesets as code, and gives the owner one command to apply them."
+icon: ShieldAlert
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  gate decides what must pass before a change lands. It computes the required
+  checks from [infra-config](/docs/qq/infra-config) and each repo's manifest,
+  and keeps the merge queue and GitHub rulesets as code, so every change is
+  verified on the exact merge result before it reaches `main`. No agent can
+  override it.
+</Lead>
+
+<Callout type="info">
+  **Today:** suraj applied the settings at gate `6610664`, which turned on
+  the repo rulesets. Settings merged since (toolchains' `promotion-gate`, the
+  release executor bypass, website) take effect only at the next apply, and
+  none is recorded yet. Until then website has no `qq-main` ruleset. Org
+  rulesets are all off: quirq-ai is on GitHub Free. No live refusal of a red
+  pull request is recorded yet.
+</Callout>
+
+## How it works
+
+- **Policy comes only from infra-config,** read at the commit pinned in
+  `pins.toml` through `qqcfg`. Manifests (`infra/repo.toml`) are read only
+  through [sync](/docs/qq/sync).
+- **Every blocking builder is a required check,** named after the builder.
+- **Each check runs twice:** on the pull request and on the merge result in
+  the queue (`pull_request` and `merge_group`). A blocking builder without the
+  queue trigger is an error.
+- **No repo lands ungated.** A repo with no blocking builder is refused, and
+  every target kind in its manifest must be covered.
+- **Only `success` passes.** Missing, running, skipped and neutral checks are
+  refusals.
+
+Required checks today:
+
+| Repo | Required check |
+|---|---|
+| xo-space | `xo-space-presubmit` |
+| innernet | `innernet-presubmit` |
+| website | `website-presubmit` |
+
+### The qqgate command
+
+```sh
+qqgate required --config ../infra-config --repo xo-space [--manifest infra/repo.toml]
+qqgate rule     --config ../infra-config --repo xo-space
+qqgate verdict  --config ../infra-config --repo xo-space --sha <commit>
+```
+
+| Exit | Meaning |
+|---|---|
+| 0 | pass |
+| 1 | refused |
+| 2 | the gate could not decide |
+| 3 | the repo is not in `repos.toml` |
+
+## Settings and the merge queue
+
+`settings/github.toml` holds the merge queue and rulesets for the 13 infra
+repos and the three product repos. What each ready repo gets:
+
+| Ruleset | What it does |
+|---|---|
+| `qq-main` | on `main`: pull request required, merge queue (squash, all-green grouping, 40-minute timeout), the required checks, no force push, no deletion, nobody may bypass. A direct push to `main` is refused |
+| `qq-release-refs-branches`, `qq-release-refs-tags` | `lkgr` and `channels/**/*` can be written only by the release executor App, and only in the repos it is installed on |
+| `qq-reserved-tags` | nobody may create a tag named `main` or like a state branch (`ledger`, `perf-data`, `release-state`, `results`, `tree-status`) |
+| `qq-state-branches` | state branches cannot be deleted or force-pushed |
+| `qq-release-state` | in release: only the release executor App may write `release-state` |
+| `qq-release-tags` | in qq: no tag may be created, so qq `v0.1.0` cannot be cut yet |
+
+**Approvals.** The 13 infra repos need no approval: green checks land them.
+Product repos (xo-space, innernet, website) need one approval. GitHub never
+counts the author's own approval, and a push after an approval dismisses it.
+toolchains also needs suraj's code-owner review on its build and promotion
+paths.
+
+**Auto-merge** (`allow_auto_merge`) is how agent sessions put a pull request
+in the queue. It skips no check or review. It is on in every repo except
+xo-space, where suraj lands pull requests himself, and website, which the
+next apply sets.
+
+Not applied: `qq-dependabot-branches` (off for both products), and the org
+rulesets (pinned presubmits, toolchains' promotion gate, `qq-drift`), which
+GitHub Free does not offer.
+
+## How an owner applies settings
+
+An agent cannot apply them, since it would be changing its own gate. An org
+owner runs one command from the gate commit they are given. You need `git`,
+Python 3.11 or newer, and `gh` logged in as an org owner. Do not export a
+token.
+
+```sh
+( mkdir -p ~/qq-apply && cd ~/qq-apply && rm -rf qq-gate && git clone -q https://github.com/quirq-ai/gate qq-gate && cd ./qq-gate && git checkout -q <COMMIT> && scripts/apply.sh )
+```
+
+What it does:
+
+1. Checks your tools and `gh` login, and builds a fresh venv.
+2. Clones infra-config at the pinned commit and every repo fresh.
+3. Runs `settings verify` to find which repos are ready, then a dry run
+   (reads only) and prints every planned change.
+4. Asks you to type `yes`. Anything else writes nothing. It asks first,
+   separately, about any `WARNING` (other protection already on a repo) or a
+   ruleset marked `differs`.
+5. Writes only what you saw. If anything changed meanwhile, it shows the dry
+   run again.
+
+Exit 0 means everything was applied, 1 that something was not ready, was
+skipped or was refused, and 2 an error. Re-running is always safe. It never
+deletes a ruleset and never touches protection it did not create.
+
+If a ruleset was edited or removed in the GitHub UI, run
+`rm -f ~/qq-apply/.qq-gate-org-done` and then the command again.
+
+**Check it worked:** `git push origin HEAD:main` to any written repo is
+refused, and a pull request lands only through the merge queue.
+
+The full guide covers when `verify` refuses a repo, the release-state
+break-glass steps and the org rulesets:
+[docs/apply-settings.md](https://github.com/quirq-ai/gate/blob/main/docs/apply-settings.md).
+
+## Other checks gate owns
+
+- **Agnosticism guard:** `qqgate guard --repo <core repo> .` fails if shipped
+  code in a core repo names a language, build tool or deploy target. Terms
+  and reviewed exceptions are in `guard/terms.toml`.
+- **Gate timing:** a step `quirq-ai/gate/timing@<commit>` records when a pull
+  request entered the queue, so the [scorecard](/docs/qq/test-pipelines)
+  reports gate time p50 and p90 per repo. It never fails the job.
+- **Verification-surface rule** (tests, quarantine and `infra/` need an owner
+  who is not the author): not built; it waits on suraj naming owners.
+
+<Callout type="warn">
+  **Known conflict:** suraj cannot approve pull requests opened under his own
+  account, so an owner-review rule needs a second human owner or a bot
+  identity. That choice is still open.
+</Callout>
+
+## Go deeper
+
+- [gate README](https://github.com/quirq-ai/gate/blob/main/README.md)
+- [The full apply guide](https://github.com/quirq-ai/gate/blob/main/docs/apply-settings.md)
+- [`settings/github.toml`](https://github.com/quirq-ai/gate/blob/main/settings/github.toml)
+- Putting a new repo under gate: [Add a repo](/docs/qq#add-a-repo)

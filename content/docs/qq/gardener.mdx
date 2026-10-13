@@ -1,0 +1,146 @@
+---
+title: "gardener: keeps main green"
+description: "Watches every main commit, publishes whether each repo's tree is open or closed, finds the culprit of a break and proposes a revert."
+icon: Activity
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  The gardener watches the post-submit run on every `main` commit of every
+  onboarded repo. It publishes a tree status, groups failures by the range of
+  commits where they started, finds the culprit and opens a clean revert,
+  within caps set in infra-config.
+</Lead>
+
+<Callout type="info">
+  **Today:** it reports only. The tree status is live for xo-space and
+  innernet. Reverts wait on the gardener's GitHub App ("quirq gardener"),
+  which does not exist yet, and on a first `ledger` branch. No revert lands on
+  its own until a repo is listed in `auto_land_repos`, which is empty in v0.
+</Callout>
+
+## How it works
+
+### Tree status
+
+infra-config generates a post-submit builder for each onboarded repo, as
+`.github/workflows/qq-<builder>.yml`. The gardener reads each repo's
+first-parent `main` history and those runs, and works out:
+
+| What | Meaning |
+|---|---|
+| State per commit and builder | green, red, pending (running, or landed under 15 minutes ago), missing (no run) or cancelled |
+| Tree status per repo | `closed` while any builder's newest verdict is red, `open` when all are green, `unknown` while a builder has no verdict |
+| Red range | for each red builder, last green .. first red, with the suspects in it, oldest first |
+| Coverage | every `main` commit since the repo's first post-submit run must have a result; a hole fails the check |
+
+A missing signal is never treated as healthy. Re-running a red head never
+opens the tree: while a re-run is in progress, the commit keeps its last
+verdict.
+
+**Backfill.** A push of several commits runs only the newest. The gardener
+fills each hole by dispatching that builder's workflow with the commit,
+oldest first, at most 10 in flight per repo. A push run's verdict always wins
+over a backfill's, and a red backfill never names a culprit by itself.
+
+### Grouping and bisection
+
+`qqgarden groups` turns red builders into failure groups, one per regression
+range. Each group has a type, because the caps differ by type:
+
+- `build`: a `build (...)` step failed.
+- `test`: a `test (...)` step failed.
+- `infra`: anything else failed (a fetch step, the result sink, the runner).
+- `unknown`: none of the above.
+
+`infra` and `unknown` are never reverted.
+
+`qqgarden bisect` finds the culprit by binary search, probing each commit in a
+scratch worktree. Exit 0 is pass, 125 is "can't tell", anything else is fail,
+as with `git bisect run`. With `require_culprit_verification`, the culprit and
+its parent are probed again, so a flaky probe cannot name a culprit.
+
+### Reverts within caps
+
+`qqgarden cycle` runs every 5 minutes. For a range of one commit it verifies
+the culprit on GitHub's own runs: the culprit red on its last two attempts and
+never green, its parent green on its last two and never red. It re-runs jobs
+to get there, and after 3 attempts a person looks. A longer range needs
+bisection, which runs the repo's code, so the cycle leaves it to the gardener
+agent.
+
+The caps all come from infra-config `auto_revert.toml`, never from code:
+
+| Cap | Value |
+|---|---|
+| Reverts created, all repos and types | at most 10 per rolling 24 hours, proposed or landed |
+| Build breaks that land on their own | at most 4 a day, culprits under 6 hours old |
+| Test failures | proposed only (submit limit 0) |
+| `unknown` failures | never reverted |
+
+Other rules:
+
+- **Clean only.** A revert that conflicts or changes nothing is refused and
+  not counted.
+- **Ledger first.** Each revert is reserved in the `ledger` branch
+  (`reverts/<id>.json`) before its branch and PR exist, so a run that dies
+  midway still counted it.
+- **Titles.** Revert PRs and commits are titled `Revert <sha12> (qq gardener)`.
+  The gardener never reverts its own revert.
+- **Still red after a revert** means a person looks: another break may hide
+  behind the first.
+- **No workflow edits.** The App token has no `workflows` permission, so a
+  culprit that changed `.github/workflows/` cannot be reverted automatically.
+
+### A record per revert
+
+Every revert gets one failure record (kind `auto-revert`, test-pipelines'
+format) in the `ledger` branch under `failures/`. It links the culprit, the
+revert PR, a postmortem stub issue, the fix commit and a `qq-failure` issue.
+It closes when the owner links the covering test with
+`qqresults failure link`.
+
+## What you do with it
+
+Read the tree status. It is on the gardener's `tree-status` branch as
+`status/<repo>.json` (schema `qq-tree-status/1`). The branch commits only
+when something changes, so its log is the tree's open and close history. A
+quiet branch is not a stalled gardener; the workflow's run list shows each
+check.
+
+Run it yourself:
+
+```sh
+qqgarden status --config <infra-config checkout>                 # live, github backend
+qqgarden status --config ... --out status/ --require-coverage    # what the workflow runs
+qqgarden groups --config <infra-config> --store <results checkout>
+qqgarden bisect --config <infra-config> --repo-dir <clone> --good <sha> --bad <sha> --run 'qq test'
+```
+
+To stop the 5-minute chain without a code change, set the repo variable
+`QQ_TREE_STATUS_CHAIN` to `off`.
+
+## Files and schedules
+
+| Thing | Where |
+|---|---|
+| `tree-status` workflow | every 5 minutes; each run dispatches the next, and a cron restarts the chain if it stops |
+| Tree status | `tree-status` branch, `status/<repo>.json` and `status/README.md` |
+| Revert reservations and failure records | `ledger` branch, `reverts/` and `failures/` (not created yet) |
+| Caps | infra-config `auto_revert.toml`, at the commit in `pins.toml` |
+
+Gate's `qq-state-branches` ruleset blocks deleting or force-pushing `ledger`
+and `tree-status`.
+
+release's lkgr does not read the `tree-status` branch. It recomputes the same
+verdicts by importing the gardener's code at a pinned commit. See
+[release](/docs/qq/release).
+
+## Go deeper
+
+- [gardener README](https://github.com/quirq-ai/gardener/blob/main/README.md):
+  every rule, the App's permissions and the ledger bootstrap steps.
+- [How a change moves](/docs/qq#how-a-change-moves) in the qq guide.
+- [test-pipelines](/docs/qq/test-pipelines) for the results store and failure
+  records, [infra-config](/docs/qq/infra-config) for the caps.

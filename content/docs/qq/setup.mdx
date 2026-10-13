@@ -1,0 +1,137 @@
+---
+title: "setup: qq in one command"
+description: "One npx command checks your tools, asks in a local form what you want, then shows the plan or prints the commands. This version only reads."
+icon: Rocket
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  qq-setup is one command for two jobs: put qq on your machine and work on a
+  repo that already uses it, or set up repos in a GitHub org you own. The
+  terminal checks your tools, a short form in your browser asks which job,
+  and the terminal then shows the plan or prints the commands.
+</Lead>
+
+<Callout type="info">
+  **Today: this version only reads.** It shows the plan or prints commands
+  and stops. It creates no repo, opens no pull request, changes no setting
+  and installs nothing. The version that carries the plan out comes after
+  review. It is not on npm yet; publishing there is a later step suraj
+  decides.
+</Callout>
+
+## Run it
+
+```sh
+npx --allow-remote=root https://codeload.github.com/quirq-ai/setup/tar.gz/<commit>
+```
+
+`<commit>` is the full id of the latest commit on
+[`main`](https://github.com/quirq-ai/setup/commits/main). Always pin it: the
+link then serves exactly that commit, and nothing that lands later.
+
+`--allow-remote=root` lets npm run a package from a tarball link; npm 12
+refuses one without it. It is harmless on older npm: the package has no
+dependencies.
+
+| Flag | What it does |
+|---|---|
+| `--no-browser` | prints the form's link instead of opening it |
+| `--port N` | serves the form on `127.0.0.1:N` (default: a free port) |
+
+**Over SSH:** run it with `--no-browser --port N`, forward the same port with
+`ssh -L N:127.0.0.1:N <host>`, then open the printed link on your own machine.
+A forward to a different local port is refused.
+
+## What it checks
+
+| Tool | Needs |
+|---|---|
+| Node | 22 or later (CI tests 22 and 24; qq's own toolchain is Node 24) |
+| `git` | installed |
+| `gh` | logged in, with the `repo` and `read:org` scopes (`gh auth login` grants them) |
+| Python | 3.11 or later (the later setup step will run infra-config's generator and gate) |
+
+It also notes that the setup step will need the `workflow` scope, and how to
+remove it afterwards. It never asks for `admin:org`, `delete_repo` or `gist`.
+
+It refuses to run while `GH_TOKEN`, `GITHUB_TOKEN`, `GH_ENTERPRISE_TOKEN` or
+`GITHUB_ENTERPRISE_TOKEN` is set, so it only ever acts as your own `gh` login.
+
+## The two choices in the form
+
+The form opens on `127.0.0.1`, with the link printed in the terminal.
+
+### Install qq on my machine and work on a repo
+
+The terminal prints:
+
+- the three commands from the [qq guide](/docs/qq#use-qq-on-your-machine) that
+  install `qq` and `qqsync` and put them on your `PATH`;
+- `qq fetch https://github.com/<owner>/<name>` for the repo you name
+  (`git clone` on a Mac);
+- what `qq sync`, `qq build`, `qq test` and `qq run` do.
+
+It runs none of them. To push branches to the repo, an owner gives you Write
+access. A login that owns no org starts here.
+
+**On a Mac:** qq fetches toolchains for Linux x86_64 only, so the form shows
+`git clone` instead of `qq fetch` and leaves out `qq sync`. Install the repo's
+pinned tools yourself (`qqsync show infra/repo.toml` lists them). macOS ships
+Python 3.9, so you need a newer one (`brew install python@3.14`).
+
+### Set up repos in an org I own
+
+You pick an org you own, the repos to put under qq and, optionally, a new
+starter repo. A repo is offered only when it can run its qq kind's commands as
+they are:
+
+| Kind | What the repo needs |
+|---|---|
+| Python service | `requirements.txt` |
+| pytest | `requirements-dev.txt` listing pytest, and tests at the root |
+| Next.js app | pnpm, with `build` and `typecheck` scripts |
+| Gatsby site | pnpm, with `build` and `test` scripts |
+
+Other repos are listed with the reason. Private repos are among them: GitHub
+offers a merge queue on private repos only on Enterprise Cloud, so v0 sets up
+public repos only.
+
+Then the command:
+
+1. **Reads what already guards each repo** (merge settings, rulesets and
+   branch protection, all with GETs) and prints a warning for anything that
+   would get in qq's way, or "no existing protection found".
+2. **Prints the plan**: the config repo it would create, each pull request,
+   each ruleset, and how to undo setup. It also prints what qq does not do for
+   other orgs yet (watching `main`, lkgr, the canary, dependency rolls, private
+   repos, `qq land`), and that on GitHub Free the gate is honour-based.
+
+## How it keeps your login safe
+
+- Every GitHub call is `gh api --method GET`. It never reads, stores or prints
+  your token; `gh` makes the request itself.
+- The form server listens on `127.0.0.1` only and answers only requests
+  addressed to exactly that host.
+- The link works once, for one tab, and the page never receives a token. No
+  telemetry, and the page loads nothing from the internet.
+
+## Exit codes
+
+| Code | Meaning |
+|---|---|
+| 0 | done |
+| 1 | not ready or stopped: a failed check, or no request from the form for 30 minutes |
+| 2 | error |
+| 130 | stopped with Ctrl-C (reported by the shell) |
+
+## Go deeper
+
+- The [setup README](https://github.com/quirq-ai/setup/blob/main/README.md):
+  every check, the security details and how to develop the form.
+- [The qq guide](/docs/qq): what qq is and how a change moves through it.
+- [Add a repo](/docs/qq#add-a-repo): the manual onboarding steps for quirq's
+  own org.
+- [Recipes](/docs/qq/recipes) for the kinds a repo can be, and
+  [gate](/docs/qq/gate) for the checks and rulesets.

@@ -1,0 +1,122 @@
+---
+title: "monitoring: the dashboard"
+description: "One read-only dashboard that says what changed across the org and what state everything is in, on a phone or a desktop."
+icon: LayoutDashboard
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  The monitoring dashboard says what changed across the quirq-ai org and what
+  state everything is in. It reads the state the other qq repos already
+  publish and links every value to the file or GitHub page it came from.
+  suraj's Vercel project serves it at
+  [monitoring.quirq.dev](https://monitoring.quirq.dev/).
+</Lead>
+
+<Callout type="info">
+  **Today:** it is read-only. It never merges, approves, comments or moves a
+  ref. Search, history charts, push alerts and a GitHub App in place of the
+  token are v1, not started. Anything that writes (filing alerts, landing,
+  releasing a hold) is v2 and waits for its own decision. The dev and stable
+  channels show "nothing promoted yet" until release promotes to them.
+</Callout>
+
+## The pages
+
+| Page | The question it answers |
+|---|---|
+| **Today** (`/`) | What needs a look, and what changed in the last 24 hours (or 7 days)? Three counts on top, then alarms (a closed tree, a held or failed canary, a failed deploy, a new failure, a writer whose last run failed), then one row per repo with a dot per change. |
+| **Waiting on you** (`/waiting`) | What is waiting on me? PRs where you are a requested reviewer or assignee, PRs you approved on an older head, held canaries, open `qq-failure` issues. |
+| **Board** (`/board`) | What state is each repo in? CI on main, open PRs, last merge; for products also tree, lkgr, canary and deploy. Repos that need a look come first. |
+| **Release** (`/release`) | Where is each product in release? lkgr and each channel, the last 14 canary days as a strip, any hold, the latest canary report. |
+| **Health** (`/health`) | Is the dashboard's data current? Whether each of the 9 scheduled writers ran on time, the scorecard, the gardener ledger, and every source read. |
+| **Repo** (`/repos/<name>`) | Everything about one repo: its Board row, open PRs, checks on its head and, for a product, its tree builders, canary strip and perf metrics. |
+| **Snapshot** (`/api/snapshot`) | The same state as JSON (`qq-monitoring-snapshot/1`), for agents. `?since=7d` widens the window. |
+
+On a phone, a green repo on the Board is one line that opens on tap.
+
+## The states
+
+Every tile shows the state word first, then the detail, then where it came
+from and how old it is.
+
+| State | Means |
+|---|---|
+| `green` | healthy |
+| `red` | failing |
+| `held` | a canary hold is on |
+| `pending` | not decided yet |
+| `unknown` | the source could not be read; the reason is shown |
+| `stale` | the writer has not run inside its window, or the data was read more than twice its cache window ago |
+
+**Missing is never green.** A count whose sources were not all read shows as
+a floor ("3+") or "?", never a green zero. A known fact with no health in it,
+like "nothing merged in 7 days", is plain text with no badge. When the GitHub
+API as a whole is out (no token, rate limit, rejected token), one banner says
+so and the API tiles read `unknown`.
+
+## Where the data comes from
+
+Only public data, from the repos that own it. Nothing is copied into this
+repo.
+
+| Source | What it gives |
+|---|---|
+| release `release-state` branch | channels, lkgr and channel pointers, canary runs, holds, daily reports |
+| gardener `tree-status` branch | whether each tree is open or closed |
+| test-pipelines `results` branch | the scorecard and failure records |
+| perf `perf-data` branch | performance metrics |
+| infra-config `config/repos.toml`, `config/channels.toml` | the products, channel order and cadence |
+| gate `settings/github.toml` | every repo behind the gate |
+| GitHub API (with a token) | PRs and reviews, check runs, deployments, writer workflow runs, `qq-failure` and `canary-report` issues, the org repo list |
+
+State branches are read from raw.githubusercontent.com, which can lag up to
+5 minutes. Each source is cached for 2 to 60 minutes. The daily canary report
+is Markdown, shown as text and tables, never as HTML.
+
+**Writers gate their tiles.** A tree, lkgr or canary tile is only as current
+as the gardener or release job that writes its file. If that job is stale,
+the tile is too.
+
+Two known gaps: the gardener `ledger` branch does not exist yet, so its tile
+reads `unknown: ledger not started` until the gardener App lands. The one
+failure record on `results` today is a planted demo; it is labelled and never
+counted.
+
+## Writers it watches
+
+| Writer | Runs | Stale after |
+|---|---|---|
+| gardener `tree-status` | every 5 min | 20 min |
+| release `lkgr` | every 10 min | 30 min |
+| perf `perf` | :17 and :47 | 90 min |
+| test-pipelines `scorecard` | every 6 h | 13 h |
+| release `canary` | daily | 26 h |
+| release `canary-watchdog` | 09:43 and 13:43 daily | 26 h |
+| rollers `roll-toolchains` | weekly, Monday 06:23 | 8 days |
+| qq `e2e-sync` | daily 06:17 | 26 h |
+| installer `live-manifest` | every 6 h at :17 | 13 h |
+
+GitHub delays and sometimes drops scheduled runs on quiet repos, so `stale`
+means "look", not "broken".
+
+## Repos it covers
+
+| Group | Repos |
+|---|---|
+| Products | `xo-space`, `innernet`, `website` (website is not in the canary yet, so only its deploy carries data) |
+| qq infra | the 13 infra repos in gate `settings/github.toml` |
+| Others | apps in progress, knowledge repos and the rest of the org's public repos |
+
+A public repo no registry names shows under "Not in any registry".
+
+## Go deeper
+
+- The [monitoring README](https://github.com/quirq-ai/monitoring/blob/main/README.md):
+  pages, data sources, running it locally and the deploy steps.
+- Its [AGENTS.md](https://github.com/quirq-ai/monitoring/blob/main/AGENTS.md):
+  every path, schema, cache window and freshness rule.
+- The repos it reads: [release](/docs/qq/release), [gardener](/docs/qq/gardener),
+  [test-pipelines](/docs/qq/test-pipelines), [perf](/docs/qq/perf),
+  [infra-config](/docs/qq/infra-config) and [gate](/docs/qq/gate).
