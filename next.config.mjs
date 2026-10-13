@@ -17,71 +17,53 @@ const config = {
         destination: "/docs/start",
         permanent: false,
       },
+      // Research pages that moved into the quirq section stay on this site.
       {
-        source: "/future-of-work/:path*",
-        destination: "/research/:path*",
-        permanent: true,
+        source: "/research/phase-1-agentic-workforce/unit-of-work",
+        destination: "/docs/quirq/what-is-quirq/unit-of-work",
+        permanent: false,
       },
       {
-        source: "/agents/:path*",
-        destination: "/docs/agents/:path*",
-        permanent: true,
+        source:
+          "/research/phase-1-agentic-workforce/unit-of-work-research/environment",
+        destination: "/docs/quirq/what-is-quirq/environment",
+        permanent: false,
       },
       {
-        source: "/getting-started",
-        destination: "/docs/cloud",
-        permanent: true,
+        source: "/future-of-work/phase-1-agentic-workforce/unit-of-work",
+        destination: "/docs/quirq/what-is-quirq/unit-of-work",
+        permanent: false,
       },
       {
-        source: "/docs/getting-started",
-        destination: "/docs/cloud",
-        permanent: true,
+        source:
+          "/future-of-work/phase-1-agentic-workforce/unit-of-work-research/environment",
+        destination: "/docs/quirq/what-is-quirq/environment",
+        permanent: false,
       },
-      {
-        source: "/docs/getting-started/:path*",
-        destination: "/docs/cloud/:path*",
-        permanent: true,
-      },
-      {
-        source: "/docs/cloud/core-concepts",
-        destination: "/docs/glossary",
-        permanent: true,
-      },
-      {
-        source: "/docs/getting-started/manage-workspace",
-        destination: "/docs/cloud/manage-space",
-        permanent: true,
-      },
-      {
-        source: "/docs/cloud/manage-workspace",
-        destination: "/docs/cloud/manage-space",
-        permanent: true,
-      },
-      {
-        source: "/more/create-your-alter-ego/:path*",
-        destination: "/more/create-your-environments/:path*",
-        permanent: true,
-      },
-      {
-        source: "/docs/more/xo-cowork-api/:path*",
-        destination: "/api-reference/:path*",
-        permanent: true,
-      },
-      {
-        source: "/more/xo-cowork-api/:path*",
-        destination: "/api-reference/:path*",
-        permanent: true,
-      },
-      {
-        source: "/more/xo-mcp-server/:path*",
-        destination: "/api-reference/xo-mcp-server/:path*",
-        permanent: true,
-      },
-      {
-        source: "/docs/more/xo-mcp-server/:path*",
-        destination: "/api-reference/xo-mcp-server/:path*",
-        permanent: true,
-      },
+      // XO docs moved to docs.xo.builders; send old links there.
+      ...[
+        ["/future-of-work/:path*", "/research/:path*"],
+        ["/research/:path*", "/research/:path*"],
+        ["/agents/:path*", "/docs/agents/:path*"],
+        ["/more/:path*", "/more/:path*"],
+        ["/getting-started", "/docs/cloud"],
+        ["/docs/getting-started/:path*", "/docs/cloud/:path*"],
+        ["/docs/cloud/:path*", "/docs/cloud/:path*"],
+        ["/docs/space/:path*", "/docs/space/:path*"],
+        ["/docs/agents/:path*", "/docs/agents/:path*"],
+        ["/docs/setup/:path*", "/docs/setup/:path*"],
+        ["/docs/troubleshooting/:path*", "/docs/troubleshooting/:path*"],
+        ["/docs/more/:path*", "/docs/more/:path*"],
+        ["/docs/changelog", "/docs/changelog"],
+        ["/api-reference/:path*", "/api-reference/:path*"],
+        ["/templates/:path*", "/templates/:path*"],
+      ].map(([source, path]) => ({
+        source,
+        // Never fire on docs.xo.builders itself, so these can never loop.
+        missing: [{ type: "host", value: "docs.xo.builders" }],
+        destination: `https://docs.xo.builders${path}`,
+        permanent: false,
+      })),
     ];
   },
   async rewrites() {

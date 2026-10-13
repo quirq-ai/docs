@@ -1,11 +1,6 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/shared";
-import {
-  apiSource,
-  researchSource,
-  source,
-  templatesSource,
-} from "@/lib/source";
+import { source } from "@/lib/source";
 
 export const revalidate = false;
 
@@ -21,10 +16,5 @@ function mapPages(
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    ...mapPages(source.getPages()),
-    ...mapPages(apiSource.getPages()),
-    ...mapPages(templatesSource.getPages()),
-    ...mapPages(researchSource.getPages()),
-  ];
+  return [...mapPages(source.getPages())];
 }

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     template: `%s | ${appName}`,
   },
   description:
-    "Documentation for XO — deploy apps, connect AI agents, and scale with XO Launchpad, XO MCP Server, and XO Spaces.",
+    "Documentation for qq, the tool quirq uses to build, test and land code, and for quirq, a proposed unit for the work agents deliver.",
   openGraph: {
     siteName: appName,
     type: "website",

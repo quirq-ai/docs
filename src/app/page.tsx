@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import { QuirqHome } from "@/components/quirq-home";
 
 export const metadata: Metadata = {
-  title: "XO Space Docs",
+  title: "quirq docs",
   description:
-    "Documentation for XO Space: the local control plane for AI coding agents. Run a Space locally or through XO Cloud.",
+    "Documentation for qq, the tool quirq uses to build, test and land code, and for quirq, a proposed unit for the work agents deliver.",
   alternates: {
     canonical: "https://docs.quirq.dev/",
   },
   openGraph: {
-    title: "XO Space Docs",
+    title: "quirq docs",
     description:
-      "Documentation for XO Space: the local control plane for AI coding agents. Run a Space locally or through XO Cloud.",
+      "Documentation for qq, the tool quirq uses to build, test and land code, and for quirq, a proposed unit for the work agents deliver.",
     url: "https://docs.quirq.dev/",
     type: "website",
   },

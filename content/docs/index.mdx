@@ -1,13 +1,17 @@
 ---
-title: XO Space
-description: The home for your AI Agent Team.
+title: Overview
+description: Docs for qq, quirq's infra, and for quirq, a proposed unit of agent work.
 icon: BookOpen
 ---
 
 import { Cards, Card } from "@/components/card";
 import { Accordions, Accordion } from "fumadocs-ui/components/accordion";
 
-{/* ── What is XO ───────────────────────────────────────────────────── */}
+# qq and quirq docs
+
+<Lead>How quirq builds, tests and lands code with qq, and quirq, a proposed unit for the work agents deliver.</Lead>
+
+{/* ── Start ────────────────────────────────────────────────────────── */}
 
 <div className="mb-6">
 <Cards>
@@ -20,36 +24,62 @@ import { Accordions, Accordion } from "fumadocs-ui/components/accordion";
 </Cards>
 </div>
 
-<WhatIsXO />
+**qq** and **quirq** share a name prefix but are different things: qq is the infra, and a quirq
+is a proposed unit of work.
 
-{/* ── Agents ───────────────────────────────────────────────────────── */}
+{/* ── qq ───────────────────────────────────────────────────────────── */}
 
-## Choose an Agent
+## qq: quirq infra
 
 <Cards>
 	<Card
-		icon={<BrandIcon name="openclaw" size={24} />}
-		title="OpenClaw"
-		description="AI agent gateway with Telegram, WhatsApp, and Slack support. Built-in skills and integrations."
-		href="/docs/agents/openclaw"
+		icon={<span className="icon-[ph--flow-arrow-fill] size-6" />}
+		title="The qq guide"
+		description="What qq is, how a change moves through it, and what works today."
+		href="/docs/qq"
 	/>
 	<Card
-		icon={<BrandIcon name="claude-code" size={24} />}
-		title="Claude Code"
-		description="AI-assisted software development, running in your secure XO environment."
-		href="/docs/agents/claude-code"
+		icon={<span className="icon-[ph--terminal-window-fill] size-6" />}
+		title="Use qq on your machine"
+		description="Install qq and qqsync, then build, test and run any repo with infra/repo.toml."
+		href="/docs/qq#use-qq-on-your-machine"
 	/>
 	<Card
-		icon={<BrandIcon name="hermes" size={24} />}
-		title="Hermes"
-		description="Messaging agent with Telegram, WhatsApp, and Slack support."
-		href="/docs/agents/hermes"
+		icon={<span className="icon-[ph--git-pull-request-fill] size-6" />}
+		title="Add a repo"
+		description="Give a repo infra/repo.toml and put it under qq's landing rules."
+		href="/docs/qq#add-a-repo"
 	/>
 	<Card
-		icon={<BrandIcon name="antigravity" size={24} />}
-		title="Antigravity"
-		description="Google's agent-first coding platform, running in a secure XO space."
-		href="/docs/agents/antigravity"
+		icon={<span className="icon-[ph--chart-bar-fill] size-6" />}
+		title="Where qq stands"
+		description="v0's exit test and today's limits."
+		href="/docs/qq#where-qq-stands"
+	/>
+</Cards>
+
+{/* ── quirq ────────────────────────────────────────────────────────── */}
+
+## quirq: a proposed unit of agent work
+
+<Cards>
+	<Card
+		icon={<span className="icon-[ph--gauge-fill] size-6" />}
+		title="What is quirq"
+		description="The definition and the mint, and why the budget is the denominator."
+		href="/docs/quirq/what-is-quirq"
+	/>
+	<Card
+		icon={<span className="icon-[ph--ruler-fill] size-6" />}
+		title="How to calculate it"
+		description="Scoring against captured state, the mint rule and the all-in cost model."
+		href="/docs/quirq/how-to-calculate"
+	/>
+	<Card
+		icon={<span className="icon-[ph--rocket-fill] size-6" />}
+		title="How to integrate this today"
+		description="One task family, four habits, and the governance that keeps the ledger honest."
+		href="/docs/quirq/integrate"
 	/>
 </Cards>
 
@@ -58,22 +88,22 @@ import { Accordions, Accordion } from "fumadocs-ui/components/accordion";
 ## Quick Answers
 
 <Accordions>
-	<Accordion title="Is XO Space free?">
-		Yes. **XO Space** is open source, and you can run it on your computer for free with one command.
-
-		**XO Cloud** on [app.xo.builders](https://app.xo.builders) runs it for you on a cloud machine; you pick a plan when you sign up. Either way, you bring your own model key.
+	<Accordion title="What is qq?">
+		qq (quirq infra) is how quirq builds, tests and lands code, and how it will ship it. You
+		write code as usual, human or agent. qq decides whether it lands, keeps `main` green and
+		moves tested commits into release channels. See [the qq guide](/docs/qq).
 	</Accordion>
-	<Accordion title="Do I need my own model key?">
-		Yes. Use an API key from Anthropic, OpenAI or OpenRouter, or sign in with
-		your Claude or ChatGPT subscription. XO does not sell model credits.
+	<Accordion title="Can I use qq on my Mac?">
+		Partly. Toolchains are fetched for Linux x86_64 only. On a Mac, `qq sync` stops with
+		`no pin for platform`, and you install the pinned Python 3.14.8 or Node 24 yourself.
+		See [Use qq on your machine](/docs/qq#use-qq-on-your-machine).
 	</Accordion>
-	<Accordion title="What is the difference between XO Space and XO Cloud?">
-		**XO Space** is the open-source app your agents work in. **XO Cloud** runs XO Space for you on a cloud machine, so you don't install anything. See the [overview](/docs/cloud/overview).
+	<Accordion title="Is qq the same as quirq?">
+		No. **qq** is the infra and its command line. **a quirq** is a
+		[proposed unit for agent work](/docs/quirq). Nothing counts quirqs yet.
 	</Accordion>
-	<Accordion title="How do I see what my agents are doing?">
-		Install Space on your computer with `curl -fsSL quirq.ai/install | sh` (or add it as an agent skill), then open `localhost:5002` to see your agents' sessions and tool use.
-	</Accordion>
-	<Accordion title="Where is my data kept?">
-		Space on your computer keeps your work there and sends nothing unless you turn something on, such as [usage reporting](/docs/space/space-walk/setup#usage-reporting), GitHub backup or a connector. Your agent still talks to its model provider. On **XO Cloud**, your work is on your cloud machine.
+	<Accordion title="Where are the XO Space docs?">
+		XO Space, XO Cloud and their agents are documented at
+		[docs.xo.builders](https://docs.xo.builders).
 	</Accordion>
 </Accordions>

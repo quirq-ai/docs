@@ -1,23 +1,24 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAISearchContext } from "@/components/ai/search";
 import { cn } from "@/lib/cn";
 
-const SIGN_UP_URL = "https://app.xo.builders/sign-up?ref=docs.quirq.dev";
 /** Hide the bar near the page end so the docs footer / social links stay reachable. */
 const HIDE_NEAR_BOTTOM_PX = 160;
 /** Matches bar content + vertical padding; reserved so content can scroll clear of the bar. */
 const BAR_HEIGHT_PX = 60;
 
 /**
- * Fixed bottom bar: Ask AI + Start Free. Client-only (scroll / AI context).
+ * Fixed bottom bar: Ask AI + Start here. Client-only (scroll / AI context).
  * Always available after mount; hides near the document bottom so the site
  * footer and social links are not covered. Reserves bottom padding while shown.
  */
 export function StartFreeBar() {
   const [awayFromFooter, setAwayFromFooter] = useState(true);
   const { open, setOpen } = useAISearchContext();
+  const onStartPage = usePathname() === "/docs/start";
 
   useEffect(() => {
     const update = () => {
@@ -71,21 +72,18 @@ export function StartFreeBar() {
           className="inline-flex items-center gap-1.5 rounded-lg border border-fd-border bg-fd-background px-3 py-1.5 text-sm font-semibold text-fd-foreground transition-colors hover:bg-fd-muted"
           tabIndex={showBar ? 0 : -1}
         >
-          <span
-            className="icon-[ph--chat-circle] size-4"
-            aria-hidden="true"
-          />
+          <span className="icon-[ph--chat-circle] size-4" aria-hidden="true" />
           Ask AI
         </button>
-        <a
-          href={SIGN_UP_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center rounded-lg bg-fd-primary px-4 py-1.5 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-90"
-          tabIndex={showBar ? 0 : -1}
-        >
-          Start Free
-        </a>
+        {!onStartPage && (
+          <a
+            href="/docs/start"
+            className="inline-flex items-center rounded-lg bg-fd-primary px-4 py-1.5 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-90"
+            tabIndex={showBar ? 0 : -1}
+          >
+            Start here
+          </a>
+        )}
       </div>
     </section>
   );
