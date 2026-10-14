@@ -18,16 +18,46 @@ import { Callout } from "fumadocs-ui/components/callout";
   a release channel.
 </Lead>
 
-<Video src="/videos/map.mp4" poster="/videos/map.jpg" title="Follow one change through qq" width={1100} height={980}>
-  One pull request, step by step: you sync, build and test, open the pull
-  request, the gate decides, you land, `main` stays green, pins move forward,
-  and the change ships to the canary. Recorded from a copy of the interactive
-  [infra map](https://github.com/quirq-ai/research/tree/main/infra/output/app/infra-map)
-  in quirq-ai/research, with depot renamed to qq (its name since 2026-10-09).
-  The map's content is as of 5 October 2026. Its last step mentions test
-  installs that follow channels; those are [not set up
-  yet](/docs/after-it-lands#5-install-from-a-channel).
+<Video src="/videos/explainer.mp4" poster="/videos/explainer.jpg" phoneSrc="/videos/explainer-phone.mp4" phonePoster="/videos/explainer.jpg" phoneWidth={854} phoneHeight={480} title="What is qq: the quirq infra field guide" width={1280} height={720}>
+  Three minutes, with sound and captions: the 13 repos, what happens to a
+  pull request, how `main` stays green and what ships, and where version zero
+  stops today. Made on 5 October 2026; the lines about getting started, the
+  gardener and reverts were re-recorded on 14 October to match qq today.
 </Video>
+
+<Accordions>
+	<Accordion title="Read the narration">
+		Every change to a quirq product starts as a pull request. And every one asks the same question: is it safe to ship?
+
+		quirq infra, qq for short, answers it the way Chromium does. Thirteen small public repositories, each with one job, running on GitHub.
+
+		A product writes one file by hand: its manifest, which pins its toolchains by digest. Everything else is generated from infra-config, the one repo where every policy lives as config.
+
+		Open a pull request, and presubmit runs. A drift check, then build, then test. Every result lands in one write-once store.
+
+		The gate decides what must pass. Then the merge queue tests the exact merge result, and squashes it onto main.
+
+		Every ten minutes, release marks the newest commit whose checks are all green. Last known good.
+
+		Each morning, canary is built from last known good, tested, and shipped. Dev and stable come later, and only when a person says so.
+
+		If main breaks, the gardener closes the tree and names the suspect range. Next, it will find the culprit and propose a clean revert. Never more than ten a day.
+
+		Rollers keep dependencies fresh, one small pull request at a time. And perf records the speed and size of every commit.
+
+		Agents may handle the routine: reverts, rolls and docs. People own the rules, and every promotion past canary.
+
+		Thirteen repositories. Policy flows down from infra-config, results flow back up, and every link is a pinned commit. Two products run on it today: xo-space and innernet.
+
+		To start, clone qq and put it on your path. Then qq sync fetches every pinned toolchain, and checks its digest.
+
+		This is version zero, and it has edges. Toolchains are built for Linux, so Macs can't sync yet. Reverts aren't opened yet, and a person still merges every roll.
+
+		The first canary has shipped, for both products. Next comes the alpha, where ten to fifteen of us land real work through qq, and tell us what breaks.
+
+		One path, from a pull request to a release. Built in the open, made to be run by agents, and owned by people. quirq infra.
+	</Accordion>
+</Accordions>
 
 ## What qq does for you
 
@@ -74,7 +104,18 @@ import { Callout } from "fumadocs-ui/components/callout";
 	/>
 </Cards>
 
-## The life of a change
+## How it works
+
+<Video src="/videos/map.mp4" poster="/videos/map.jpg" title="Follow one change through qq" width={1100} height={980}>
+  One pull request, step by step: you sync, build and test, open the pull
+  request, the gate decides, you land, `main` stays green, pins move forward,
+  and the change ships to the canary. Recorded from a copy of the interactive
+  [infra map](https://github.com/quirq-ai/research/tree/main/infra/output/app/infra-map)
+  in quirq-ai/research, with depot renamed to qq (its name since 2026-10-09).
+  The map's content is as of 5 October 2026. Its last step mentions test
+  installs that follow channels; those are [not set up
+  yet](/docs/after-it-lands#5-install-from-a-channel).
+</Video>
 
 This is the whole journey. Each step links to the guide for it.
 

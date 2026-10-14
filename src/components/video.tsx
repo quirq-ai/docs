@@ -3,10 +3,11 @@ import type { ReactNode } from "react";
 const BOX =
   "mx-auto block h-auto max-h-[70vh] w-auto max-w-full rounded-xl border border-fd-border bg-black";
 
-// A recording served from public/videos: an mp4 with a poster frame, no sound.
+// A recording served from public/videos: an mp4 with a poster frame.
 // preload="none" keeps a page light until the reader presses play. A narrower
 // phone cut (phoneSrc) keeps terminal text readable on small screens; only the
-// one that is shown is ever fetched.
+// one that is shown is ever fetched. Terminal recordings are silent; the
+// explainer film has narration with its captions burned into the picture.
 export function Video({
   src,
   poster,
@@ -15,6 +16,8 @@ export function Video({
   height = 660,
   phoneSrc,
   phonePoster,
+  phoneWidth = 520,
+  phoneHeight = 760,
   children,
 }: {
   src: string;
@@ -23,9 +26,11 @@ export function Video({
   /** the recording's size in pixels, so the box keeps its shape before it loads */
   width?: number;
   height?: number;
-  /** a 520×760 cut of the same recording for phones */
+  /** a smaller cut of the same recording for phones (520×760 by default) */
   phoneSrc?: string;
   phonePoster?: string;
+  phoneWidth?: number;
+  phoneHeight?: number;
   /** the caption under the video */
   children?: ReactNode;
 }) {
@@ -36,7 +41,7 @@ export function Video({
     h: number,
     className: string,
   ) => (
-    // biome-ignore lint/a11y/useMediaCaption: the recordings have no sound; the caption and the page around them give the same steps as text
+    // biome-ignore lint/a11y/useMediaCaption: terminal recordings are silent and the explainer's captions are in the picture; the caption and the page around them give the same steps as text
     <video
       controls
       playsInline
@@ -56,7 +61,7 @@ export function Video({
       {phoneSrc && phonePoster ? (
         <>
           {player(src, poster, width, height, "max-sm:hidden")}
-          {player(phoneSrc, phonePoster, 520, 760, "sm:hidden")}
+          {player(phoneSrc, phonePoster, phoneWidth, phoneHeight, "sm:hidden")}
         </>
       ) : (
         player(src, poster, width, height, "")

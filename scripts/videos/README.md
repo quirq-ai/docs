@@ -42,3 +42,17 @@ replaced by qq; the docs caption says so. Its poster is a frame from the start o
 ```sh
 ffmpeg -ss 1.5 -i map.mp4 -frames:v 1 -q:v 4 map.jpg
 ```
+
+## The explainer film
+
+`explainer.mp4` (the voiced film on the overview) is not made here. It is the quirq infra field
+guide, a HyperFrames film narrated with ElevenLabs, whose project lives in the quirq project's
+shared files (`vision/quirq-infra/video`, with its own README). It was made on 2026-10-05; on
+2026-10-14 three lines were re-voiced and the depot labels renamed to qq. The web and phone copies
+come from its master render:
+
+```sh
+ffmpeg -i master.mp4 -vf scale=1280:720 -c:v libx264 -preset slow -crf 28 -pix_fmt yuv420p -c:a aac -b:a 96k -movflags +faststart explainer.mp4
+ffmpeg -i master.mp4 -vf scale=854:480 -c:v libx264 -preset slow -crf 30 -pix_fmt yuv420p -c:a aac -b:a 64k -movflags +faststart explainer-phone.mp4
+ffmpeg -ss 18 -i master.mp4 -frames:v 1 -vf scale=1280:720 -q:v 4 explainer.jpg
+```
