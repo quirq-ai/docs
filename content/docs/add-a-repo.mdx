@@ -1,0 +1,138 @@
+---
+title: Put a repo on qq
+description: Onboard a repo in two parts. First make it build and test with qq on your machine, then put it behind the gate so every change lands through the merge queue.
+icon: UserPlus
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  Onboarding has two parts. The first takes minutes and needs nobody's
+  permission: give the repo an `infra/repo.toml` and check that `qq test`
+  passes. The second puts the repo behind the gate, so its pull requests get a
+  generated presubmit and land through the merge queue. That part touches
+  three repos and ends with an org owner applying settings.
+</Lead>
+
+<Video src="/videos/onboard.mp4" poster="/videos/onboard.png" title="Putting a new Python repo on qq">
+  A real run: a small Python repo with one test gets its `infra/repo.toml`
+  from `qqsync init`, passes `qqsync validate`, and passes `qq test`. As in
+  the other recordings, Python 3.14.8 is passed with `--toolchain` because
+  the sandbox cannot reach ghcr.io.
+</Video>
+
+## Part 1: make it build with qq
+
+### Pick its kinds
+
+| Kind | Use it for | The repo needs |
+|---|---|---|
+| `python-service` | a Python server | `requirements.txt` |
+| `pytest` | a Python test suite | `requirements-dev.txt` listing pytest |
+| `node-app` | a Next.js app | pnpm, with `build` and `typecheck` scripts |
+| `gatsby-site` | a Gatsby site (CI only for now) | pnpm, with `build` and `test` scripts |
+
+A repo can have several targets, for example a `python-service` and a
+`pytest`. Other languages have no kind yet; a new kind is an org-wide change
+in infra-config and recipes first.
+
+### Write infra/repo.toml
+
+`qqsync init` writes it for you: one target per kind, the toolchains those
+kinds need at the versions toolchains promoted, and the qq version. It needs
+checkouts of [infra-config](https://github.com/quirq-ai/infra-config) and
+[toolchains](https://github.com/quirq-ai/toolchains) for the lists it reads:
+
+```sh
+git clone -q https://github.com/quirq-ai/infra-config ~/src/infra-config
+git clone -q https://github.com/quirq-ai/toolchains ~/src/toolchains
+cd ~/my-repo
+qqsync init . --kind pytest \
+  --kinds ~/src/infra-config/config/kinds.toml \
+  --promoted ~/src/toolchains/promoted.toml \
+  --qq-version 0.1.0
+```
+
+It prints `infra/repo.toml: written with target kinds pytest`, and never
+replaces an existing manifest. The file it wrote (digests shortened here):
+
+```toml
+schema = "quirq-repo/1"
+
+[qq]
+version = "0.1.0"
+
+[toolchains.python]
+version = "3.14.8"
+platforms.linux-x86_64 = { source = "oci://ghcr.io/quirq-ai/toolchains/python@sha256:32c0…a716", digest = "sha256:230c…b03c" }
+
+[[targets]]
+name = "pytest"
+kind = "pytest"
+cacheable = false
+```
+
+New targets start with no `srcs` and `cacheable = false`. Add `srcs` (the
+files the target is built from, such as `["tests/**",
+"requirements-dev.txt"]`), then delete the `cacheable` line. Never edit pins
+by hand: the toolchain roller moves them.
+
+### Check it and test it
+
+```sh
+qqsync validate infra/repo.toml
+qq test
+```
+
+`qqsync validate` prints `infra/repo.toml: PASS`, or exits 1 and lists every
+problem. Unknown keys are errors, target names must be unique, and `deps`
+must name targets in the same file. Then `qq test` should pass the way it did
+in the video. Open a pull request with the new file.
+
+## Part 2: put it behind the gate
+
+The repo must be public in quirq-ai. Do these in order:
+
+1. **infra-config:** add the repo to `config/repos.toml`, with a presubmit
+   and a post-submit builder in `config/pipelines.toml`.
+2. **The new repo:** in infra-config, run
+   `python3 tools/qqcfg.py deliver <repo> <path to its checkout>`. Add the
+   generated workflows to the pull request from part 1, and merge it.
+3. **gate:** add a `[[repo]]` entry to `settings/github.toml`, and move the
+   infra-config commit in `pins.toml` to one that lists the repo.
+4. **Release access:** install the release executor App on the repo and add
+   it to gate's `executor_repos`, before release moves its infra-config pin
+   past step 1. Without it, release's lkgr job fails for every repo.
+5. **An org owner applies the settings** at the gate commit they are given.
+   The script shows a dry run, asks them to type `yes`, and writes only what
+   they saw:
+
+```sh
+( mkdir -p ~/qq-apply && cd ~/qq-apply && rm -rf qq-gate && git clone -q https://github.com/quirq-ai/gate qq-gate && cd ./qq-gate && git checkout -q <COMMIT> && scripts/apply.sh )
+```
+
+From then on, every pull request gets the `<repo>-presubmit` check, and
+`main` lands only through the merge queue. Dependency rolls (Dependabot and
+the toolchain roller) are optional and can come later. The owner's steps are in
+gate's [apply guide](https://github.com/quirq-ai/gate/blob/main/docs/apply-settings.md).
+
+<Callout type="info">
+  **Who approves what:** a policy change in infra-config is a pull request
+  there. By policy, suraj approves changes to its `config/`, `schema/`,
+  `tools/`, `generated/`, `tests/` and `.github/`. Only an org owner can
+  apply gate settings; an agent cannot.
+</Callout>
+
+## Onboarding repos in your own org
+
+`qq-setup` (see [Install qq](/docs/install#let-qq-setup-check-your-machine))
+has a second choice in its form, **Set up repos in an org I own**. You pick an
+org and the repos to put under qq. It offers only repos that can already run
+their kind's commands, warns about existing branch protection in qq's way, and
+prints the plan with how to undo it.
+
+<Callout type="info">
+  **Today:** it prints the plan and stops. It creates no repo, opens no pull
+  request and changes no setting. The version that carries the plan out comes
+  after review, and v0 sets up public repos only.
+</Callout>

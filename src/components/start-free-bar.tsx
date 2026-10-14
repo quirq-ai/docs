@@ -11,14 +11,14 @@ const HIDE_NEAR_BOTTOM_PX = 160;
 const BAR_HEIGHT_PX = 60;
 
 /**
- * Fixed bottom bar: Ask AI + Start here. Client-only (scroll / AI context).
+ * Fixed bottom bar: Ask AI + Install qq. Client-only (scroll / AI context).
  * Always available after mount; hides near the document bottom so the site
  * footer and social links are not covered. Reserves bottom padding while shown.
  */
 export function StartFreeBar() {
   const [awayFromFooter, setAwayFromFooter] = useState(true);
   const { open, setOpen } = useAISearchContext();
-  const onStartPage = usePathname() === "/docs/start";
+  const onInstallPage = usePathname() === "/docs/install";
 
   useEffect(() => {
     const update = () => {
@@ -75,13 +75,13 @@ export function StartFreeBar() {
           <span className="icon-[ph--chat-circle] size-4" aria-hidden="true" />
           Ask AI
         </button>
-        {!onStartPage && (
+        {!onInstallPage && (
           <a
-            href="/docs/start"
+            href="/docs/install"
             className="inline-flex items-center rounded-lg bg-fd-primary px-4 py-1.5 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-90"
             tabIndex={showBar ? 0 : -1}
           >
-            Start here
+            Install qq
           </a>
         )}
       </div>

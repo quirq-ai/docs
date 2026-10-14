@@ -1,0 +1,113 @@
+---
+title: Send a change
+description: From your branch to main. Open a pull request with qq try, read the gate's verdict with qq status, and land through the merge queue with qq land.
+icon: GitPullRequest
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  When your change builds and tests locally, three commands take it the rest
+  of the way: `qq try` opens the pull request, `qq status` tells you what the
+  gate thinks, and `qq land` lands it once the gate passes. None of them makes
+  you wait at the terminal while CI runs.
+</Lead>
+
+<Callout type="info">
+  **Today:** these commands are built and tested, but a live `qq try` or `qq
+  land` on a product repo has not been shown yet. A plain `git push` and a
+  pull request on GitHub go through exactly the same gate.
+</Callout>
+
+## Before you start
+
+You need the [GitHub CLI](https://cli.github.com/), `gh`, signed in with
+`gh auth login`. qq's change commands are thin wrappers over it. Work on a
+branch, with your commits on it.
+
+## 1. Open the pull request
+
+```sh
+qq try
+```
+
+`qq try` pushes your branch, opens its pull request (or updates it if one is
+open), prints a run ID and exits at once. The presubmit check now runs on
+GitHub. To open the pull request without starting a watch, use `qq upload`.
+
+Both take `--title`, `--body` and `--draft`, and `--base` to land somewhere
+other than the default branch. Without `--title`, the title comes from your
+commits.
+
+## 2. What the presubmit checks
+
+The presubmit is one required check named after the repo, such as
+`innernet-presubmit`. It first checks that the generated CI workflows were
+not edited by hand, then installs, builds and tests the repo and stores the
+results. Only `success` passes: a missing, running, skipped or neutral check
+is a refusal.
+
+## 3. Read the verdict
+
+```sh
+qq status
+```
+
+| Exit code | Verdict |
+|---|---|
+| 0 | pass (or already landed) |
+| 1 | refused (or closed) |
+| 2 | error |
+| 3 | pending: checks are still running |
+
+Scripts should decide on the exit code. Add `--json` for the full verdict.
+
+## 4. Land it
+
+```sh
+qq land
+```
+
+`qq land` queues nothing until the gate passes. It then hands the pull request
+to GitHub's merge queue, which tests it again on top of the changes ahead of
+it and merges it into `main`, with the merge method gate sets for the repo
+(squash otherwise). `--method` overrides it. A
+refused change is never queued, and a change the queue drops is reported as
+dequeued.
+
+### Who must approve
+
+| Repos | Approval needed |
+|---|---|
+| The 13 infra repos | none: green checks land them |
+| Products: xo-space, innernet, website | one approval, never from the author |
+| toolchains' build and promotion paths | suraj's code-owner review |
+
+In xo-space, auto-merge is off: once the gate passes, a person clicks
+**Merge when ready**.
+
+## For agents: never hold a call open
+
+`qq try` and `qq land` return a run ID at once. A watcher follows the
+change and writes the verdict (pass, refused, landed, dequeued, superseded
+by a newer push, closed, timed out or error) to
+`$QQ_HOME/verdicts/<run ID>.json` (`QQ_HOME` is `~/.cache/qq` by default). It also runs your `--notify` command
+(default `$QQ_NOTIFY`), which gets the verdict as JSON on stdin and
+`QQ_VERDICT` set in its environment. That is where an agent harness plugs in its own channel.
+
+If the watcher dies, for example after a reboot, `qq status` still gives
+the verdict. The `--notify` command line shows in `ps`, so pass secrets
+through the environment, never in the command.
+
+## Which change
+
+`qq try`, `qq status` and `qq land` act on the current branch's pull request.
+Pass a number, URL or branch to act on another one, and `--repo OWNER/NAME`
+to act outside this checkout:
+
+```sh
+qq status 42
+qq land https://github.com/quirq-ai/innernet/pull/42
+```
+
+Next: [after it lands](/docs/after-it-lands).

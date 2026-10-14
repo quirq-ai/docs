@@ -1,48 +1,30 @@
 ---
 title: Glossary
-description: Terms for qq, quirq's infra, and for quirq, the proposed unit of agent work.
+description: The words qq uses, defined once.
 icon: BookOpen
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-
-Use this page as the single definition source. Guides link here instead of redefining terms.
-
-## qq terms
+<Lead>
+  The guides link here instead of defining terms again.
+</Lead>
 
 | Term | What it means |
 |---|---|
-| **qq** | quirq infra: how quirq builds, tests and lands code, and its command line, `qq`. See [the qq guide](/docs/qq). Not **a quirq**, the proposed unit of work. |
-| **`infra/repo.toml`** | The one file a product repo writes by hand. It lists the repo's targets; its CI is generated from config. Not infra-config, which holds every policy. |
-| **infra-config** | The config repo that holds every policy as TOML. Changing one is a pull request there. Not a repo's own `infra/repo.toml`. |
-| **gate** | The repo that applies required checks, repo settings and the merge queue. Not infra-config. |
-| **v0** | The first, thin version of qq, being finished now. |
+| **qq** | quirq's build and release infrastructure, and its command line, `qq`. |
+| **`infra/repo.toml`** | The one file a repo writes to use qq: its targets, the toolchains they need, and its qq version. Read only through `qqsync`. Also called the manifest. |
+| **Target** | One thing a repo builds or tests, with a name and a kind. |
+| **Kind** | The type of a target, such as `node-app` or `pytest`. It decides the steps. Kinds are defined once for the org in infra-config, and given their steps by recipes. |
+| **Toolchain** | The Python, or Node with pnpm, that a build uses. |
 | **Pinned by digest** | Named by the hash of its exact bytes, so every machine that fetches it gets the same bytes. Not a version number. |
-| **Presubmit** | The blocking check on a pull request. Not the post-submit. |
-| **Merge queue** | Tests each pull request merged onto the latest `main` before it lands. |
-| **Post-submit** | The builder that runs on `main` after a change lands. Not the presubmit. |
-| **lkgr** (last known good) | The newest `main` commit whose post-submit builders all passed. Not the canary channel. |
-| **Canary** | The daily release channel, built from lkgr; dev and stable come later. Not lkgr itself. |
-
-## quirq terms
-
-| Term | What it means |
-|---|---|
-| **quirq** | A *proposed* unit of **verified work** ([the idea](/docs/quirq)). Nothing counts quirqs yet. Not qq, the infra. |
-| **Definition of done** | A machine-checkable end state a human owner writes before the work starts. Not a prompt. |
-| **Budget (B)** | The price the owner would pay for the outcome to exist. The task carries B *potential* quirqs. Not what the work cost. |
-| **Completion (V)** | A score from 0 to 1, from comparing the world before (S₀) and after (S₁) against the definition of done. Not the agent's own report. |
-| **Mint** | Recording V · B quirqs of delivered work in a tamper-evident ledger, with everything production consumed. |
-
-<Callout type="info">
-  **One sentence to remember:** **qq** decides whether code lands and ships; **a quirq** is a
-  proposed way to count what agents deliver.
-</Callout>
-
-## Related paths
-
-| If you want to… | Go to |
-|---|---|
-| Build, test and land code | [qq](/docs/qq) |
-| Measure verified work | [quirq](/docs/quirq) |
-| Read about XO Space or XO Cloud | [docs.xo.builders](https://docs.xo.builders) |
+| **infra-config** | The repo that holds every policy as TOML. Not a repo's own `infra/repo.toml`. |
+| **gate** | The repo that applies required checks, repo settings and the merge queue. |
+| **Presubmit** | The required check on a pull request, named `<repo>-presubmit`. |
+| **Merge queue** | GitHub's queue that tests each pull request on top of the latest `main`, and the ones ahead of it, before it lands. |
+| **Verdict** | The gate's answer for a change: pass, refused or pending. `qq status` prints it. |
+| **Post-submit** | The build that runs on each `main` commit after a change lands. |
+| **Tree status** | Whether a repo's `main` is green: `open`, `closed` or `unknown`. Published by gardener. |
+| **lkgr** (last known good) | The newest `main` commit whose post-submit builds all passed. Not the canary. |
+| **Channel** | A pointer to a commit and the digest of what was built from it: canary now, dev and stable later. |
+| **Canary** | The daily channel. Once a day lkgr is built, tested, started and probed, then the canary moves to it. |
+| **Roll** | A pull request that moves a pin forward: a dependency version or a toolchain digest. |
+| **v0, v1, v2** | qq's three versions. v0, the first thin version, is being finished now. See the [roadmap](/docs/roadmap). |

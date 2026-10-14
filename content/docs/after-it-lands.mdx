@@ -1,0 +1,133 @@
+---
+title: After it lands
+description: What happens to your change on main. The post-submit build, the tree status, lkgr, the daily canary, installing from a channel, and the dashboard that shows it all.
+icon: Rocket
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  Landing is not the end. Your commit is built again on `main`, qq decides
+  whether `main` is still green, and the newest all-green commit becomes a
+  candidate to ship. Once a day the canary builds it, starts it and probes it
+  before moving the canary channel to it. You do nothing for any of this; this
+  page shows where to look.
+</Lead>
+
+## 1. The post-submit build
+
+Every commit on `main` runs a post-submit builder, a CI workflow generated
+for the repo. Its results are stored in the
+[test-pipelines](/docs/infrastructure#test-pipelines) repo, so the history of
+every test is kept.
+
+## 2. Is main green? The tree status
+
+The [gardener](/docs/infrastructure#gardener) checks every 5 minutes and
+publishes one status per repo:
+
+| Status | Means |
+|---|---|
+| `open` | every post-submit builder's newest result is green |
+| `closed` | at least one is red; the range from the last green to the first red names the suspect commits |
+| `unknown` | a builder has no result yet. A missing result is never treated as green |
+
+The live status is a file per repo on the gardener's
+[`tree-status` branch](https://github.com/quirq-ai/gardener/tree/tree-status/status),
+and that branch's history is the record of every time a tree opened or
+closed.
+
+<Callout type="info">
+  **Today:** the gardener only reports. Finding the culprit and opening a
+  revert is built, but waits on the gardener's own GitHub App, which does not
+  exist yet. When it is switched on, every revert is a pull request a person
+  merges, at most 10 in any 24 hours across all repos.
+</Callout>
+
+## 3. lkgr, the last known good commit
+
+Every 10 minutes the [release](/docs/infrastructure#release) repo moves
+**lkgr** to the newest `main` commit whose post-submit builders all passed.
+A missing result holds lkgr where it is. In xo-space and innernet you can see
+it as a branch:
+
+```sh
+git fetch origin lkgr channels/canary
+git log -1 --oneline origin/lkgr
+```
+
+## 4. The daily canary
+
+Once a day (06:17 UTC) the canary takes lkgr's commit and runs it through
+these stages. The first stage that fails holds the canary, and the previous
+canary stays.
+
+| Stage | What happens |
+|---|---|
+| select, build | lkgr's commit, built through the recipes |
+| verify, fuzz smoke | the full test suites, then again with 1,000 generated examples |
+| deploy, probe | start it on a CI runner and run its health probes |
+| promote | move `channels/canary` to that commit |
+
+Each day's report is an issue labelled `canary-report` in the release repo,
+and a Markdown file under
+[`reports/`](https://github.com/quirq-ai/release/tree/release-state/reports)
+on its `release-state` branch.
+
+<Callout type="info">
+  **Today:** the first canary shipped xo-space and innernet on 2026-10-05.
+  GitHub often skips scheduled runs on these repos, so a daily backstop at
+  07:37 UTC starts any missed lkgr or canary run. Seven unattended canaries in
+  a row, a held canary and a rollback drill on a real repo have not happened
+  yet. website has no canary.
+</Callout>
+
+## 5. Install from a channel
+
+`qqinstall` says which commit and build a channel names, and can put a
+checkout on exactly that commit:
+
+```sh
+( set -e; python3 -m venv ~/qq-tools/qqinstall; ~/qq-tools/qqinstall/bin/pip install -q "qqinstall @ git+https://github.com/quirq-ai/installer@main"; ~/qq-tools/qqinstall/bin/qqinstall resolve --repo xo-space --channel canary )
+```
+
+It prints one line, for example:
+
+```text
+xo-space canary: commit cc7d73db61e2eca99ceb798b0c43faf2817a3f2c digest sha256:8d14b5f92151817becf9a3e357fd872eff5987583ba9d73c810736edcbfa0a07 (generation 6)
+```
+
+The generation only goes up, so an old channel file replayed later can never
+move an install back. Other `qqinstall` commands are in the [command
+reference](/docs/commands#install-from-a-channel-qqinstall).
+
+<Callout type="info">
+  **Today:** every real install, including xo-space's `install.sh` and its
+  in-app updater, still follows `main`. Test machines that follow the canary
+  are not set up yet.
+</Callout>
+
+## 6. See it all in one place
+
+The [monitoring dashboard](https://monitoring.quirq.dev/) reads the state
+these repos publish and links every value to where it came from. It only
+reads; it never merges, approves or moves anything.
+
+| Page | Answers |
+|---|---|
+| **Today** | What needs a look, and what changed in the last day or week? |
+| **Waiting on you** | Which reviews, held canaries and failure issues wait on me? |
+| **Board** | What state is each repo in, worst first? |
+| **Release** | Where is each product: lkgr, channels, the last 14 canary days? |
+| **Health** | Is the data current? Did each scheduled job run on time? |
+
+A source it cannot read shows `unknown` with the reason, never green.
+`stale` means "look", not "broken".
+
+## Also after landing
+
+- **Performance.** The [perf](/docs/infrastructure#perf) repo records build
+  size and benchmarks per `main` commit. It never alerts or gates in v0.
+- **Dependency updates.** Dependabot and the toolchain roller open pull
+  requests that go through the same gate as yours. Today a person merges each
+  one ([rollers](/docs/infrastructure#rollers)).

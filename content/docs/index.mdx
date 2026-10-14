@@ -1,109 +1,125 @@
 ---
-title: Overview
-description: Docs for qq, quirq's infra, and for quirq, a proposed unit of agent work.
+title: What is qq
+description: qq is how quirq builds, tests, lands and ships code. Start here to see what it does for you and which guide to read next.
 icon: BookOpen
 ---
 
 import { Cards, Card } from "@/components/card";
 import { Accordions, Accordion } from "fumadocs-ui/components/accordion";
+import { Callout } from "fumadocs-ui/components/callout";
 
-# qq and quirq docs
+# What is qq
 
-<Lead>How quirq builds, tests and lands code with qq, and quirq, a proposed unit for the work agents deliver.</Lead>
+<Lead>
+  qq is quirq's build and release infrastructure, and `qq` is its command
+  line. You write code the way you always do, by hand or with an agent. qq
+  builds and tests it the same way on your laptop and on GitHub, decides
+  whether it may land, keeps `main` green, and moves tested commits out to
+  a release channel.
+</Lead>
 
-{/* ── Start ────────────────────────────────────────────────────────── */}
+<Video src="/videos/map.mp4" poster="/videos/map.png" title="Follow one change through qq" width={1100} height={980}>
+  One pull request, step by step: you sync, build and test, open the pull
+  request, the gate decides, you land, `main` stays green, pins move forward,
+  and the change ships to the canary. Recorded from the interactive
+  [infra map](https://github.com/quirq-ai/research/tree/main/infra/output/app/infra-map)
+  in quirq-ai/research.
+</Video>
 
-<div className="mb-6">
+## What qq does for you
+
+- **The same tools on every machine.** Each repo pins its toolchains (Python,
+  or Node with pnpm) by the hash of their exact bytes, and `qq sync` fetches
+  exactly those bytes, so you and your teammates build with the same tools.
+- **One file per repo.** A repo describes itself in `infra/repo.toml`: its
+  targets and the toolchains they need. Its CI workflows are generated for
+  it. Nobody hand-writes CI.
+- **A gate that cannot be talked around.** A change lands only through the
+  merge queue, after its required checks pass on the exact merge result.
+  The rules live in one config repo, so they are the same for people and
+  for agents.
+- **Main stays green, and good commits ship.** After a change lands, qq
+  watches `main`, records the newest all-green commit, and once a day
+  builds, starts and probes it before moving the canary channel to it.
+
+## Pick your path
+
 <Cards>
 	<Card
-		icon={<span className="icon-[ph--map-trifold-fill] size-6" />}
-		title="New here? Start here"
-		description="Pick what you want to do from a short list of the main links."
-		href="/docs/start"
-	/>
-</Cards>
-</div>
-
-**qq** and **quirq** share a name prefix but are different things: qq is the infra, and a quirq
-is a proposed unit of work.
-
-{/* ── qq ───────────────────────────────────────────────────────────── */}
-
-## qq: quirq infra
-
-<Cards>
-	<Card
-		icon={<span className="icon-[ph--flow-arrow-fill] size-6" />}
-		title="The qq guide"
-		description="What qq is, how a change moves through it, and what works today."
-		href="/docs/qq"
+		icon={<span className="icon-[ph--download-simple-fill] size-6" />}
+		title="I want to try qq"
+		description="Install it in three commands, then build and run a real app."
+		href="/docs/install"
 	/>
 	<Card
 		icon={<span className="icon-[ph--terminal-window-fill] size-6" />}
-		title="Use qq on your machine"
-		description="Install qq and qqsync, then build, test and run any repo with infra/repo.toml."
-		href="/docs/qq#use-qq-on-your-machine"
+		title="I work on a repo that uses qq"
+		description="Build, test, run, add your own commands, and land a change."
+		href="/docs/build-test-run"
 	/>
 	<Card
 		icon={<span className="icon-[ph--git-pull-request-fill] size-6" />}
-		title="Add a repo"
-		description="Give a repo infra/repo.toml and put it under qq's landing rules."
-		href="/docs/qq#add-a-repo"
+		title="I want to put my repo on qq"
+		description="Write its infra/repo.toml, test it, then put it behind the gate."
+		href="/docs/add-a-repo"
 	/>
 	<Card
-		icon={<span className="icon-[ph--chart-bar-fill] size-6" />}
-		title="Where qq stands"
-		description="v0's exit test and today's limits."
-		href="/docs/qq#where-qq-stands"
+		icon={<span className="icon-[ph--map-trifold-fill] size-6" />}
+		title="I want to understand the infra"
+		description="The 13 repos behind qq, what each does, and how they connect."
+		href="/docs/infrastructure"
 	/>
 </Cards>
 
-{/* ── quirq ────────────────────────────────────────────────────────── */}
+## The life of a change
 
-## quirq: a proposed unit of agent work
+This is the whole journey. Each step links to the guide for it.
 
-<Cards>
-	<Card
-		icon={<span className="icon-[ph--gauge-fill] size-6" />}
-		title="What is quirq"
-		description="The definition and the mint, and why the budget is the denominator."
-		href="/docs/quirq/what-is-quirq"
-	/>
-	<Card
-		icon={<span className="icon-[ph--ruler-fill] size-6" />}
-		title="How to calculate it"
-		description="Scoring against captured state, the mint rule and the all-in cost model."
-		href="/docs/quirq/how-to-calculate"
-	/>
-	<Card
-		icon={<span className="icon-[ph--rocket-fill] size-6" />}
-		title="How to integrate this today"
-		description="One task family, four habits, and the governance that keeps the ledger honest."
-		href="/docs/quirq/integrate"
-	/>
-</Cards>
+1. **Get the tools.** [Install](/docs/install) `qq` and `qqsync` once.
+2. **Build and test locally.** `qq test` builds every target with the
+   repo's pinned toolchains and tests it ([your first build](/docs/first-build)).
+3. **Send it for review.** `qq try` pushes your branch, opens the pull request
+   and returns at once. The presubmit check runs on GitHub
+   ([send a change](/docs/send-a-change)).
+4. **Land it.** `qq land` waits for the gate to pass, then hands the pull
+   request to the merge queue, which tests it on top of the latest `main`.
+5. **After it lands.** A post-submit build runs on the new `main` commit. qq
+   reports whether `main` is green, moves lkgr (last known good) forward, and
+   ships lkgr to the daily canary ([after it lands](/docs/after-it-lands)).
 
-{/* ── Quick Answers ────────────────────────────────────────────────── */}
+<Callout type="info">
+  **Today:** qq is an alpha (version `0.1.0`). Its pinned toolchains exist
+  for Linux x86_64 only. xo-space and innernet go all the way to the canary;
+  website is behind the gate but not in the canary. Product CI still runs
+  simpler stand-in commands, so [a local result can differ from
+  CI](/docs/build-test-run#when-your-result-differs-from-ci). What is built
+  and what is next: the [roadmap](/docs/roadmap).
+</Callout>
 
-## Quick Answers
+## Common questions
 
 <Accordions>
-	<Accordion title="What is qq?">
-		qq (quirq infra) is how quirq builds, tests and lands code, and how it will ship it. You
-		write code as usual, human or agent. qq decides whether it lands, keeps `main` green and
-		moves tested commits into release channels. See [the qq guide](/docs/qq).
+	<Accordion title="Can I use qq on a Mac?">
+		Yes, with your own tools. qq itself runs anywhere with `git` and Python
+		3.11.4 or newer. The pinned toolchains are published for Linux x86_64 only,
+		so on a Mac `qq sync` stops with `no pin for platform`. Clone with `git
+		clone`, install Python 3.14.8 or Node 24 yourself, and pass it to `qq
+		build` and `qq test` with `--toolchain`. See [Install qq](/docs/install#on-a-mac).
 	</Accordion>
-	<Accordion title="Can I use qq on my Mac?">
-		Partly. Toolchains are fetched for Linux x86_64 only. On a Mac, `qq sync` stops with
-		`no pin for platform`, and you install the pinned Python 3.14.8 or Node 24 yourself.
-		See [Use qq on your machine](/docs/qq#use-qq-on-your-machine).
+	<Accordion title="Do I have to use qq to contribute?">
+		No. A plain `git push` and a pull request go through the same gate. qq
+		makes the local loop match CI and lets an agent send a change without
+		holding a terminal open while CI runs.
 	</Accordion>
-	<Accordion title="Is qq the same as quirq?">
-		No. **qq** is the infra and its command line. **a quirq** is a
-		[proposed unit for agent work](/docs/quirq). Nothing counts quirqs yet.
+	<Accordion title="Who decides the rules?">
+		Every policy is a TOML file in the
+		[infra-config](/docs/infrastructure#infra-config) repo. Changing one is a
+		pull request there. A few rules cannot be loosened by config at all, for
+		example that only clean reverts, dependency rolls and docs may ever land
+		without a person.
 	</Accordion>
 	<Accordion title="Where are the XO Space docs?">
 		XO Space, XO Cloud and their agents are documented at
-		[docs.xo.builders](https://docs.xo.builders).
+		[docs.xo.builders](https://docs.xo.builders). This site is only about qq.
 	</Accordion>
 </Accordions>

@@ -1,0 +1,107 @@
+---
+title: Your first build
+description: Clone a real app that uses qq, see what it builds, test it, read the results and run it, in five commands.
+icon: Play
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  The quickest way to understand qq is to point it at a repo that already
+  uses it. This walk-through uses innernet, a Next.js app in quirq-ai. You
+  get it, ask what it builds, test it, look at the results and start it. It
+  takes a few minutes and changes nothing outside `~/qq-try`.
+</Lead>
+
+<Video src="/videos/first-build.mp4" poster="/videos/first-build.png" title="Building, testing and running innernet with qq">
+  A real run. The sandbox it was recorded in cannot reach ghcr.io, where the
+  toolchains live, so it clones with git and passes Node 24 in with
+  `--toolchain` instead of running `qq sync`. On your machine, `qq fetch`
+  does both for you.
+</Video>
+
+## 1. Get the repo
+
+On Linux, `qq fetch` clones a repo and runs `qq sync` in it, which downloads
+the repo's pinned toolchains and checks each against its digest:
+
+```sh
+mkdir -p ~/qq-try && cd ~/qq-try
+qq fetch https://github.com/quirq-ai/innernet
+cd innernet
+```
+
+On a Mac, use `git clone` instead, and see [Install qq: on a
+Mac](/docs/install#on-a-mac) for the toolchain.
+
+## 2. See what it builds
+
+A repo is a list of **targets**. Each target has a **kind**, such as
+`node-app` or `pytest`, which tells qq how to build and test it. Ask
+`qqsync` rather than reading `infra/repo.toml` yourself:
+
+```sh
+qqsync show
+```
+
+It prints the manifest as JSON. For innernet there is one target, `app`, of
+kind `node-app`, built with Node `24.21.0`, and the repo pins qq `0.1.0`.
+
+## 3. Build and test it
+
+```sh
+qq test
+```
+
+`qq test` builds every target, then tests it. Each step prints one line:
+
+```text
+PASS app fetch:toolchain-check (0.1s)
+PASS app fetch:install (4.8s)
+PASS app build:build (13.3s)
+PASS app test:typecheck (1.6s)
+```
+
+Read each line as *result, target, step*. `fetch` steps check the toolchain
+and install dependencies, `build` builds, and `test` runs the checks. A
+`FAIL` line names the log to open. `qq build` does the same without the
+test steps.
+
+## 4. Read the results
+
+Everything a run produces lands in `.qq/out`:
+
+| Path | What is in it |
+|---|---|
+| `.qq/out/results.json` | every step and its result, for scripts and agents |
+| `.qq/out/logs/` | one log per step, such as `app.build.build.log` |
+| `.qq/out/junit/` | JUnit XML, the same format CI stores |
+
+## 5. Run it
+
+`qq run` runs any command from the repo root with the repo's pinned
+toolchains first on `PATH`:
+
+```sh
+qq run "pnpm start"
+```
+
+innernet is now at **http://127.0.0.1:3470**. **Ctrl-C** stops it. If the
+repo was not synced, qq says so (`qq: not synced here: node; using PATH for
+them. Run qq sync`) and uses the tools on your `PATH`.
+
+<Callout type="info">
+  innernet has a demo mode with sample data. Build it with
+  `INNERNET_DEMO=1 qq test` to see it.
+</Callout>
+
+## What you just did
+
+You ran a repo's full build and test without reading its README, installing
+Node or knowing its build tool. That is the point of qq: every repo answers
+to the same five commands. Next:
+
+- [Build, test and run](/docs/build-test-run): everything those commands can
+  do, and why CI can still disagree.
+- [Repo commands](/docs/repo-commands): give a repo commands of its own.
+- [Send a change](/docs/send-a-change): from your branch to `main`.

@@ -12,34 +12,50 @@ const config = {
   },
   async redirects() {
     return [
-      {
-        source: "/start",
-        destination: "/docs/start",
-        permanent: false,
-      },
-      // Research pages that moved into the quirq section stay on this site.
-      {
-        source: "/research/phase-1-agentic-workforce/unit-of-work",
-        destination: "/docs/quirq/what-is-quirq/unit-of-work",
-        permanent: false,
-      },
-      {
-        source:
+      // The site is qq only. Old guide, per-repo and start pages land on the
+      // page that now covers them; the quirq proposal section was removed.
+      ...[
+        ["/start", "/docs/install"],
+        ["/docs/start", "/docs/install"],
+        ["/docs/qq", "/docs/install"],
+        ["/docs/qq/cli", "/docs/commands"],
+        ["/docs/qq/setup", "/docs/install#let-qq-setup-check-your-machine"],
+        [
+          "/docs/qq/monitoring",
+          "/docs/after-it-lands#6-see-it-all-in-one-place",
+        ],
+        ["/docs/qq/roadmap", "/docs/roadmap"],
+        ...[
+          "sync",
+          "recipes",
+          "toolchains",
+          "remote-build",
+          "infra-config",
+          "gate",
+          "test-pipelines",
+          "gardener",
+          "rollers",
+          "release",
+          "installer",
+          "perf",
+        ].map((repo) => [`/docs/qq/${repo}`, `/docs/infrastructure#${repo}`]),
+        ["/docs/quirq", "/docs"],
+        ["/docs/quirq/:path*", "/docs"],
+        ["/research/phase-1-agentic-workforce/unit-of-work", "/docs"],
+        [
           "/research/phase-1-agentic-workforce/unit-of-work-research/environment",
-        destination: "/docs/quirq/what-is-quirq/environment",
-        permanent: false,
-      },
-      {
-        source: "/future-of-work/phase-1-agentic-workforce/unit-of-work",
-        destination: "/docs/quirq/what-is-quirq/unit-of-work",
-        permanent: false,
-      },
-      {
-        source:
+          "/docs",
+        ],
+        ["/future-of-work/phase-1-agentic-workforce/unit-of-work", "/docs"],
+        [
           "/future-of-work/phase-1-agentic-workforce/unit-of-work-research/environment",
-        destination: "/docs/quirq/what-is-quirq/environment",
+          "/docs",
+        ],
+      ].map(([source, destination]) => ({
+        source,
+        destination,
         permanent: false,
-      },
+      })),
       // XO docs moved to docs.xo.builders; send old links there.
       ...[
         ["/future-of-work/:path*", "/research/:path*"],

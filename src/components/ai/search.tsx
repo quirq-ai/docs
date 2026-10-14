@@ -263,7 +263,7 @@ function Input(props: ComponentProps<"textarea">) {
 
 const roleName: Record<string, string> = {
   user: "you",
-  assistant: "quirq AI",
+  assistant: "qq AI",
 };
 
 function Message({
@@ -432,7 +432,7 @@ export function AISearchPanel() {
 const SUGGESTED_PROMPTS = [
   "What is qq?",
   "How do I add a repo to qq?",
-  "What is a quirq?",
+  "How do I install qq?",
 ] as const;
 
 function EmptyChatSuggestions() {
