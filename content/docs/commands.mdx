@@ -48,16 +48,18 @@ pass a number, URL or branch, and takes `--repo OWNER/NAME`, `--backend`
 | `qq upload` | push this branch, open or update its pull request |
 | `qq try` | upload, print a run ID and exit; the verdict arrives later |
 | `qq status` | the gate's verdict now |
-| `qq land` | land through the merge queue once the gate passes; returns at once |
+| `qq land` | land through the merge queue once the gate passes; returns at once (not in xo-space) |
 
-`upload` and `try` take `--title`, `--body`, `--draft` and `--base`. `try`
+`upload` and `try` take `--title`, `--body` (only with `--title`), `--draft`
+and `--base`. `try`
 and `land` take `--notify CMD`. `land` takes `--method merge|squash|rebase`.
 See [send a change](/docs/send-a-change).
 
 ## Read or edit the manifest: qqsync
 
-`qqsync` is the only program that reads or edits `infra/repo.toml`. Every
-command exits 1 on any problem and prints every problem.
+`qqsync` is the only program that reads or edits `infra/repo.toml`. Each
+command exits 1 on any problem with the manifest, printing every problem, and
+2 on a usage error such as a missing argument.
 
 | Command | What it does |
 |---|---|
@@ -105,6 +107,7 @@ With `QQ_PINNED=1`, an invalid manifest gives 1 instead of 2.
 
 | Variable | What it does |
 |---|---|
+| `QQ_PYTHON` | the Python that runs qq itself (default `python3`; needs 3.11.4 or newer with venv) |
 | `QQ_HOME` | where qq keeps installed versions and verdicts (default `~/.cache/qq`) |
 | `QQ_PINNED=1` | run this `qq` as it is, ignoring the repo's pinned version |
 | `QQ_TRUSTED_SOURCES` | extra places a pinned qq may be installed from |

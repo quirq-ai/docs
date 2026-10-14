@@ -14,7 +14,7 @@ import { Callout } from "fumadocs-ui/components/callout";
   three repos and ends with an org owner applying settings.
 </Lead>
 
-<Video src="/videos/onboard.mp4" poster="/videos/onboard.png" title="Putting a new Python repo on qq">
+<Video src="/videos/onboard.mp4" poster="/videos/onboard.png" phoneSrc="/videos/onboard-phone.mp4" phonePoster="/videos/onboard-phone.png" title="Putting a new Python repo on qq">
   A real run: a small Python repo with one test gets its `infra/repo.toml`
   from `qqsync init`, passes `qqsync validate`, and passes `qq test`. As in
   the other recordings, Python 3.14.8 is passed with `--toolchain` because
@@ -76,6 +76,42 @@ New targets start with no `srcs` and `cacheable = false`. Add `srcs` (the
 files the target is built from, such as `["tests/**",
 "requirements-dev.txt"]`), then delete the `cacheable` line. Never edit pins
 by hand: the toolchain roller moves them.
+
+### What a target can say
+
+| Field | What it is |
+|---|---|
+| `name` | the target's name, unique in the file (required) |
+| `kind` | one of the kinds above (required) |
+| `srcs` | input globs, relative to the repo root |
+| `outs` | declared outputs, relative to the repo root |
+| `deps` | other targets in this file that this one needs first |
+| `cacheable` | `false` for a step that is not hermetic: it still runs, but its result is never reused |
+| `params` | settings for the kind, passed to its adapter as is |
+
+Every `params` key is optional:
+
+| Kind | `params` |
+|---|---|
+| `python-service` | `requirements` (default `requirements.txt`), `entry` (the script that starts it), `port_env` (default `PORT`), `ready_path` (default `/`), `probes`, `bench` |
+| `pytest` | `requirements` (default `requirements-dev.txt`), `args` (extra pytest arguments) |
+| `node-app` | `dir` (the app folder, default `.`), `port_flag` (default `-p`), `ready_path` (default `/`), `probes`, `env`, `bench` |
+
+For example, a server that reads its port from `APP_PORT` and answers on
+`/health`:
+
+```toml
+[[targets]]
+name = "server"
+kind = "python-service"
+srcs = ["server.py", "services/**", "requirements.txt"]
+params = { port_env = "APP_PORT", ready_path = "/health" }
+```
+
+The full rules are in sync's
+[schema](https://github.com/quirq-ai/sync/blob/main/src/qqsync/schema/quirq-repo-1.schema.json),
+and each kind's `params` are documented at the top of its adapter in
+[recipes](https://github.com/quirq-ai/recipes/tree/main/src/qqrecipes/adapters).
 
 ### Check it and test it
 

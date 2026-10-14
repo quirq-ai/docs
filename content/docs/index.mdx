@@ -18,12 +18,15 @@ import { Callout } from "fumadocs-ui/components/callout";
   a release channel.
 </Lead>
 
-<Video src="/videos/map.mp4" poster="/videos/map.png" title="Follow one change through qq" width={1100} height={980}>
+<Video src="/videos/map.mp4" poster="/videos/map.jpg" title="Follow one change through qq" width={1100} height={980}>
   One pull request, step by step: you sync, build and test, open the pull
   request, the gate decides, you land, `main` stays green, pins move forward,
-  and the change ships to the canary. Recorded from the interactive
+  and the change ships to the canary. Recorded from a copy of the interactive
   [infra map](https://github.com/quirq-ai/research/tree/main/infra/output/app/infra-map)
-  in quirq-ai/research.
+  in quirq-ai/research, with depot renamed to qq (its name since 2026-10-09).
+  The map's content is as of 5 October 2026. Its last step mentions test
+  installs that follow channels; those are [not set up
+  yet](/docs/after-it-lands#5-install-from-a-channel).
 </Video>
 
 ## What qq does for you
@@ -32,8 +35,8 @@ import { Callout } from "fumadocs-ui/components/callout";
   or Node with pnpm) by the hash of their exact bytes, and `qq sync` fetches
   exactly those bytes, so you and your teammates build with the same tools.
 - **One file per repo.** A repo describes itself in `infra/repo.toml`: its
-  targets and the toolchains they need. Its CI workflows are generated for
-  it. Nobody hand-writes CI.
+  targets and the toolchains they need. A product repo's CI workflows are
+  generated for it from config, so nobody hand-writes them.
 - **A gate that cannot be talked around.** A change lands only through the
   merge queue, after its required checks pass on the exact merge result.
   The rules live in one config repo, so they are the same for people and
@@ -81,8 +84,9 @@ This is the whole journey. Each step links to the guide for it.
 3. **Send it for review.** `qq try` pushes your branch, opens the pull request
    and returns at once. The presubmit check runs on GitHub
    ([send a change](/docs/send-a-change)).
-4. **Land it.** `qq land` waits for the gate to pass, then hands the pull
-   request to the merge queue, which tests it on top of the latest `main`.
+4. **Land it.** `qq land` returns at once; a watcher waits for the gate to
+   pass, then the pull request goes to the merge queue, which tests it on top
+   of the latest `main`.
 5. **After it lands.** A post-submit build runs on the new `main` commit. qq
    reports whether `main` is green, moves lkgr (last known good) forward, and
    ships lkgr to the daily canary ([after it lands](/docs/after-it-lands)).
@@ -100,16 +104,17 @@ This is the whole journey. Each step links to the guide for it.
 
 <Accordions>
 	<Accordion title="Can I use qq on a Mac?">
-		Yes, with your own tools. qq itself runs anywhere with `git` and Python
-		3.11.4 or newer. The pinned toolchains are published for Linux x86_64 only,
-		so on a Mac `qq sync` stops with `no pin for platform`. Clone with `git
-		clone`, install Python 3.14.8 or Node 24 yourself, and pass it to `qq
+		Yes, with your own tools. qq itself runs on Linux and macOS with `git` and
+		Python 3.11.4 or newer. The pinned toolchains are published for Linux x86_64 only,
+		so on a Mac `qq sync` stops with `no pin for platform`, and `qq fetch`
+		clones the repo and then stops there. Install Python 3.14.8 or Node 24 yourself, and pass it to `qq
 		build` and `qq test` with `--toolchain`. See [Install qq](/docs/install#on-a-mac).
 	</Accordion>
 	<Accordion title="Do I have to use qq to contribute?">
-		No. A plain `git push` and a pull request go through the same gate. qq
-		makes the local loop match CI and lets an agent send a change without
-		holding a terminal open while CI runs.
+		No. A plain `git push` and a pull request go through the same gate. qq is
+		built to make the local loop match CI (today the two can still differ), and
+		it lets an agent send a change without holding a terminal open while CI
+		runs.
 	</Accordion>
 	<Accordion title="Who decides the rules?">
 		Every policy is a TOML file in the

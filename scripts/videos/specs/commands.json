@@ -1,0 +1,20 @@
+{
+  "title": "Give a repo its own qq commands",
+  "home": "/home/qq-demo",
+  "cwd": "~/qq-try/innernet",
+  "path": "~/qq-tools/bin:~/toolchains/node/bin",
+  "steps": [
+    { "say": "Save a command the whole team can run" },
+    { "cmd": "qq create check pnpm typecheck" },
+    {
+      "say": "It is a plain script in the repo: read it, then commit it to share it"
+    },
+    { "cmd": "cat -v infra/commands/check.sh" },
+    { "say": "Run it like any qq command, from any folder in the repo" },
+    { "cmd": "cd app && qq check; cd .." },
+    { "say": "qq --help lists the repo's commands under qq's own" },
+    { "cmd": "qq --help | tail -4" },
+    { "say": "qq's own names, and near-typos of them, are refused" },
+    { "cmd": "qq create snyc echo hi" }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "title": "Put a new repo on qq",
+  "home": "/home/qq-demo",
+  "cwd": "~",
+  "path": "~/qq-tools/bin",
+  "steps": [
+    { "say": "A small Python repo with one test" },
+    {
+      "cmd": "mkdir -p hello-qq/tests && cd hello-qq && git init -q && echo pytest > requirements-dev.txt && printf 'def test_adds():\\n    assert 1 + 1 == 2\\n' > tests/test_hello.py && ls -R",
+      "cd": "~"
+    },
+    {
+      "say": "Write infra/repo.toml: one target per kind, toolchains from the promoted pins"
+    },
+    {
+      "cmd": "qqsync init . --kind pytest --kinds ~/src/infra-config/config/kinds.toml --promoted ~/src/toolchains/promoted.toml --qq-version 0.1.0",
+      "cd": "~/hello-qq"
+    },
+    { "cmd": "grep -v '^#' infra/repo.toml | grep -v '^$'" },
+    { "say": "Check it" },
+    { "cmd": "qqsync validate infra/repo.toml && echo valid" },
+    {
+      "say": "Test it the way the presubmit will (Python 3.14 passed with --toolchain here)"
+    },
+    { "cmd": "qq test --toolchain python=~/toolchains/python" }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "title": "Install qq and qqsync",
+  "home": "/home/qq-demo",
+  "cwd": "~",
+  "steps": [
+    { "say": "Install the qq command line (one git clone, no root needed)" },
+    {
+      "cmd": "( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/depot; git clone -q https://github.com/quirq-ai/qq ~/qq-tools/depot; ~/qq-tools/depot/bin/qq --version )"
+    },
+    {
+      "say": "Install qqsync, the tool that reads infra/repo.toml, pinned to the commit qq uses"
+    },
+    {
+      "cmd": "( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/qqsync; python3 -m venv ~/qq-tools/qqsync; ~/qq-tools/qqsync/bin/pip install -q --disable-pip-version-check \"qqsync @ git+https://github.com/quirq-ai/sync@aecb0fdb89f0d88b61a26052f5b3c26c48392841\"; ~/qq-tools/qqsync/bin/qqsync --version )"
+    },
+    { "say": "Put both on your PATH" },
+    {
+      "cmd": "( case \"$SHELL:$(uname)\" in */bash:Darwin) for rc in ~/.bash_profile ~/.bash_login ~/.profile ~/.bash_profile; do [ -f \"$rc\" ] && break; done ;; */bash:*) rc=~/.bashrc ;; *) rc=~/.zshrc ;; esac; mkdir -p ~/qq-tools/bin && ln -sf ~/qq-tools/depot/bin/qq ~/qq-tools/qqsync/bin/qqsync ~/qq-tools/bin/ && { grep -qs 'qq-tools/bin:' \"$rc\" || printf '\\nexport PATH=\"$HOME/qq-tools/bin:$PATH\"\\n' >> \"$rc\"; } && echo \"qq-tools/bin is on PATH in $rc; open a new terminal\" )"
+    },
+    { "say": "In a new terminal:" },
+    { "cmd": "qq --version && qqsync --version" }
+  ],
+  "env": { "SHELL": "/bin/bash" },
+  "path": "~/qq-tools/bin"
+}

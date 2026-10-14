@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><style>
+html,body{margin:0;background:#0b0b0c;height:100%}
+.win{position:absolute;inset:18px;border-radius:12px;background:#151517;border:1px solid #2a2a2e;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 40px #0008}
+.bar{height:36px;display:flex;align-items:center;gap:8px;padding:0 14px;background:#1c1c1f;border-bottom:1px solid #2a2a2e;font:500 13px system-ui,sans-serif;color:#9a9aa2}
+.dot{width:12px;height:12px;border-radius:50%;background:#3a3a3f}
+.title{margin-left:10px}
+.badge{margin-left:auto;color:#83d63a;font-weight:600}
+pre{flex:1;margin:0;padding:16px 20px;font:17px/1.5 "DejaVu Sans Mono",ui-monospace,monospace;color:#e6e6e6;white-space:pre-wrap;word-break:break-word;overflow:hidden}
+.p{color:#83d63a}.c{color:#8f8f99;font-style:italic}.say{color:#b9a7ff}.cur{background:#e6e6e6;color:#151517}
+</style></head><body><div class="win"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="title" id="t"></span><span class="badge">qq</span></div><pre id="o"></pre></div>
+<script>
+const fs=new URLSearchParams(location.search).get("fs");if(fs)document.querySelector("pre").style.fontSize=`${fs}px`;
+const o=document.getElementById('o');
+function add(cls,text){const s=document.createElement('span');if(cls)s.className=cls;s.textContent=text;o.appendChild(s);trim();return s}
+function trim(){while(o.scrollHeight>o.clientHeight&&o.firstChild){o.removeChild(o.firstChild)}}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function type(cls,text,speed){const s=add(cls,'');for(const ch of text){s.textContent+=ch;trim();await sleep(speed)}}
+window.play=async (rec)=> {document.getElementById('t').textContent=rec.title;await sleep(700);
+ for(const e of rec.events){
+  if(e.k==='say'){await type('say',`# ${e.text}`,22);add('','\n');await sleep(500)}
+  else if(e.k==='cmd'){add('p',`${e.prompt} $ `);await sleep(300);await type('',e.text,Math.min(32,5000/e.text.length));add('','\n');await sleep(250)}
+  else if(e.k==='out'){await sleep(Math.min(e.dt*1000,700));
+     const lines=e.text.split(/(?<=\n)/);for(const l of lines){add('',l);await sleep(18)}}
+  else if(e.k==='end'){await sleep(Math.min(e.dt*1000,400));await sleep(600)}
+ }
+ add('p',`\n${rec.events.filter(e=>e.k==='cmd').slice(-1)[0]?.prompt||'~'} $ `);add('cur',' ');await sleep(2200);window.done=true}
+</script></body></html>

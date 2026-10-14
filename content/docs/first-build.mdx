@@ -4,16 +4,15 @@ description: Clone a real app that uses qq, see what it builds, test it, read th
 icon: Play
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-
 <Lead>
   The quickest way to understand qq is to point it at a repo that already
   uses it. This walk-through uses innernet, a Next.js app in quirq-ai. You
   get it, ask what it builds, test it, look at the results and start it. It
-  takes a few minutes and changes nothing outside `~/qq-try`.
+  takes a few minutes and changes nothing outside `~/qq-try` and qq's own
+  cache in `~/.cache/qq`.
 </Lead>
 
-<Video src="/videos/first-build.mp4" poster="/videos/first-build.png" title="Building, testing and running innernet with qq">
+<Video src="/videos/first-build.mp4" poster="/videos/first-build.png" phoneSrc="/videos/first-build-phone.mp4" phonePoster="/videos/first-build-phone.png" title="Building, testing and running innernet with qq">
   A real run. The sandbox it was recorded in cannot reach ghcr.io, where the
   toolchains live, so it clones with git and passes Node 24 in with
   `--toolchain` instead of running `qq sync`. On your machine, `qq fetch`
@@ -31,7 +30,8 @@ qq fetch https://github.com/quirq-ai/innernet
 cd innernet
 ```
 
-On a Mac, use `git clone` instead, and see [Install qq: on a
+On a Mac, `qq fetch` clones the repo and then stops at the toolchains, which
+are published for Linux only. Carry on in the clone, and see [Install qq: on a
 Mac](/docs/install#on-a-mac) for the toolchain.
 
 ## 2. See what it builds
@@ -57,9 +57,9 @@ qq test
 
 ```text
 PASS app fetch:toolchain-check (0.1s)
-PASS app fetch:install (4.8s)
-PASS app build:build (13.3s)
-PASS app test:typecheck (1.6s)
+PASS app fetch:install (1.5s)
+PASS app build:build (13.9s)
+PASS app test:typecheck (1.5s)
 ```
 
 Read each line as *result, target, step*. `fetch` steps check the toolchain
@@ -90,10 +90,14 @@ innernet is now at **http://127.0.0.1:3470**. **Ctrl-C** stops it. If the
 repo was not synced, qq says so (`qq: not synced here: node; using PATH for
 them. Run qq sync`) and uses the tools on your `PATH`.
 
-<Callout type="info">
-  innernet has a demo mode with sample data. Build it with
-  `INNERNET_DEMO=1 qq test` to see it.
-</Callout>
+The page says **No index yet**. That is expected: innernet searches your own
+folders, and you have not indexed any. To see it with sample data, build its
+demo and start it again:
+
+```sh
+INNERNET_DEMO=1 qq test
+qq run "pnpm start"
+```
 
 ## What you just did
 

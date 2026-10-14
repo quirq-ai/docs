@@ -10,20 +10,22 @@ import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 <Lead>
   You install two tools, both from source on GitHub, into one folder in your
   home directory: `qq`, the command line, and `qqsync`, the tool that reads
-  a repo's `infra/repo.toml`. Nothing needs root, and nothing outside
-  `~/qq-tools` changes except one line that puts it on your `PATH`.
+  a repo's `infra/repo.toml`. Nothing needs root. Outside `~/qq-tools`, the
+  only changes are one line that puts it on your `PATH` and qq's own cache in
+  `~/.cache/qq`.
 </Lead>
 
-<Video src="/videos/install.mp4" poster="/videos/install.png" title="Installing qq and qqsync">
+<Video src="/videos/install.mp4" poster="/videos/install.png" phoneSrc="/videos/install-phone.mp4" phonePoster="/videos/install-phone.png" title="Installing qq and qqsync">
   The three commands below, run on a fresh Linux account. The last step opens
   a new shell and checks both versions.
 </Video>
 
 ## Before you start
 
-You need `git` and `python3` 3.11.4 or newer with its venv module
+qq runs on Linux and macOS. You need `git` and `python3` 3.11.4 or newer
+with its venv module
 (on Debian or Ubuntu, the `python3-venv` package). That is all qq itself
-needs. The toolchains a repo builds with (Python 3.14.8, Node 24 with pnpm)
+needs. To use another Python, set `QQ_PYTHON` to it. The toolchains a repo builds with (Python 3.14.8, Node 24 with pnpm)
 are fetched later by `qq sync`, on Linux x86_64.
 
 Each command below runs inside `( … )`, so it leaves your shell as it was,
@@ -92,8 +94,8 @@ next `qq` you run picks up the new version.
 qq and qqsync install the same way. What differs is the toolchains, which
 are published for Linux x86_64 only:
 
-- `qq sync` and `qq fetch` stop with `no pin for platform macos-arm64`. Use
-  `git clone` to get a repo.
+- `qq sync` stops with `no pin for platform macos-arm64`. `qq fetch` clones
+  the repo, then stops at the same point; carry on in the clone.
 - Install the pinned version yourself (Python 3.14.8, or Node 24 with pnpm)
   and pass it in: `qq test --toolchain python=ROOT`, where `ROOT` is the
   folder that holds its `bin`.

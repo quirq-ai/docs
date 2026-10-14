@@ -175,12 +175,15 @@ export function QqHome() {
             Your first build, for real.
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-fd-muted-foreground sm:text-base">
-            innernet, a Next.js app, built, tested and started with qq in five
-            commands.
+            innernet, a Next.js app, cloned, built, tested and started with qq.
+            Recorded where ghcr.io was out of reach, so it clones with git and
+            passes Node 24 with --toolchain; on your machine qq fetch does both.
           </p>
           <Video
             src="/videos/first-build.mp4"
             poster="/videos/first-build.png"
+            phoneSrc="/videos/first-build-phone.mp4"
+            phonePoster="/videos/first-build-phone.png"
             title="Building, testing and running innernet with qq"
           />
         </div>

@@ -37,15 +37,15 @@ GitHub. To open the pull request without starting a watch, use `qq upload`.
 
 Both take `--title`, `--body` and `--draft`, and `--base` to land somewhere
 other than the default branch. Without `--title`, the title comes from your
-commits.
+commits, and `--body` is refused without `--title`.
 
 ## 2. What the presubmit checks
 
 The presubmit is one required check named after the repo, such as
 `innernet-presubmit`. It first checks that the generated CI workflows were
 not edited by hand, then installs, builds and tests the repo and stores the
-results. Only `success` passes: a missing, running, skipped or neutral check
-is a refusal.
+results. Only `success` passes. A skipped or neutral check is a refusal; a
+check still running, or not reported yet, is pending (`qq status` exits 3).
 
 ## 3. Read the verdict
 
@@ -83,8 +83,10 @@ dequeued.
 | Products: xo-space, innernet, website | one approval, never from the author |
 | toolchains' build and promotion paths | suraj's code-owner review |
 
-In xo-space, auto-merge is off: once the gate passes, a person clicks
-**Merge when ready**.
+**In xo-space, don't use `qq land`.** `qq land` lands through GitHub's
+auto-merge, and xo-space is the one repo with auto-merge off. Use `qq try` and
+`qq status` there; once the gate passes and the pull request is approved,
+suraj clicks **Merge when ready**.
 
 ## For agents: never hold a call open
 
