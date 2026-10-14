@@ -1,0 +1,92 @@
+---
+title: Repo commands
+description: Give a repo its own qq commands with qq create, share them with your team and agents, and pass arguments safely.
+icon: Code
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  Every repo has a few commands people keep retyping: a lint, a check, a
+  seed script. `qq create` saves one as a small script in the repo, and
+  `qq NAME` runs it like a built-in command, with the pinned toolchains, from
+  any folder. Commit it and everyone, people and agents, gets the same
+  command.
+</Lead>
+
+<Video src="/videos/commands.mp4" poster="/videos/commands.png" phoneSrc="/videos/commands-phone.mp4" phonePoster="/videos/commands-phone.png" title="Creating and running a repo command">
+  Recorded in innernet: create `qq check`, read the script it wrote, run it
+  from a subfolder, see it listed in `qq --help`, and watch qq refuse a name
+  one typo away from `qq sync`.
+</Video>
+
+## Create a command
+
+```sh
+qq create check pnpm typecheck
+```
+
+That writes `infra/commands/check.sh`, a plain shell script:
+
+```sh
+#!/bin/sh
+# Created with `qq create check`; run it with `qq check [ARG ...]`.
+# It runs from the repo root with the repo's pinned toolchains first on PATH;
+# arguments given after the name reach it as "$@".
+pnpm typecheck "$@"
+```
+
+## Run it
+
+```sh
+qq check
+qq check --pretty false    # extra arguments are passed on
+```
+
+It runs exactly like `qq run`: from the repo root, with the pinned toolchains
+first on `PATH`, whichever folder you are in.
+
+## Share it
+
+Commit `infra/commands/check.sh`. Anyone who pulls gets `qq check`, and `qq
+--help` lists the repo's commands under qq's own:
+
+```text
+this repo's commands (qq create NAME COMMAND adds one):
+  check  pnpm typecheck "$@"
+```
+
+This is how a repo tells an agent how to work in it: the agent runs `qq
+--help` and sees the commands the team uses.
+
+## Arguments
+
+- **Created from several words** (`qq create check pnpm typecheck`), each
+  word stays one word, and the arguments you give `qq check` are added after
+  them.
+- **Created from one argument** (a quoted command line, or one word such as
+  `qq create lint ruff`), it is saved as you typed it. Add `"$@"` where the
+  arguments should go. Otherwise qq refuses to run it with arguments, rather
+  than drop them silently.
+- `qq NAME --help` shows the command when it takes no arguments; otherwise
+  `--help` goes to the command.
+
+## Names
+
+Names are lowercase letters, digits, `-` and `_`. qq's own command names, and
+names one typo away from them, cannot be created:
+
+```text
+$ qq create snyc echo hi
+qq: 'snyc' is one typo away from qq sync, so a mistyped qq sync would run it; pick another name
+```
+
+That way a mistyped `qq sync` never runs a repo's code. To replace a command,
+use `qq create --force NAME COMMAND`.
+
+<Callout type="warn">
+  **A repo command is code from that repo.** CI does not run it, and qq does
+  not check what it does. Before running one in a repo you do not trust, read
+  it with `less` or `cat -v` (plain `cat` lets terminal escapes in the file
+  act on your terminal).
+</Callout>

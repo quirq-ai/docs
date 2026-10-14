@@ -1,0 +1,234 @@
+---
+title: Commands by type
+description: Every qq command grouped by what you use it for, with exit codes and environment variables, plus the tools behind the infra.
+icon: Terminal
+---
+
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+
+<Lead>
+  qq has four kinds of commands: ones you run in a repo every day, ones a repo
+  defines for itself, ones that send a change through the gate, and the tools
+  that read a repo's manifest or a release channel. Behind them sit the tools
+  each infra repo ships, which most people never run.
+</Lead>
+
+## Work in a repo
+
+| Command | What it does |
+|---|---|
+| `qq fetch URL [DIR]` | clone a repo, then `qq sync` in it (Linux) |
+| `qq sync` | fetch every pin in `infra/repo.toml`, check its digest, link it under `.qq/` |
+| `qq build [TARGET ...]` | build targets (default all) |
+| `qq test [TARGET ...]` | build and test them; results in `.qq/out` |
+| `qq run "COMMAND"` | run a command from the repo root, pinned toolchains first on `PATH` |
+
+`qq build` and `qq test` take `--keep-going`, `--toolchain NAME=ROOT` and
+`--out DIR`. See [build, test and run](/docs/build-test-run).
+
+## The repo's own commands
+
+| Command | What it does |
+|---|---|
+| `qq create NAME COMMAND...` | save a command as `infra/commands/NAME.sh` |
+| `qq create --force NAME COMMAND...` | replace one |
+| `qq NAME [ARG ...]` | run it, like `qq run` |
+| `qq --help` | qq's commands, then this repo's |
+
+See [repo commands](/docs/repo-commands).
+
+## Send a change
+
+These need `gh` signed in. Each acts on this branch's pull request unless you
+pass a number, URL or branch, and takes `--repo OWNER/NAME`, `--backend`
+(default `$QQ_BACKEND`, else `github`) and `--json`.
+
+| Command | What it does |
+|---|---|
+| `qq upload` | push this branch, open or update its pull request |
+| `qq try` | upload, print a run ID and exit; the verdict arrives later |
+| `qq status` | the gate's verdict now |
+| `qq land` | land through the merge queue once the gate passes; returns at once (not in xo-space) |
+
+`upload` and `try` take `--title`, `--body` (only with `--title`), `--draft`
+and `--base`. `try`
+and `land` take `--notify CMD`. `land` takes `--method merge|squash|rebase`.
+See [send a change](/docs/send-a-change).
+
+## Read or edit the manifest: qqsync
+
+`qqsync` is the only program that reads or edits `infra/repo.toml`. Each
+command exits 1 on any problem with the manifest, printing every problem, and
+2 on a usage error such as a missing argument.
+
+| Command | What it does |
+|---|---|
+| `qqsync show [PATH]` | print the manifest as JSON, for tools in any language |
+| `qqsync validate [PATH ...] [--kind KIND]` | check against the schema; with `--kind`, any other kind is an error |
+| `qqsync init DIR --kind KIND --kinds KINDS_TOML --promoted PROMOTED_TOML --qq-version V` | write a new repo's manifest |
+| `qqsync pins [PATH] [--strict]` | list every pin; `--strict` rejects placeholder digests |
+| `qqsync pin SECTION NAME --digest D` | set one pin, keeping the rest of the file byte for byte |
+| `qqsync fetch SECTION NAME --dest FILE` | download a pinned artifact, keeping it only if it matches |
+| `qqsync verify SECTION NAME PATH` | check a file or checkout against its pin |
+| `qqsync guard [ROOT]` | fail if anything else parses `repo.toml` (a presubmit for every repo) |
+
+`PATH` defaults to `infra/repo.toml`.
+
+## Install from a channel: qqinstall
+
+| Command | What it does |
+|---|---|
+| `qqinstall resolve --repo R --channel C` | the commit, digest and generation the channel names |
+| `qqinstall resolve ... --format env` | the same, as `QQ_CHANNEL_COMMIT=...` lines for scripts |
+| `qqinstall checkout --repo R --channel C --remote URL --dest DIR` | put a checkout on exactly that commit |
+| `qqinstall verify --repo R --channel C --checkout DIR` | check an install is on that commit with no local changes |
+| `qqinstall show` | every channel |
+
+Exit codes: 0 resolved or matches, 1 mismatch or local changes, 2 error, 3
+not published yet. Install it as shown in [after it
+lands](/docs/after-it-lands#5-install-from-a-channel).
+
+## Exit codes
+
+| Command | Exit codes |
+|---|---|
+| `sync` | 0 done; 1 a fetch failed; 2 no `infra/repo.toml`, or it is invalid |
+| `fetch` | 0 done; 1 a clone, fetch or manifest problem |
+| `build`, `test` | 0 all passed; 1 a step failed or a target cannot be planned; 2 no `infra/repo.toml`, or it is invalid |
+| `run`, `NAME` | the command's own code; 125 qq itself failed; 126 not runnable; 127 not found |
+| `create` | 2 bad usage or outside a repo; 1 the name is taken or the file exists |
+| `status` | 0 pass or landed; 1 refused or closed; 2 error; 3 pending |
+| `upload`, `try` | 0 done; 2 error |
+| `land` | 0 queued or being watched; 1 the gate already refused it; 2 error |
+
+With `QQ_PINNED=1`, an invalid manifest gives 1 instead of 2.
+
+## Environment variables
+
+| Variable | What it does |
+|---|---|
+| `QQ_PYTHON` | the Python that runs qq itself (default `python3`; needs 3.11.4 or newer with venv) |
+| `QQ_HOME` | where qq keeps installed versions and verdicts (default `~/.cache/qq`) |
+| `QQ_PINNED=1` | run this `qq` as it is, ignoring the repo's pinned version |
+| `QQ_TRUSTED_SOURCES` | extra places a pinned qq may be installed from |
+| `QQ_BACKEND` | where changes are reviewed and landed (default `github`) |
+| `QQ_NOTIFY` | the command that gets each verdict as JSON on stdin |
+
+## Tools behind the infra
+
+Most people never run these. Each infra repo ships one, and its README has
+every command.
+
+<Accordions>
+  <Accordion title="qqcfg: check and deliver policy (infra-config)">
+
+```sh
+# the CI check; exit 1 on any error
+python3 tools/qqcfg.py validate
+# rewrite generated/ after editing config/
+python3 tools/qqcfg.py generate
+# copy a product's workflows into its checkout
+python3 tools/qqcfg.py deliver xo-space ../xo-space
+python3 tools/qqcfg.py check-delivered xo-space ../xo-space
+```
+
+  </Accordion>
+  <Accordion title="qqgate: what must pass (gate)">
+
+```sh
+# the checks a repo must pass
+qqgate required --config ../infra-config --repo xo-space
+# the ruleset it should have
+qqgate rule --config ../infra-config --repo xo-space
+qqgate verdict --config ../infra-config --repo xo-space --sha <commit>
+```
+
+Exit 0 pass, 1 refused, 2 the gate could not decide, 3 the repo is not in
+`repos.toml`.
+
+  </Accordion>
+  <Accordion title="qqrecipes: how each kind builds (recipes)">
+
+```sh
+# adapters and their steps
+qqrecipes kinds
+# the steps, without running them
+qqrecipes plan test --repo PATH --json
+# run them; results in .qq/out
+qqrecipes execute test --repo PATH
+# adapters agree with kinds.toml?
+qqrecipes check-kinds --infra-config PATH
+```
+
+  </Accordion>
+  <Accordion title="qqrelease: lkgr and channels (release)">
+
+```sh
+qqrelease channel show --state ...
+qqrelease lkgr --config <infra-config> --state <state dir> [--publish] [--dry-run]
+qqrelease channel rollback --config ... --state ... --repo NAME --channel canary --reason "..." --from COMMIT
+```
+
+A rollback points the channel at the newest earlier commit it was never
+rolled back from; nothing is rebuilt.
+
+  </Accordion>
+  <Accordion title="qqgarden: keep main green (gardener)">
+
+```sh
+# live tree status
+qqgarden status --config <infra-config>
+qqgarden groups --config <infra-config> --store <results checkout>
+qqgarden bisect --config <infra-config> --repo-dir <clone> --good <sha> --bad <sha> --run 'qq test'
+```
+
+  </Accordion>
+  <Accordion title="qqroll: dependency and toolchain rolls (rollers)">
+
+```sh
+qqroll roll --toolchains ../toolchains --manifest infra/repo.toml --infra-config ../infra-config
+# dry run
+qqroll rotation --infra-config ../infra-config --toolchains ../toolchains
+qqroll dependabot --infra-config ../infra-config [--write]
+```
+
+  </Accordion>
+  <Accordion title="qqresults: stored results and the scorecard (test-pipelines)">
+
+```sh
+git fetch origin +refs/heads/results:refs/remotes/origin/results && git worktree add .qq/store refs/remotes/origin/results
+qqresults query runs --store .qq/store --repo quirq-ai/xo-space --kind postsubmit --failed
+qqresults query history --store .qq/store --test 'tests.test_greet::test_hello'
+qqresults scorecard --store .qq/store --days 7
+```
+
+  </Accordion>
+  <Accordion title="qqperf: performance records (perf)">
+
+```sh
+qqperf history --store DIR --repo innernet [--value static_js_gzip_bytes] [--json]
+qqperf pending --store DIR --repo innernet --checkout PATH
+qqperf backlog --store DIR --repo innernet --checkout PATH
+```
+
+  </Accordion>
+  <Accordion title="qqrbe: where steps run (remote-build)">
+
+```sh
+qqrbe backends
+qqrbe selftest --backend local
+qqrbe selftest --backend github --fallback local
+qqrbe stats
+```
+
+Nothing outside remote-build calls it yet.
+
+  </Accordion>
+  <Accordion title="qqtc: promote a toolchain (toolchains)">
+
+```sh
+python tools/qqtc.py promote <name> --record staged.json
+```
+
+  </Accordion>
+</Accordions>

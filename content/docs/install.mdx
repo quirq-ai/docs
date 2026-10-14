@@ -1,0 +1,146 @@
+---
+title: Install qq
+description: Put qq and qqsync on your machine in three copy-paste commands, check them, and know what to do on a Mac.
+icon: Download
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+
+<Lead>
+  You install two tools, both from source on GitHub, into one folder in your
+  home directory: `qq`, the command line, and `qqsync`, the tool that reads
+  a repo's `infra/repo.toml`. Nothing needs root. Outside `~/qq-tools`, the
+  only changes are one line that puts it on your `PATH` and qq's own cache in
+  `~/.cache/qq`.
+</Lead>
+
+<Video src="/videos/install.mp4" poster="/videos/install.png" phoneSrc="/videos/install-phone.mp4" phonePoster="/videos/install-phone.png" title="Installing qq and qqsync">
+  The three commands below, run on a fresh Linux account. The last step opens
+  a new shell and checks both versions.
+</Video>
+
+## Before you start
+
+qq runs on Linux and macOS. You need `git` and `python3` 3.11.4 or newer
+with its venv module
+(on Debian or Ubuntu, the `python3-venv` package). That is all qq itself
+needs. To use another Python, set `QQ_PYTHON` to it. The toolchains a repo builds with (Python 3.14.8, Node 24 with pnpm)
+are fetched later by `qq sync`, on Linux x86_64.
+
+Each command below runs inside `( … )`, so it leaves your shell as it was,
+and each is safe to run again.
+
+## 1. Install qq
+
+qq is a git checkout, like depot_tools. This clones it and prints its
+version.
+
+```sh
+( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/depot; git clone -q https://github.com/quirq-ai/qq ~/qq-tools/depot; ~/qq-tools/depot/bin/qq --version )
+```
+
+It prints `qq 0.1.0`. The first run also prints a line saying it set up its
+launcher under `~/.cache/qq`.
+
+## 2. Install qqsync
+
+`qqsync` is the only program allowed to read or edit `infra/repo.toml`. It
+goes in its own Python environment, pinned to the same sync commit that qq
+pins, so the two always agree.
+
+```sh
+( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/qqsync; python3 -m venv ~/qq-tools/qqsync; ~/qq-tools/qqsync/bin/pip install -q --disable-pip-version-check "qqsync @ git+https://github.com/quirq-ai/sync@aecb0fdb89f0d88b61a26052f5b3c26c48392841"; ~/qq-tools/qqsync/bin/qqsync --version )
+```
+
+{/* Same sync commit as quirq-ai/qq pyproject.toml:15 (and recipes pyproject.toml); bump them together, with setup's cli/tools.mjs and its fixture. */}
+
+It prints `qqsync 0.1.0`.
+
+## 3. Put both on your PATH
+
+This links both into `~/qq-tools/bin` and adds that folder to your `PATH`:
+in `~/.bashrc` for bash, in `~/.zshrc` otherwise, and on a Mac in the first
+of `~/.bash_profile`, `~/.bash_login` or `~/.profile` that bash already
+reads.
+
+```sh
+( case "$SHELL:$(uname)" in */bash:Darwin) for rc in ~/.bash_profile ~/.bash_login ~/.profile ~/.bash_profile; do [ -f "$rc" ] && break; done ;; */bash:*) rc=~/.bashrc ;; *) rc=~/.zshrc ;; esac; mkdir -p ~/qq-tools/bin && ln -sf ~/qq-tools/depot/bin/qq ~/qq-tools/qqsync/bin/qqsync ~/qq-tools/bin/ && { grep -qs 'qq-tools/bin:' "$rc" || printf '\nexport PATH="$HOME/qq-tools/bin:$PATH"\n' >> "$rc"; } && echo "qq-tools/bin is on PATH in $rc; open a new terminal" )
+```
+
+Open a new terminal and check:
+
+```sh
+qq --version && qqsync --version
+```
+
+You should see `qq 0.1.0` and `qqsync 0.1.0`. Next: [your first
+build](/docs/first-build).
+
+## How qq stays up to date
+
+You rarely update qq by hand. Each repo pins the qq version it runs in its
+`infra/repo.toml`, and inside that repo `qq` runs exactly that version,
+installing it under `~/.cache/qq` the first time. When the pin moves, the
+next `qq` you run picks up the new version.
+
+<Callout type="info">
+  **Today:** qq has no release tag yet, so a repo's `0.1.0` pin runs your own
+  checkout in `~/qq-tools/depot`. To update it, run step 1 again.
+</Callout>
+
+## On a Mac
+
+qq and qqsync install the same way. What differs is the toolchains, which
+are published for Linux x86_64 only:
+
+- `qq sync` stops with `no pin for platform macos-arm64`. `qq fetch` clones
+  the repo, then stops at the same point; carry on in the clone.
+- Install the pinned version yourself (Python 3.14.8, or Node 24 with pnpm)
+  and pass it in: `qq test --toolchain python=ROOT`, where `ROOT` is the
+  folder that holds its `bin`.
+- `qq run` uses the tools on your `PATH` and names the pinned toolchains it
+  could not use.
+
+## Let qq-setup check your machine
+
+If you prefer a guided start, `qq-setup` checks your tools (Node 22 or
+later, `git`, `gh` logged in, Python 3.11 or later), asks in a small local
+form what you want to do, and prints the commands on this page for the repo
+you name.
+
+```sh
+# <commit> is the full id of the latest commit on main
+npx --allow-remote=root https://codeload.github.com/quirq-ai/setup/tar.gz/<commit>
+```
+
+Pin the [latest `main` commit](https://github.com/quirq-ai/setup/commits/main),
+so the link serves exactly that commit.
+
+<Callout type="info">
+  **Today:** qq-setup only reads. It prints commands and stops: it installs
+  nothing, creates no repo and changes no setting. It is not on npm yet.
+  Its form listens on `127.0.0.1` only and its link works once. It refuses
+  to run while `GH_TOKEN` or `GITHUB_TOKEN` is set, so it only ever acts as
+  your own `gh` login.
+</Callout>
+
+<Accordions>
+  <Accordion title="Remove everything">
+
+This deletes the tools, the demo folders this guide uses, and qq's cache:
+
+```sh
+( chmod -R u+w ~/.cache/qq 2>/dev/null; rm -rf ~/qq-tools ~/qq-try ~/qq-ci-venv ~/.cache/qq )
+```
+
+Then remove the `PATH` line. This deletes the exact line the install added
+and the blank line before it, and deletes the file if nothing else is left
+in it:
+
+```sh
+( for f in ~/.bashrc ~/.bash_profile ~/.bash_login ~/.profile ~/.zshrc; do grep -qsxF 'export PATH="$HOME/qq-tools/bin:$PATH"' "$f" || continue; awk '$0 == "export PATH=\"$HOME/qq-tools/bin:$PATH\"" { if (b > 0) b--; next } /^$/ { b++; next } { while (b > 0) { print ""; b-- } print } END { while (b > 0) { print ""; b-- } }' "$f" >| "$f.qq-tmp" || exit 1; if [ -L "$f" ] || grep -q '[^[:space:]]' "$f.qq-tmp"; then cat "$f.qq-tmp" >| "$f" || exit 1; rm -f "$f.qq-tmp"; echo "removed the qq-tools/bin line from $f"; else rm -f "$f" "$f.qq-tmp"; echo "deleted $f, which held only that line"; fi; done )
+```
+
+  </Accordion>
+</Accordions>

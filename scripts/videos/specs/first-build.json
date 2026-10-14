@@ -1,0 +1,36 @@
+{
+  "title": "Your first build: innernet",
+  "home": "/home/qq-demo",
+  "cwd": "~",
+  "path": "~/qq-tools/bin",
+  "steps": [
+    {
+      "say": "Get a repo that uses qq. On Linux, qq fetch clones it and runs qq sync."
+    },
+    {
+      "say": "This sandbox cannot reach ghcr.io, so we clone and pass Node 24 with --toolchain."
+    },
+    {
+      "cmd": "mkdir -p ~/qq-try && cd ~/qq-try && git clone -q https://github.com/quirq-ai/innernet && echo cloned",
+      "cd": "~"
+    },
+    {
+      "say": "What does the repo build? Ask qqsync, never parse repo.toml yourself."
+    },
+    {
+      "cmd": "qqsync show | grep -E '\"(name|kind|version)\"'",
+      "cd": "~/qq-try/innernet"
+    },
+    { "say": "Build and test every target, with the pinned toolchain" },
+    { "cmd": "qq test --toolchain node=~/toolchains/node" },
+    { "say": "Results, logs and JUnit XML land in .qq/out" },
+    { "cmd": "ls .qq/out .qq/out/logs" },
+    {
+      "say": "Run the app with the same toolchains first on PATH (Ctrl-C stops it)"
+    },
+    {
+      "cmd": "PATH=~/toolchains/node/bin:$PATH qq run \"pnpm start\"",
+      "max": 9
+    }
+  ]
+}

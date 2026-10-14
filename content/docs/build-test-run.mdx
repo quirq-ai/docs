@@ -1,0 +1,119 @@
+---
+title: Build, test and run
+description: The everyday loop in a repo that uses qq. What targets and kinds are, every option of qq build and qq test, qq run, and why CI can disagree.
+icon: Terminal
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  Day to day you use four commands: `qq sync` when the pins change, `qq
+  build` and `qq test` before you push, and `qq run` to start things. They
+  work from any folder inside the repo.
+</Lead>
+
+## How qq knows what to build
+
+A repo's `infra/repo.toml` lists its **targets**. Each target names a
+**kind**, and the kind decides the steps. You never write build steps
+yourself; you pick a kind.
+
+| Kind | For | Steps it has |
+|---|---|---|
+| `python-service` | a Python server (needs `requirements.txt`) | fetch, build, run, deploy, bench |
+| `pytest` | a Python test suite (needs `requirements-dev.txt`) | fetch, test |
+| `node-app` | a Next.js app with pnpm | fetch, build, test, run, deploy, bench |
+
+`qq build` and `qq test` use fetch, build and test. deploy and bench are
+used by the daily canary and by perf.
+
+The steps for each kind live in the [recipes](/docs/infrastructure#recipes)
+repo, one adapter per kind. A fourth kind, `gatsby-site`, runs in CI only:
+`qq build` cannot run it locally yet. Other languages have no kind yet.
+
+## Keep your toolchains current
+
+```sh
+qq sync
+```
+
+`qq sync` fetches every pin in `infra/repo.toml`, checks each against its
+digest and links it under `.qq/`. Run it after you clone, and again when a
+pull request moves a pin. A download that does not match its digest stops
+the sync, and an older good copy is kept.
+
+## Build and test
+
+```sh
+qq build            # every target
+qq test             # every target, built and then tested
+qq test app         # only the target named app
+```
+
+| Option | What it does |
+|---|---|
+| `TARGET ...` | only these targets (default: all) |
+| `--keep-going` | run every step even after one fails, to see all failures at once |
+| `--toolchain NAME=ROOT` | use the toolchain unpacked at `ROOT` instead of the synced one |
+| `--out DIR` | write results to `DIR` instead of `.qq/out` |
+
+Each step prints one line. `PASS` and `FAIL` are what they say. A line that
+starts with `-` means the kind has no such step (a `pytest` target has
+nothing to build, for example). It is skipped, not failed.
+
+The exit code is 0 when everything passed, 1 when a step failed or a target
+cannot be planned (for example an unknown kind), and 2 when there is no
+`infra/repo.toml` here or above, or it is invalid.
+
+## Run anything with the pinned tools
+
+```sh
+qq run "pnpm start"
+```
+
+`qq run` runs one command from the repo root, with the toolchains `qq sync`
+linked first on `PATH`. It exits with the command's own code, or 125 when qq
+itself failed, 126 when the command cannot run, and 127 when it is not
+found. If the repo is not synced, it uses your `PATH` and says which
+toolchains it could not use.
+
+For a command you run often, save it as a [repo command](/docs/repo-commands).
+
+## When your result differs from CI
+
+A pass on your machine does not yet guarantee a pass on your pull request.
+Until product CI runs `qq test` itself, the two run different things:
+
+- **Different commands.** `qq` runs the recipes. CI runs simpler stand-in
+  commands from infra-config's
+  [`kinds.toml`](https://github.com/quirq-ai/infra-config/blob/main/config/kinds.toml),
+  for a Next.js app `pnpm install --frozen-lockfile`, `pnpm build` and
+  `pnpm typecheck`.
+- **Different tool versions.** `qq sync` gives you CPython 3.14.8, Node
+  24.21.0 and pnpm 11.28.2. CI sets up Python 3.14 and Node 24 with GitHub's
+  setup actions and installs pnpm 10.
+
+So the presubmit on your pull request is the result that counts. When the two
+disagree, open the presubmit's log to see which step failed, then run CI's
+own commands with the pinned tools. In a Next.js repo:
+
+```sh
+qq run "set -e; npx -y pnpm@10 install --frozen-lockfile; npx -y pnpm@10 build; npx -y pnpm@10 typecheck"
+```
+
+In xo-space (this installs into a fresh virtualenv in your home folder,
+never into the shared toolchain):
+
+```sh
+qq run 'set -e; rm -rf ~/qq-ci-venv; python3 -m venv ~/qq-ci-venv; . ~/qq-ci-venv/bin/activate; python -m pip install -q --disable-pip-version-check -r requirements.txt; python -m pip install -q --disable-pip-version-check -r requirements-dev.txt; python -m compileall -q .; python -m pytest -q -p no:cacheprovider'
+```
+
+On a Mac, write `python3.14` in place of `python3` there.
+
+<Callout type="info">
+  **Today:** moving product CI onto the recipes is open v0 work, and moving
+  it onto the toolchains `qq sync` fetches is planned for v1. See the
+  [roadmap](/docs/roadmap).
+</Callout>
+
+Something else went wrong? See [troubleshooting](/docs/problems).

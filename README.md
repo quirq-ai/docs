@@ -1,9 +1,13 @@
-# quirq docs
+# qq docs
 
-The docs for qq and quirq are live at [docs.quirq.dev](https://docs.quirq.dev/). XO Space docs
-are at [docs.xo.builders](https://docs.xo.builders/). New here? Start at
-[docs.quirq.dev/docs/start](https://docs.quirq.dev/docs/start), which links the main guides and
-sites on one page. The rest of this file is for people working on the docs site itself.
+The docs for qq, quirq's build and release infrastructure, are live at
+[docs.quirq.dev](https://docs.quirq.dev/). XO Space docs are at
+[docs.xo.builders](https://docs.xo.builders/). New here? Start at
+[docs.quirq.dev/docs](https://docs.quirq.dev/docs), which says what qq does and which guide to
+read first. The rest of this file is for people working on the docs site itself.
+
+The videos in `public/videos/` are rendered from real qq runs by the scripts in
+[`scripts/videos/`](scripts/videos/README.md).
 
 Run development server:
 

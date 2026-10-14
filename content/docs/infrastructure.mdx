@@ -1,0 +1,198 @@
+---
+title: How the infra fits together
+description: The 13 repos behind qq in four stages, from your machine to shipping. What each one does, what state it is in today, and where to read more.
+icon: Map
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Lead>
+  qq is 13 small repos that hand work to each other. One of them,
+  infra-config, holds every policy. The others read it at a pinned commit and
+  each do one job: build, decide, keep `main` green, or ship. Every link
+  between them is a pinned commit, never copied code.
+</Lead>
+
+<figure className="not-prose my-6">
+  <img
+    src="/images/qq/how-it-fits.png"
+    alt="Diagram: infra-config sends policy, read at a pinned commit, to gate, gardener, release, installer and rollers, and generated workflows to the product repos xo-space and innernet. sync gives qq the manifest; qq uses recipes, which will use remote-build. gate sets the product repos' required checks, rollers rolls their pins from toolchains, and the product repos send test results to test-pipelines and sizes and benchmarks to perf. gardener tells release which main commits are green."
+    width={1720}
+    height={880}
+    className="block h-auto w-full rounded-xl border border-fd-border"
+  />
+  <figcaption className="mt-2 text-sm text-fd-muted-foreground">
+    Policy flows down, results flow back. From the qq v0 slide deck in
+    quirq-ai/research.
+  </figcaption>
+</figure>
+
+The walkthrough on the [overview](/docs) follows one change through all of
+them. Below, the repos in the order a change meets them. Maintainer detail,
+such as adding a kind, moving a toolchain, changing a policy, the gate's
+rulesets or the release-state layout, lives in each repo's README, linked
+under its name.
+
+## On your machine
+
+### qq
+
+The [command line](https://github.com/quirq-ai/qq) (called depot until
+2026-10-09; the old URL redirects). It fetches toolchains, builds and tests
+through recipes, runs commands, and sends changes through the gate. It wraps
+`git` and `gh` and calls the other repos at pinned commits. Each repo pins
+the qq version it runs. See [commands by type](/docs/commands).
+
+### sync
+
+Owns the `infra/repo.toml` format (schema `quirq-repo/1`) and `qqsync`, the
+only program allowed to read or edit it. Edits keep every other byte of the
+file as it was, and an edit that would make the file invalid is undone.
+Other languages read the manifest through `qqsync show`.
+[README](https://github.com/quirq-ai/sync/blob/main/README.md).
+
+### recipes
+
+Says how to build and test each kind of target, one adapter per kind. It is
+the only place in qq allowed to name a language, build tool or test runner.
+Each step's digest is its cache key, so a step can later run anywhere.
+
+**Today:** adapters exist for `python-service`, `pytest` and `node-app`, and
+`qq build` and `qq test` run them. Product CI does not run them yet.
+[README](https://github.com/quirq-ai/recipes/blob/main/README.md).
+
+### toolchains
+
+Builds the Python and Node every build uses, publishes each once as an OCI
+artifact on ghcr.io, and names it only by the digest of its bytes. A new
+version reaches repos only through a reviewed promotion pull request, checked
+by the required `promotion-gate` check.
+
+**Today:** CPython 3.14.8, and Node.js 24.21.0 with pnpm 11.28.2, for Linux
+x86_64. Both packages have been public since 2026-10-04.
+[README](https://github.com/quirq-ai/toolchains/blob/main/README.md).
+
+### remote-build
+
+Will decide where a build step runs (here, or on a GitHub Actions runner) and
+skip steps whose result is already cached.
+
+**Today:** built, but nothing outside this repo calls it yet. A shared cache
+is planned for v1 and remote execution for v2.
+[README](https://github.com/quirq-ai/remote-build/blob/main/README.md).
+
+## Before landing
+
+### infra-config
+
+Every policy as data, one TOML file per area in `config/`: which repos are
+onboarded (`repos.toml`), what builds them (`pipelines.toml`, `kinds.toml`),
+how a change lands (`gate.toml`), how releases move (`channels.toml`), and
+revert caps, rolls, health probes and more. Its tool `qqcfg` validates the
+files and generates each product repo's CI workflows. A policy change is a
+pull request here, reverted like code.
+
+Some rules cannot be loosened by config: only clean reverts, dependency rolls
+and docs may ever land without a person, at most 10 reverts in any 24 hours,
+dev and stable need a human owner's approval, and builders that run code from
+an open pull request get no secrets.
+[README](https://github.com/quirq-ai/infra-config/blob/main/README.md).
+
+### gate
+
+Decides what must pass before a change lands. It computes each repo's
+required checks from infra-config and keeps the merge queue and GitHub
+rulesets as code. Each check runs twice, on the pull request and again on the
+merge result in the queue, and only `success` passes.
+
+**Today:** settings were last applied on 2026-10-09: product pull requests
+need one approval, and only the release App may write release refs.
+[README](https://github.com/quirq-ai/gate/blob/main/README.md).
+
+### test-pipelines
+
+Turns test output into stored, write-once results and mechanical verdicts. A
+job with no test reports still stores a run, marked as failing: a missing
+signal is never a pass. Every 6 hours it collects results into its `results`
+branch and computes a scorecard (time to green, red minutes on `main`, flake
+rate) by script.
+
+**Today:** results are collected from xo-space, innernet and perf. Retrying a
+failed test and comparing with the base commit is built but not in any product
+gate yet.
+[README](https://github.com/quirq-ai/test-pipelines/blob/main/README.md).
+
+## After landing
+
+### gardener
+
+Watches the post-submit run on every `main` commit and publishes each repo's
+tree status (open, closed or unknown) every 5 minutes, with the suspect range
+when `main` breaks. It is also built to find the culprit and open a revert,
+within infra-config's caps.
+
+**Today:** it reports only. Reverts wait on the gardener's GitHub App, which
+does not exist yet. See [after it lands](/docs/after-it-lands#2-is-main-green-the-tree-status).
+[README](https://github.com/quirq-ai/gardener/blob/main/README.md).
+
+### rollers
+
+Moves pinned dependencies and toolchains forward, through the same gate as any
+change. Lockfile updates come from Dependabot, configured from infra-config;
+toolchain pins move weekly to what toolchains promoted.
+
+**Today:** nothing lands on its own. Every roll stops at an open pull request
+for a person to merge.
+[README](https://github.com/quirq-ai/rollers/blob/main/README.md).
+
+### perf
+
+Records build size and benchmarks for every post-submit commit: innernet's
+build size and search time, and xo-space's server start time. Raw numbers
+only.
+
+**Today:** it never alerts, bisects or gates. GitHub delays its scheduled
+runs, so records lag; as of 2026-10-13 the newest is from 2026-10-09.
+[README](https://github.com/quirq-ai/perf/blob/main/README.md).
+
+## Shipping
+
+### release
+
+Moves builds through channels. A channel is a pointer to a commit and the
+digest of what was built from it. Every 10 minutes it moves lkgr to the newest
+all-green `main` commit; once a day the canary builds, tests, starts and
+probes lkgr before moving `channels/canary`. It records each move before
+making it, so a retry never acts twice.
+
+**Today:** the first canary shipped xo-space and innernet on 2026-10-05.
+Since 2026-10-09 lkgr and the canary are also git branches in those two
+repos. Dev and stable are later versions.
+[README](https://github.com/quirq-ai/release/blob/main/README.md).
+
+### installer
+
+Lets an install follow a channel instead of `main`. `qqinstall` reads which
+commit a channel names, puts a checkout on exactly that commit and verifies
+it. It refuses an older channel file than the one it last saw.
+
+**Today:** `qqinstall resolve` works for xo-space and innernet on canary.
+Every real install still follows `main`.
+[README](https://github.com/quirq-ai/installer/blob/main/README.md).
+
+## Tools built on qq
+
+Two more repos are not part of the 13 but make qq easier to use:
+
+- **[setup](https://github.com/quirq-ai/setup):** `qq-setup`, one command
+  that checks your tools and prints the steps to use qq or to onboard an org's
+  repos. See [install](/docs/install#let-qq-setup-check-your-machine).
+- **[monitoring](https://github.com/quirq-ai/monitoring):** the read-only
+  dashboard at [monitoring.quirq.dev](https://monitoring.quirq.dev/). See
+  [after it lands](/docs/after-it-lands#6-see-it-all-in-one-place).
+
+<Callout type="info">
+  The full plan, every v0 item and its state, is in infra-config's
+  [`docs/v0.md`](https://github.com/quirq-ai/infra-config/blob/main/docs/v0.md).
+  What each version adds is on the [roadmap](/docs/roadmap).
+</Callout>

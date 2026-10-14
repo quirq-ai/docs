@@ -1,13 +1,22 @@
 {
-  "title": "quirq Documentation",
+  "title": "qq docs",
   "pages": [
     "index",
-    "start",
-    "---Infrastructure---",
-    "qq",
-    "---quirq---",
-    "quirq",
+    "---Get started---",
+    "install",
+    "first-build",
+    "---Everyday work---",
+    "build-test-run",
+    "repo-commands",
+    "send-a-change",
+    "after-it-lands",
+    "---Onboard a repo---",
+    "add-a-repo",
     "---Reference---",
+    "commands",
+    "infrastructure",
+    "problems",
+    "roadmap",
     "glossary"
   ]
 }

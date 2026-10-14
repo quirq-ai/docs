@@ -1,0 +1,52 @@
+---
+title: Troubleshooting
+description: The errors people hit with qq, what each means, and what to do.
+icon: Wrench
+---
+
+<Lead>
+  Every `FAIL` line names its log file in `.qq/out/logs/`, so open that
+  first. If the message is below, the fix is next to it. If your machine
+  passes but your pull request fails, see [when your result differs from
+  CI](/docs/build-test-run#when-your-result-differs-from-ci).
+</Lead>
+
+## Setup and sync
+
+| You see | What to do |
+|---|---|
+| `qq: command not found` | Open a new terminal after the PATH step, or run step 3 of [Install qq](/docs/install) again |
+| `invalid choice: 'run'` (or another new command) | Your qq checkout is old. Run step 1 of [Install qq](/docs/install) again |
+| `no pin for platform macos-arm64` | Toolchains are Linux x86_64 only. Install the pinned version yourself and pass `--toolchain python=ROOT` ([on a Mac](/docs/install#on-a-mac)) |
+| `qq: no infra/repo.toml here or above` | The repo is not on qq yet ([put a repo on qq](/docs/add-a-repo)), or you are outside it |
+| `qq: not synced here: node; using PATH for them. Run qq sync` | A warning, not an error. Run `qq sync` to use the pinned toolchains |
+
+## Build and test
+
+| You see | What to do |
+|---|---|
+| `FAIL … toolchain-check` | The toolchain is not the pinned version. The log says which, for example `pinned CPython 3.14.8, found 3.14.0`. Run `qq sync`, or pass the right one with `--toolchain` |
+| A line starting with `-`, such as `pytest build: missing (declared)` | Not a failure. That kind has no such step |
+| Exit code 2 | No `infra/repo.toml` here or above, or it is invalid. Run `qqsync validate` to see every problem |
+| `Could not find a production build in the '.next' directory` | Run `qq test` (or `qq build`) before `qq run "pnpm start"` |
+
+## Repo commands
+
+| You see | What to do |
+|---|---|
+| `qq NAME never mentions its arguments ("$@")` | Add `"$@"` where the arguments go in `infra/commands/NAME.sh` |
+| `'NAME' is one typo away from qq …` | Pick another name. qq's own names and near-typos of them are reserved |
+
+## Sending a change
+
+| You see | What to do |
+|---|---|
+| `qq status` exits 3 | Checks are still running. Wait, or let `--notify` tell you |
+| `qq status` exits 1 | The gate refused it. Open the presubmit's log on the pull request |
+| `qq land` exits 1 | The gate had already refused it, so nothing was queued |
+| An error about `gh` | Sign in with `gh auth login` |
+
+## Still stuck
+
+[File an alpha issue](https://github.com/quirq-ai/wiki/issues/new?template=alpha.yml)
+in quirq-ai/wiki with the command, its output and the log it names.

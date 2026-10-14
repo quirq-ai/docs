@@ -1,4 +1,4 @@
-export const appName = "quirq docs";
+export const appName = "qq docs";
 export const siteUrl = "https://docs.quirq.dev";
 export const docsRoute = "/docs";
 export const docsImageRoute = "/og/docs";

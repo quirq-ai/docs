@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     template: `%s | ${appName}`,
   },
   description:
-    "Documentation for qq, the tool quirq uses to build, test and land code, and for quirq, a proposed unit for the work agents deliver.",
+    "Documentation for qq, quirq's build and release infrastructure: install it, build and test a repo, land a change and put a repo on qq.",
   openGraph: {
     siteName: appName,
     type: "website",
