@@ -14,7 +14,7 @@ import { Callout } from "fumadocs-ui/components/callout";
   three repos and ends with an org owner applying settings.
 </Lead>
 
-<Video src="/videos/onboard.mp4" poster="/videos/onboard.png" phoneSrc="/videos/onboard-phone.mp4" phonePoster="/videos/onboard-phone.png" title="Putting a new Python repo on qq">
+<Video src="/videos/onboard.mp4" poster="/videos/onboard.webp" phoneSrc="/videos/onboard-phone.mp4" phonePoster="/videos/onboard-phone.webp" title="Putting a new Python repo on qq">
   A real run: a small Python repo with one test gets its `infra/repo.toml`
   from `qqsync init`, passes `qqsync validate`, and passes `qq test`. As in
   the other recordings, Python 3.14.8 is passed with `--toolchain` because
@@ -94,7 +94,7 @@ Every `params` key is optional:
 | Kind | `params` |
 |---|---|
 | `python-service` | `requirements` (default `requirements.txt`), `entry` (the script that starts it), `port_env` (default `PORT`), `ready_path` (default `/`), `probes`, `bench` |
-| `pytest` | `requirements` (default `requirements-dev.txt`), `args` (extra pytest arguments) |
+| `pytest` | `requirements` (default `requirements-dev.txt`), `args` (extra pytest arguments); `shards` is accepted and ignored for now |
 | `node-app` | `dir` (the app folder, default `.`), `port_flag` (default `-p`), `ready_path` (default `/`), `probes`, `env`, `bench` |
 
 For example, a server that reads its port from `APP_PORT` and answers on

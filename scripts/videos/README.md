@@ -30,29 +30,43 @@ for n in commands commands-phone; do
 done
 ```
 
-Copy the `.mp4` files and the `.png` posters (the last frame) into `public/videos/`.
+Copy the `.mp4` files into `public/videos/`, and turn each `.png` poster (the last frame) into
+WebP, which is about half the size:
+
+```sh
+ffmpeg -i /tmp/out/commands.png -c:v libwebp -quality 80 commands.webp
+```
 
 ## The infra map walkthrough
 
 `map.cjs` records the "Follow a change" walkthrough of the research infra map
 (quirq-ai/research `infra/output/app/infra-map`), served at `MAP_URL` (default
-`http://127.0.0.1:3200/`). The copy recorded for `map.mp4` was built with the old name depot
-replaced by qq; the docs caption says so. Its poster is a frame from the start of the video:
+`http://127.0.0.1:3200/`). The recorded copy has the old name depot replaced by qq, and the docs
+caption says so. `map-depot-to-qq.patch` is that change, against research 8fd796e; apply it in
+the infra-map folder before building:
 
 ```sh
-ffmpeg -ss 1.5 -i map.mp4 -frames:v 1 -q:v 4 map.jpg
+git -C ~/src/research/infra/output/app/infra-map apply "$PWD/map-depot-to-qq.patch"
+( cd ~/src/research/infra/output/app/infra-map && npm ci && npm run build && cd dist && python3 -m http.server 3200 --bind 127.0.0.1 ) &
+node map.cjs /tmp/out                      # desktop, 1100x980
+node map.cjs /tmp/out map-phone 400 760    # phone: keeps the map and the step in view
+ffmpeg -ss 1.5 -i /tmp/out/map.webm -frames:v 1 -q:v 4 map.jpg
+ffmpeg -ss 6 -i /tmp/out/map-phone.webm -frames:v 1 -c:v libwebp -quality 80 map-phone.webp
 ```
+
+Convert the `.webm` files to `.mp4` as above.
 
 ## The explainer film
 
 `explainer.mp4` (the voiced film on the overview) is not made here. It is the quirq infra field
 guide, a HyperFrames film narrated with ElevenLabs, whose project lives in the quirq project's
-shared files (`vision/quirq-infra/video`, with its own README). It was made on 2026-10-05; on
-2026-10-14 three lines were re-voiced and the depot labels renamed to qq. The web and phone copies
-come from its master render:
+shared files (`vision/quirq-infra/video`, with its own README). It was made on 2026-10-05. On
+2026-10-14 three lines were re-voiced, the depot labels were renamed to qq, and its getting-started
+terminal was matched to the install page. The web and phone copies and the poster come from its
+1080p master, `renders/qq-explainer-master.mp4` in that folder:
 
 ```sh
-ffmpeg -i master.mp4 -vf scale=1280:720 -c:v libx264 -preset slow -crf 28 -pix_fmt yuv420p -c:a aac -b:a 96k -movflags +faststart explainer.mp4
-ffmpeg -i master.mp4 -vf scale=854:480 -c:v libx264 -preset slow -crf 30 -pix_fmt yuv420p -c:a aac -b:a 64k -movflags +faststart explainer-phone.mp4
-ffmpeg -ss 18 -i master.mp4 -frames:v 1 -vf scale=1280:720 -q:v 4 explainer.jpg
+ffmpeg -i qq-explainer-master.mp4 -vf scale=1280:720 -c:v libx264 -preset slow -crf 28 -pix_fmt yuv420p -c:a aac -b:a 96k -movflags +faststart explainer.mp4
+ffmpeg -i qq-explainer-master.mp4 -vf scale=854:480 -c:v libx264 -preset slow -crf 30 -pix_fmt yuv420p -c:a aac -b:a 64k -movflags +faststart explainer-phone.mp4
+ffmpeg -ss 20.6 -i qq-explainer-master.mp4 -frames:v 1 -vf scale=1280:720 -q:v 4 explainer.jpg
 ```
