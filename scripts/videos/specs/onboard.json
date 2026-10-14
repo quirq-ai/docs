@@ -20,7 +20,7 @@
     { "say": "Check it" },
     { "cmd": "qqsync validate infra/repo.toml && echo valid" },
     {
-      "say": "Test it the way the presubmit will (Python 3.14 passed with --toolchain here)"
+      "say": "Test it with qq (Python 3.14 passed with --toolchain here)"
     },
     { "cmd": "qq test --toolchain python=~/toolchains/python" }
   ]

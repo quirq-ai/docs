@@ -1,0 +1,165 @@
+diff -ru a/src/Alpha.tsx b/src/Alpha.tsx
+--- a/src/Alpha.tsx
++++ b/src/Alpha.tsx
+@@ -146,9 +146,9 @@
+   { id: "u3", title: "Install qq", sub: "One paste, safe to run again", body: <>
+     <p>You need <code>git</code> and Python 3.11.4 or newer. Paste this into a terminal (macOS or Linux, bash or zsh). It runs in a subshell, so it never changes your current folder or shell.</p>
+     <Command label="Terminal" text={setupSh.trimEnd()} />
+-    <How>It checks git and Python (<code>$QQ_PYTHON</code> if you set it), then clones <a href="https://github.com/quirq-ai/depot" target="_blank" rel="noreferrer">quirq-ai/depot</a> into <code>~/depot</code>, or fast-forwards it if it is already there, and prints <code>qq 0.1.0</code>. The first run installs qq's Python packages, from pinned hashes, into <code>~/.cache/qq</code>. It never edits your shell profile; if <code>qq</code> is not on your PATH, it prints the one line to add. Running it twice is safe: the second run only updates.</How>
++    <How>It checks git and Python (<code>$QQ_PYTHON</code> if you set it), then clones <a href="https://github.com/quirq-ai/qq" target="_blank" rel="noreferrer">quirq-ai/qq</a> into <code>~/qq</code>, or fast-forwards it if it is already there, and prints <code>qq 0.1.0</code>. The first run installs qq's Python packages, from pinned hashes, into <code>~/.cache/qq</code>. It never edits your shell profile; if <code>qq</code> is not on your PATH, it prints the one line to add. Running it twice is safe: the second run only updates.</How>
+     <p>When it says <b>done</b>, add the PATH line it shows (if any), open a new terminal, and check that <code>qq --version</code> works. If <code>gh</code> is missing or signed out, install the <a href="https://cli.github.com" target="_blank" rel="noreferrer">GitHub CLI</a> and run <code>gh auth login</code>. qq uses gh to open and land PRs.</p>
+-    <p className="text-sm text-muted-foreground">Behind a company proxy? See the proxy and CA note under <a href="https://github.com/quirq-ai/depot#version-pinning" target="_blank" rel="noreferrer">Version pinning in the depot README</a>.</p>
++    <p className="text-sm text-muted-foreground">Behind a company proxy? See the proxy and CA note under <a href="https://github.com/quirq-ai/qq#version-pinning" target="_blank" rel="noreferrer">Version pinning in the qq README</a>.</p>
+   </> },
+   { id: "u4", title: "Get a repo", sub: "Clone it and sync its pinned toolchains", body: <GetRepo /> },
+   { id: "u5", title: "Build and test on your machine", sub: "Results land in .qq/out", body: <>
+diff -ru a/src/App.tsx b/src/App.tsx
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -51,7 +51,7 @@
+ 
+ /** The commits this page was checked against on 5 October 2026. */
+ const SOURCES: [string, string][] = [
+-  ["depot", "741967cc7fba1e486a65856b05c4abb2b1486b8b"], ["sync", "d97e2f747cfa7dd04fac3cd8e9973eb7eab091dd"], ["recipes", "db6ce0a19ea0adb6bc71cd553524064bdd18d5b0"],
++  ["qq", "741967cc7fba1e486a65856b05c4abb2b1486b8b"], ["sync", "d97e2f747cfa7dd04fac3cd8e9973eb7eab091dd"], ["recipes", "db6ce0a19ea0adb6bc71cd553524064bdd18d5b0"],
+   ["toolchains", "44f8f959458eab59baf46cbae5866a36657f7eeb"], ["remote-build", "62b2f04865ffbba5dafd0ab23ce4c1ae253de33e"], ["infra-config", "310e3264f5de3cd9822b3a4712ae0a372b97dac3"],
+   ["gate", "c3721365186a35c4b2b5acdc0635e281e754ac13"], ["test-pipelines", "a642399644ee4a463168773cacd5eabd48ac5a16"], ["gardener", "bf7d24d0fd81ec02c51051e63f46971455b596f2"],
+   ["rollers", "4285aa4dd3211eda2df28d2bd4bebb2267a01f0d"], ["perf", "d1d9765ea65df2b7d4824fd3845fdf371907857c"], ["release", "83ef917771375ae0d1ed51829c9e762a57e01e7e"],
+diff -ru a/src/RepoPage.tsx b/src/RepoPage.tsx
+--- a/src/RepoPage.tsx
++++ b/src/RepoPage.tsx
+@@ -112,7 +112,7 @@
+         {p.try_it.commands.length > 0 && (
+           <section className="grid gap-2">
+             <h3 className="text-lg font-semibold">Try it</h3>
+-            <p className="text-sm text-muted-foreground">Paste in a terminal at the top of a clone of {id}. It needs python3 at 3.11 or newer (3.11.4 for depot) and works in a virtual environment, .venv, inside the clone.{p.try_it.note && <> {p.try_it.note}</>} Source: <Src repo={id} sha={p.sha} path={p.try_it.source} /></p>
++            <p className="text-sm text-muted-foreground">Paste in a terminal at the top of a clone of {id}. It needs python3 at 3.11 or newer (3.11.4 for qq) and works in a virtual environment, .venv, inside the clone.{p.try_it.note && <> {p.try_it.note}</>} Source: <Src repo={id} sha={p.sha} path={p.try_it.source} /></p>
+             <pre className="m-0 overflow-x-auto rounded-lg bg-code p-4 font-mono text-[13px] leading-relaxed text-code-foreground">{p.try_it.commands.join("\n")}</pre>
+           </section>
+         )}
+diff -ru a/src/commands/get-repo.sh b/src/commands/get-repo.sh
+--- a/src/commands/get-repo.sh
++++ b/src/commands/get-repo.sh
+@@ -1,4 +1,4 @@
+ ( set -eu; unset CDPATH; R=__REPO__; W="$HOME/quirq"; mkdir -p "$W"
+-  if [ -d "$W/$R/.git" ]; then cd "$W/$R" && "$HOME/depot/bin/qq" sync
+-  else cd "$W" && "$HOME/depot/bin/qq" fetch "https://github.com/quirq-ai/$R"; fi
++  if [ -d "$W/$R/.git" ]; then cd "$W/$R" && "$HOME/qq/bin/qq" sync
++  else cd "$W" && "$HOME/qq/bin/qq" fetch "https://github.com/quirq-ai/$R"; fi
+   echo "qq: $R is ready in $W/$R" )
+diff -ru a/src/commands/setup.sh b/src/commands/setup.sh
+--- a/src/commands/setup.sh
++++ b/src/commands/setup.sh
+@@ -1,12 +1,12 @@
+-( set -eu; unset CDPATH; D="$HOME/depot"; P="${QQ_PYTHON:-python3}"
++( set -eu; unset CDPATH; D="$HOME/qq"; P="${QQ_PYTHON:-python3}"
+   command -v git >/dev/null || { echo "qq setup: install git first, then paste this again."; exit 1; }
+   "$P" -c 'import sys, venv; sys.exit(sys.version_info < (3, 11, 4))' 2>/dev/null || { echo "qq setup: qq needs Python 3.11.4 or newer with venv ($P is too old or missing). On macOS: brew install python@3.12, add  export QQ_PYTHON=python3.12  to ~/.zshrc, open a new terminal and paste this again."; exit 1; }
+   "$P" -m ensurepip --version >/dev/null 2>&1 || { echo "qq setup: $P cannot make virtual environments. On Debian or Ubuntu: sudo apt install python$("$P" -c 'import sys; print("%d.%d" % sys.version_info[:2])')-venv, then paste this again."; exit 1; }
+   if [ -d "$D/.git" ]; then
+-    case "$(git -C "$D" remote get-url origin)" in *quirq-ai/depot*) ;; *) echo "qq setup: $D is some other repo. Move it, then paste this again."; exit 1;; esac
++    case "$(git -C "$D" remote get-url origin)" in *quirq-ai/qq*) ;; *) echo "qq setup: $D is some other repo. Move it, then paste this again."; exit 1;; esac
+     git -C "$D" pull -q --ff-only || { echo "qq setup: could not fast-forward $D (offline, local changes or another branch). Fix that, then paste this again."; exit 1; }
+   elif [ -e "$D" ]; then echo "qq setup: $D exists and is not a git checkout. Move it, then paste this again."; exit 1
+-  else git clone -q https://github.com/quirq-ai/depot "$D"; fi
++  else git clone -q https://github.com/quirq-ai/qq "$D"; fi
+   "$D/bin/qq" --version
+   { command -v gh >/dev/null && gh auth status >/dev/null 2>&1; } || echo "qq setup: to open PRs, install gh (https://cli.github.com) and run: gh auth login"
+-  case ":$PATH:" in *":$D/bin:"*) echo "qq setup: done.";; *) echo "qq setup: done. Add this line to ~/.zshrc (macOS) or ~/.bashrc (Linux), then open a new terminal:  export PATH=\"\$HOME/depot/bin:\$PATH\"";; esac )
++  case ":$PATH:" in *":$D/bin:"*) echo "qq setup: done.";; *) echo "qq setup: done. Add this line to ~/.zshrc (macOS) or ~/.bashrc (Linux), then open a new terminal:  export PATH=\"\$HOME/qq/bin:\$PATH\"";; esac )
+diff -ru a/src/pages/depot.json b/src/pages/depot.json
+--- a/src/pages/depot.json
++++ b/src/pages/depot.json
+@@ -1,8 +1,8 @@
+ {
+-  "id": "depot",
++  "id": "qq",
+   "sha": "741967cc7fba1e486a65856b05c4abb2b1486b8b",
+   "language": "Python 3.11.4+ (CI runs 3.14), with a POSIX sh bootstrap",
+-  "summary": "depot is qq, the one command line a contributor puts on their PATH to fetch a repo's toolchains, build and test it the way CI does, and send changes through the gate. It exists so every repo runs exactly the qq version its manifest pins, and so long-running work like CI never ties up the caller.",
++  "summary": "qq is qq, the one command line a contributor puts on their PATH to fetch a repo's toolchains, build and test it the way CI does, and send changes through the gate. It exists so every repo runs exactly the qq version its manifest pins, and so long-running work like CI never ties up the caller.",
+   "how_it_works": [
+     {
+       "title": "Self-pinning bootstrap",
+@@ -16,7 +16,7 @@
+     },
+     {
+       "title": "qq build and qq test run recipes locally",
+-      "text": "Both commands hand the manifest to recipes, which plans and runs each action and leaves JUnit XML and results.json under .qq/out. Product CI does not run through recipes yet; depot's presubmit parity job shows qq test and qqrecipes execute give the same JUnit.",
++      "text": "Both commands hand the manifest to recipes, which plans and runs each action and leaves JUnit XML and results.json under .qq/out. Product CI does not run through recipes yet; qq's presubmit parity job shows qq test and qqrecipes execute give the same JUnit.",
+       "source": "src/qqdepot/commands/build.py"
+     },
+     {
+@@ -86,5 +86,5 @@
+       "source": "src/qqdepot/watch.py"
+     }
+   ],
+-  "readme_url": "https://github.com/quirq-ai/depot/blob/741967cc7fba1e486a65856b05c4abb2b1486b8b/README.md"
++  "readme_url": "https://github.com/quirq-ai/qq/blob/741967cc7fba1e486a65856b05c4abb2b1486b8b/README.md"
+ }
+diff -ru a/src/pages/sync.json b/src/pages/sync.json
+--- a/src/pages/sync.json
++++ b/src/pages/sync.json
+@@ -67,10 +67,10 @@
+   },
+   "status": [
+     {
+-      "text": "All four v0 items (schema, parser and editor, pin check, no-other-parser check) are marked merged, and depot and rollers now read and edit manifests through it.",
++      "text": "All four v0 items (schema, parser and editor, pin check, no-other-parser check) are marked merged, and qq and rollers now read and edit manifests through it.",
+       "source": [
+         "README.md",
+-        "https://github.com/quirq-ai/depot/blob/741967cc7fba1e486a65856b05c4abb2b1486b8b/src/qqdepot/pin.py",
++        "https://github.com/quirq-ai/qq/blob/741967cc7fba1e486a65856b05c4abb2b1486b8b/src/qqdepot/pin.py",
+         "https://github.com/quirq-ai/rollers/blob/4285aa4dd3211eda2df28d2bd4bebb2267a01f0d/src/qqroll/roll.py"
+       ]
+     },
+diff -ru a/src/repos.ts b/src/repos.ts
+--- a/src/repos.ts
++++ b/src/repos.ts
+@@ -7,7 +7,7 @@
+ export const LANES = ["Your machine", "Before landing", "After landing", "Shipping"]
+ 
+ export const REPOS: Record<string, Repo> = {
+-  depot: { lane: 0, row: 0, sub: "the qq command", role: "The qq command line you run: fetch, sync, build, test, upload, try, land, status. Every repo pins the qq version it uses.", counterpart: "depot_tools" },
++  qq: { lane: 0, row: 0, sub: "the qq command", role: "The qq command line you run: fetch, sync, build, test, upload, try, land, status. Every repo pins the qq version it uses.", counterpart: "depot_tools" },
+   sync: { lane: 0, row: 1, sub: "manifest + parser", role: "Defines infra/repo.toml, the manifest each product repo keeps, and is the only code allowed to read or edit it.", counterpart: "gclient and DEPS" },
+   recipes: { lane: 0, row: 2, sub: "adapters per kind", role: "Adapters for each kind of repo (a Python service, a Next.js app) that plan and run fetch, build, test and bench. qq uses them on your machine; CI will use them once it runs through qq.", counterpart: "recipes" },
+   toolchains: { lane: 0, row: 3, sub: "pinned Python, Node", role: "Builds Python, Node and pnpm, publishes them pinned by digest, and promotes a new build only through a reviewed PR. Linux x86_64 only so far.", counterpart: "CIPD toolchain packages" },
+@@ -24,8 +24,8 @@
+ 
+ /** [from, to, why]: `from` uses `to`. */
+ export const EDGES: [string, string, string][] = [
+-  ["depot", "sync", "reads manifests through"], ["depot", "recipes", "builds and tests with"],
+-  ["depot", "gate", "asks for the verdict from"], ["depot", "toolchains", "downloads pinned toolchains from"],
++  ["qq", "sync", "reads manifests through"], ["qq", "recipes", "builds and tests with"],
++  ["qq", "gate", "asks for the verdict from"], ["qq", "toolchains", "downloads pinned toolchains from"],
+   ["recipes", "sync", "reads targets through"], ["remote-build", "recipes", "runs actions planned by"],
+   ["gate", "infra-config", "reads required checks from"], ["gate", "sync", "reads manifests through"],
+   ["gardener", "test-pipelines", "files failure records through"], ["gardener", "infra-config", "reads revert caps from"],
+@@ -42,7 +42,7 @@
+ 
+ /** What each repo does to the product repos. */
+ export const ON_PRODUCTS: Record<string, string> = {
+-  depot: "is how you work on them", "infra-config": "generates their CI workflows",
++  qq: "is how you work on them", "infra-config": "generates their CI workflows",
+   gate: "decides what must pass in them", "test-pipelines": "stores the results of their runs",
+   gardener: "watches their main and publishes tree status (reverts wait on its GitHub App)", rollers: "configures the Dependabot roll PRs in them",
+   toolchains: "is pinned in their manifests", perf: "records their benchmarks",
+@@ -50,12 +50,12 @@
+ 
+ export type FlowStep = { title: string; text: string; nodes: string[]; edges: [string, string][] }
+ export const FLOW: FlowStep[] = [
+-  { title: "You sync", text: "qq sync runs depot, which reads the repo's infra/repo.toml through sync and downloads each pinned toolchain from toolchains, checked against its digest. Toolchains are Linux x86_64 only so far; on a Mac you bring your own.", nodes: ["depot", "sync", "toolchains", "products"], edges: [["depot", "sync"], ["depot", "toolchains"]] },
+-  { title: "You build and test", text: "qq build and qq test hand the manifest to recipes, which plans and runs each build and test action. CI will use the same planner once it runs through qq. remote-build is the slot that will run those actions on shared machines later.", nodes: ["depot", "recipes", "sync", "remote-build"], edges: [["depot", "recipes"], ["recipes", "sync"], ["remote-build", "recipes"]] },
+-  { title: "You open a PR", text: "qq try pushes your branch, opens the PR on GitHub and returns at once with a run ID. A watcher reports the verdict later.", nodes: ["depot", "products"], edges: [] },
+-  { title: "The gate decides what must pass", text: "gate reads the required checks from infra-config and the repo's manifest. The workflows that run them were generated by infra-config.", nodes: ["gate", "infra-config", "sync", "products", "depot"], edges: [["gate", "infra-config"], ["gate", "sync"], ["depot", "gate"]] },
++  { title: "You sync", text: "qq sync reads the repo's infra/repo.toml through sync and downloads each pinned toolchain from toolchains, checked against its digest. Toolchains are Linux x86_64 only so far; on a Mac you bring your own.", nodes: ["qq", "sync", "toolchains", "products"], edges: [["qq", "sync"], ["qq", "toolchains"]] },
++  { title: "You build and test", text: "qq build and qq test hand the manifest to recipes, which plans and runs each build and test action. CI will use the same planner once it runs through qq. remote-build is the slot that will run those actions on shared machines later.", nodes: ["qq", "recipes", "sync", "remote-build"], edges: [["qq", "recipes"], ["recipes", "sync"], ["remote-build", "recipes"]] },
++  { title: "You open a PR", text: "qq try pushes your branch, opens the PR on GitHub and returns at once with a run ID. A watcher reports the verdict later.", nodes: ["qq", "products"], edges: [] },
++  { title: "The gate decides what must pass", text: "gate reads the required checks from infra-config and the repo's manifest. The workflows that run them were generated by infra-config.", nodes: ["gate", "infra-config", "sync", "products", "qq"], edges: [["gate", "infra-config"], ["gate", "sync"], ["qq", "gate"]] },
+   { title: "Results become a verdict", text: "Each run's JUnit results go to test-pipelines. Today a single failing test fails the required check, with no retry; retrying and comparing with base is built but not switched on yet.", nodes: ["test-pipelines", "products"], edges: [] },
+-  { title: "You land", text: "qq land waits for a pass, then joins GitHub's merge queue, which tests your change on top of the ones ahead and squash-merges it into main. On xo-space, click Merge when ready instead.", nodes: ["products", "depot"], edges: [] },
++  { title: "You land", text: "qq land waits for a pass, then joins GitHub's merge queue, which tests your change on top of the ones ahead and squash-merges it into main. On xo-space, click Merge when ready instead.", nodes: ["products", "qq"], edges: [] },
+   { title: "main stays green", text: "Post-submit runs on every main commit. gardener watches those runs, publishes tree status and will open a revert PR for a break, within infra-config's cap, once its GitHub App exists; a person merges each revert. perf records benchmarks.", nodes: ["gardener", "test-pipelines", "infra-config", "perf", "products"], edges: [["gardener", "test-pipelines"], ["gardener", "infra-config"], ["perf", "test-pipelines"], ["infra-config", "test-pipelines"]] },
+   { title: "Pins move forward", text: "When toolchains promotes a new build, rollers edits the pin through sync and opens a PR, which goes through the same gate as yours.", nodes: ["rollers", "toolchains", "sync", "infra-config", "products"], edges: [["rollers", "toolchains"], ["rollers", "sync"], ["rollers", "infra-config"]] },
+   { title: "Shipping", text: "release advances lkgr to the newest all-green commit, which already happens for both product repos. Once a day it builds that commit, runs the full tests, starts it and checks its health page; only then does the canary channel move to it. installer follows the channels for test installs.", nodes: ["release", "installer", "gardener", "infra-config"], edges: [["release", "gardener"], ["release", "infra-config"], ["installer", "release"]] },

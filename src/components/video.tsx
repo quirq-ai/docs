@@ -5,8 +5,10 @@ const BOX =
 
 // A recording served from public/videos: an mp4 with a poster frame.
 // preload="none" keeps a page light until the reader presses play. A narrower
-// phone cut (phoneSrc) keeps terminal text readable on small screens; only the
-// one that is shown is ever fetched. Terminal recordings are silent; the
+// phone cut (phoneSrc) keeps terminal text readable on small screens. Both
+// players are in the page and CSS shows one: only the shown one's video is
+// fetched, but browsers fetch both posters (small WebP or JPEG frames).
+// Terminal recordings are silent; the
 // explainer film has narration with its captions burned into the picture.
 export function Video({
   src,

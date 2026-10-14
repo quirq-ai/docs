@@ -181,9 +181,9 @@ export function QqHome() {
           </p>
           <Video
             src="/videos/first-build.mp4"
-            poster="/videos/first-build.png"
+            poster="/videos/first-build.webp"
             phoneSrc="/videos/first-build-phone.mp4"
-            phonePoster="/videos/first-build-phone.png"
+            phonePoster="/videos/first-build-phone.webp"
             title="Building, testing and running innernet with qq"
           />
         </div>

@@ -21,7 +21,7 @@
       "cmd": "qqsync show | grep -E '\"(name|kind|version)\"'",
       "cd": "~/qq-try/innernet"
     },
-    { "say": "Build and test every target, with the pinned toolchain" },
+    { "say": "Build and test every target, with Node 24 passed in" },
     { "cmd": "qq test --toolchain node=~/toolchains/node" },
     { "say": "Results, logs and JUnit XML land in .qq/out" },
     { "cmd": "ls .qq/out .qq/out/logs" },
