@@ -124,7 +124,7 @@ toolchains, which are published for Linux x86_64 only:
 ## Let qq-setup check your machine
 
 If you prefer a guided start, `qq-setup` checks your tools (Node 22 or
-later, `git`, `gh` logged in, Python 3.11 or later), asks in a small local
+later, `git`, `gh` logged in, Python 3.11.4 or later (`QQ_PYTHON` if set)), asks in a small local
 form what you want to do, and prints install commands for the repo you
 name.
 
@@ -163,6 +163,10 @@ in it:
 
 On a Mac, also delete the `export QQ_PYTHON=python3.13` line from `~/.zshrc`
 (or from your bash file), unless something else uses that Python.
+
+pip's download cache is shared with every other use of pip, so this leaves
+it. To delete it too, remove `~/.cache/pip` on Linux or `~/Library/Caches/pip`
+on a Mac.
 
   </Accordion>
 </Accordions>
