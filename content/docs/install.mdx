@@ -22,11 +22,24 @@ import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 
 ## Before you start
 
-qq runs on Linux and macOS. You need `git` and `python3` 3.11.4 or newer
-with its venv module
-(on Debian or Ubuntu, the `python3-venv` package). That is all qq itself
-needs. To use another Python, set `QQ_PYTHON` to it. The toolchains a repo builds with (Python 3.14.8, Node 24 with pnpm)
-are fetched later by `qq sync`, on Linux x86_64.
+qq runs on Linux and macOS. You need `git` and Python 3.11.4 or newer with
+its venv module (on Debian or Ubuntu, the `python3-venv` package). That is
+all qq itself needs. qq uses `python3` unless you set `QQ_PYTHON` to another
+Python, and the commands below do the same. The toolchains a repo builds
+with (Python 3.14.8, Node 24 with pnpm) are fetched later by `qq sync`, on
+Linux x86_64.
+
+<Callout type="warn">
+  **On a Mac, set up Python first.** The `python3` that comes with macOS is
+  3.9, too old for qq. `brew install python@3.13` adds `python3.13` but leaves
+  `python3` as it was, so tell qq to use it, then open a new terminal:
+
+  ```sh
+  brew install python@3.13 && echo 'export QQ_PYTHON=python3.13' >> ~/.zshrc
+  ```
+
+  If your shell is bash, add that `export` line to `~/.bash_profile` instead.
+</Callout>
 
 Each command below runs inside `( … )`, so it leaves your shell as it was,
 and each is safe to run again.
@@ -46,11 +59,11 @@ launcher under `~/.cache/qq`.
 ## 2. Install qqsync
 
 `qqsync` is the only program allowed to read or edit `infra/repo.toml`. It
-goes in its own Python environment, pinned to the same sync commit that qq
-pins, so the two always agree.
+goes in its own Python environment, made with the same Python as qq and
+pinned to the same sync commit that qq pins, so the two always agree.
 
 ```sh
-( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/qqsync; python3 -m venv ~/qq-tools/qqsync; ~/qq-tools/qqsync/bin/pip install -q --disable-pip-version-check "qqsync @ git+https://github.com/quirq-ai/sync@aecb0fdb89f0d88b61a26052f5b3c26c48392841"; ~/qq-tools/qqsync/bin/qqsync --version )
+( set -e; mkdir -p ~/qq-tools; rm -rf ~/qq-tools/qqsync; "${QQ_PYTHON:-python3}" -m venv ~/qq-tools/qqsync; ~/qq-tools/qqsync/bin/pip install -q --disable-pip-version-check "qqsync @ git+https://github.com/quirq-ai/sync@9821f745690d5150cac70cd2eee54c97d431e6c3"; ~/qq-tools/qqsync/bin/qqsync --version )
 ```
 
 {/* Same sync commit as quirq-ai/qq pyproject.toml:15 (and recipes pyproject.toml); bump them together, with setup's cli/tools.mjs and its fixture. */}
@@ -91,8 +104,9 @@ next `qq` you run picks up the new version.
 
 ## On a Mac
 
-qq and qqsync install the same way. What differs is the toolchains, which
-are published for Linux x86_64 only:
+qq and qqsync install the same way, once `QQ_PYTHON` points at a new enough
+Python ([Before you start](#before-you-start)). What differs is the
+toolchains, which are published for Linux x86_64 only:
 
 - `qq sync` stops with `no pin for platform macos-arm64`. `qq fetch` clones
   the repo, then stops at the same point; carry on in the clone.
