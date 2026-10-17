@@ -1,6 +1,6 @@
 ---
 title: Install qq
-description: Put qq and qqsync on your machine in three copy-paste commands, check them, and know what to do on a Mac.
+description: Put qq and qqsync on your machine in three copy-paste commands (four on a Mac), check them, and know what to do on a Mac.
 icon: Download
 ---
 
@@ -11,12 +11,14 @@ import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
   You install two tools, both from source on GitHub, into one folder in your
   home directory: `qq`, the command line, and `qqsync`, the tool that reads
   a repo's `infra/repo.toml`. Nothing needs root. Outside `~/qq-tools`, the
-  only changes are one line that puts it on your `PATH` and qq's own cache in
-  `~/.cache/qq`.
+  only changes are one line that puts it on your `PATH` (on a Mac, also one
+  line that sets `QQ_PYTHON`), qq's own cache in `~/.cache/qq`, and pip's
+  download cache.
 </Lead>
 
 <Video src="/videos/install.mp4" poster="/videos/install.webp" phoneSrc="/videos/install-phone.mp4" phonePoster="/videos/install-phone.webp" title="Installing qq and qqsync">
-  The three commands below, run on a fresh Linux account. The last step opens
+  The three commands below, run on a fresh Linux account with an earlier
+  qqsync pin. The last step opens
   a new shell and checks both versions.
 </Video>
 
@@ -35,10 +37,13 @@ Linux x86_64.
   `python3` as it was, so tell qq to use it, then open a new terminal:
 
   ```sh
-  brew install python@3.13 && echo 'export QQ_PYTHON=python3.13' >> ~/.zshrc
+  brew install python@3.13 && { grep -qs 'QQ_PYTHON=' ~/.zshrc || echo 'export QQ_PYTHON=python3.13' >> ~/.zshrc; }
   ```
 
-  If your shell is bash, add that `export` line to `~/.bash_profile` instead.
+  If your shell is bash, add that `export` line instead to the first of
+  `~/.bash_profile`, `~/.bash_login` or `~/.profile` that you already have
+  (`~/.bash_profile` if you have none). Bash reads only that one, and step 3
+  uses the same file.
 </Callout>
 
 Each command below runs inside `( … )`, so it leaves your shell as it was,
@@ -120,16 +125,16 @@ toolchains, which are published for Linux x86_64 only:
 
 If you prefer a guided start, `qq-setup` checks your tools (Node 22 or
 later, `git`, `gh` logged in, Python 3.11 or later), asks in a small local
-form what you want to do, and prints the commands on this page for the repo
-you name.
+form what you want to do, and prints install commands for the repo you
+name.
+
+Replace `<commit>` with the full id of the latest commit on
+[`main`](https://github.com/quirq-ai/setup/commits/main). Pinning it means
+the link serves exactly that commit.
 
 ```sh
-# <commit> is the full id of the latest commit on main
 npx --allow-remote=root https://codeload.github.com/quirq-ai/setup/tar.gz/<commit>
 ```
-
-Pin the [latest `main` commit](https://github.com/quirq-ai/setup/commits/main),
-so the link serves exactly that commit.
 
 <Callout type="info">
   **Today:** qq-setup only reads. It prints commands and stops: it installs
@@ -155,6 +160,9 @@ in it:
 ```sh
 ( for f in ~/.bashrc ~/.bash_profile ~/.bash_login ~/.profile ~/.zshrc; do grep -qsxF 'export PATH="$HOME/qq-tools/bin:$PATH"' "$f" || continue; awk '$0 == "export PATH=\"$HOME/qq-tools/bin:$PATH\"" { if (b > 0) b--; next } /^$/ { b++; next } { while (b > 0) { print ""; b-- } print } END { while (b > 0) { print ""; b-- } }' "$f" >| "$f.qq-tmp" || exit 1; if [ -L "$f" ] || grep -q '[^[:space:]]' "$f.qq-tmp"; then cat "$f.qq-tmp" >| "$f" || exit 1; rm -f "$f.qq-tmp"; echo "removed the qq-tools/bin line from $f"; else rm -f "$f" "$f.qq-tmp"; echo "deleted $f, which held only that line"; fi; done )
 ```
+
+On a Mac, also delete the `export QQ_PYTHON=python3.13` line from `~/.zshrc`
+(or from your bash file), unless something else uses that Python.
 
   </Accordion>
 </Accordions>
