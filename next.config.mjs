@@ -19,7 +19,7 @@ const config = {
         ["/docs/start", "/docs/install"],
         ["/docs/qq", "/docs/install"],
         ["/docs/qq/cli", "/docs/commands"],
-        ["/docs/qq/setup", "/docs/install#let-qq-setup-check-your-machine"],
+        ["/docs/qq/setup", "/docs/install#let-qq-setup-install-it-for-you"],
         [
           "/docs/qq/monitoring",
           "/docs/after-it-lands#6-see-it-all-in-one-place",

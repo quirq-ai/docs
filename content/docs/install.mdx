@@ -11,8 +11,9 @@ import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
   You install two tools, both from source on GitHub, into one folder in your
   home directory: `qq`, the command line, and `qqsync`, the tool that reads
   a repo's `infra/repo.toml`. Nothing needs root. Outside `~/qq-tools`, the
-  only changes are one line that puts it on your `PATH` (on a Mac, also one
-  line that sets `QQ_PYTHON`), qq's own cache in `~/.cache/qq`, and pip's
+  only changes are one line that puts it on your `PATH` (on a Mac, or when
+  qq-setup picks a newer `python3.N`, also one line that sets `QQ_PYTHON`),
+  qq's own cache in `~/.cache/qq`, and pip's
   download cache.
 </Lead>
 
@@ -47,7 +48,8 @@ Linux x86_64.
 </Callout>
 
 Each command below runs inside `( … )`, so it leaves your shell as it was,
-and each is safe to run again.
+and each is safe to run again. To have them run for you instead, see
+[Let qq-setup install it for you](#let-qq-setup-install-it-for-you).
 
 ## 1. Install qq
 
@@ -123,44 +125,53 @@ toolchains, which are published for Linux x86_64 only:
 
 ## Let qq-setup install it for you
 
-`qq-setup` can run this page for you. It runs straight from GitHub with
-`npx`: replace `<commit>` with the full id of the latest commit on
-[`main`](https://github.com/quirq-ai/setup/commits/main), so the link serves
-exactly that commit.
+`qq-setup` can run steps 1 to 3 for you, and later update or remove qq. It
+runs straight from GitHub with `npx`. Replace `<commit>` with the full id of
+the latest commit on [`main`](https://github.com/quirq-ai/setup/commits/main),
+so the link serves exactly that commit:
 
 ```sh
-npx --allow-remote=root https://codeload.github.com/quirq-ai/setup/tar.gz/<commit> install
+npx --allow-remote=root https://codeload.github.com/quirq-ai/setup/tar.gz/<commit>
 ```
 
-It starts by saying what is already here: qq and qqsync in `~/qq-tools`,
-and whether they are on your `PATH`. Then it asks what to do: install qq if
-it is missing, or update, remove or keep it if it is there. It prints the
-exact commands from this page, runs them only after you say yes, and stops at
-the first one that fails. On a Mac with no new enough Python, its first step
-is the `brew install python@3.13` line above. When `QQ_PYTHON` is not set and
-it has to use a newer `python3.N` instead of `python3`, it writes the
-`QQ_PYTHON` line for you. It installs xo too, if you want it. Add `--dry-run` to see the commands without running them.
+It checks your tools and opens a small form in your browser. Pick **Install,
+update or remove qq and xo on this machine**. The form shows what is already
+here: qq and qqsync in `~/qq-tools`, and whether they are on your `PATH`. Each
+tool starts at **Keep** (or **Don't install**), so nothing changes until you
+choose. For qq, pick **Install** if it is missing, or **Update**, **Add to
+PATH** or **Remove** if it is there, and leave xo as it is. The form shows the
+exact commands, and **Run** runs them one at a time, with their output on the
+page, stopping at the first that fails. Press **Done: close qq-setup** when
+you are finished, then open a new terminal.
 
-Run the same command later to update or remove qq:
+To install or update, it runs steps 1 to 3 of this page. On a Mac with no new
+enough Python, it first runs `brew install python@3.13` and writes
+`export QQ_PYTHON=python3.13` to the same file as the `PATH` line, so bash and
+zsh both find it. On Linux, if `python3` is too old but a newer `python3.N` is
+installed, it writes a `QQ_PYTHON` line for that one.
 
-- **Update** runs steps 1 to 3 again. That re-clones `~/qq-tools/depot`, so
-  if that checkout has work of yours in it, qq-setup keeps it as it is unless
-  you choose otherwise.
-- **Remove** deletes `~/qq-tools`, qq's cache and the `PATH` line, as
-  "Remove everything" below does. It asks before deleting the demo folders `~/qq-try` and `~/qq-ci-venv`, and it leaves the
-  `QQ_PYTHON` line for you to delete.
+- **Update** runs steps 1 to 3 again, which re-clones `~/qq-tools/depot`. If
+  that checkout has work of yours in it, the form warns you first; pick
+  **Keep** to leave it.
+- **Remove** deletes `~/qq-tools`, qq's cache and the `PATH` line, as "Remove
+  everything" below does. The demo folders `~/qq-try` and `~/qq-ci-venv`, and
+  the `QQ_PYTHON` line, are boxes left unticked: they stay unless you tick
+  them.
 
-Without `install`, the same link opens a small form in your browser instead.
-It checks your tools (Node 22 or later, `git`, `gh` logged in, Python 3.11.4
-or later, `QQ_PYTHON` if set) and prints the commands for a repo you name, or
-the plan for [putting an org's repos on qq](/docs/add-a-repo#onboarding-repos-in-your-own-org).
+The form's other choices print the commands for a repo you name, or the plan
+for [putting an org's repos on qq](/docs/add-a-repo#onboarding-repos-in-your-own-org).
+In a terminal without a browser, add `install --only qq` to the end of the
+command: it asks the same questions there, and `--dry-run` shows the commands
+without running them.
 
 <Callout type="info">
-  **Today:** qq-setup is not on npm yet. `install` never writes to GitHub and
-  needs no `gh` login. The form only reads: it installs nothing, creates no
-  repo and changes no setting. It listens on `127.0.0.1` only, its link works
-  once, and it refuses to run while a GitHub token is set in your
-  environment, so it only ever acts as your own `gh` login.
+  **Today:** qq-setup is not on npm yet. It never writes to GitHub, and on
+  your machine it changes only your home folder (and Homebrew's, for the Mac
+  Python step). For an org, the form only shows the plan: it creates no repo
+  and changes no setting. The form listens on `127.0.0.1` only and its link
+  works once. It refuses to run while `GH_TOKEN`, `GITHUB_TOKEN` or a GitHub
+  Enterprise token variable is set, so it only ever acts as your own `gh`
+  login.
 </Callout>
 
 <Accordions>
@@ -180,9 +191,9 @@ in it:
 ( for f in ~/.bashrc ~/.bash_profile ~/.bash_login ~/.profile ~/.zshrc; do grep -qsxF 'export PATH="$HOME/qq-tools/bin:$PATH"' "$f" || continue; awk '$0 == "export PATH=\"$HOME/qq-tools/bin:$PATH\"" { if (b > 0) b--; next } /^$/ { b++; next } { while (b > 0) { print ""; b-- } print } END { while (b > 0) { print ""; b-- } }' "$f" >| "$f.qq-tmp" || exit 1; if [ -L "$f" ] || grep -q '[^[:space:]]' "$f.qq-tmp"; then cat "$f.qq-tmp" >| "$f" || exit 1; rm -f "$f.qq-tmp"; echo "removed the qq-tools/bin line from $f"; else rm -f "$f" "$f.qq-tmp"; echo "deleted $f, which held only that line"; fi; done )
 ```
 
-On a Mac, also delete the `export QQ_PYTHON=python3.13` line from `~/.zshrc`
-(or from your bash file), unless something else uses that Python. qq-setup
-leaves this line too.
+If you set up `QQ_PYTHON` (the Mac step above, or qq-setup on a Mac or
+Linux), also delete that `export QQ_PYTHON=…` line from your startup file,
+unless something else uses that Python.
 
 pip's download cache is shared with every other use of pip, so this leaves
 it. To delete it too, remove `~/.cache/pip` on Linux or `~/Library/Caches/pip`
