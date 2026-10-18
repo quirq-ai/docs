@@ -133,12 +133,12 @@ so the link serves exactly that commit:
 npx --allow-remote=root https://codeload.github.com/quirq-ai/setup/tar.gz/<commit>
 ```
 
-It checks your tools and opens a small form in your browser. Pick **Install,
-update or remove qq and xo on this machine**. The form shows what is already
+It checks your tools and opens a page in your browser, on step 1, **This
+machine** (it says "Start here" when qq is missing). It shows what is already
 here: qq and qqsync in `~/qq-tools`, and whether they are on your `PATH`. Each
 tool starts at **Keep** (or **Don't install**), so nothing changes until you
 choose. For qq, pick **Install** if it is missing, or **Update**, **Add to
-PATH** or **Remove** if it is there, and leave xo as it is. The form shows the
+PATH** or **Remove** if it is there, and leave xo as it is. The page shows the
 exact commands, and **Run** runs them one at a time, with their output on the
 page, stopping at the first that fails. Press **Done: close qq-setup** when
 you are finished, then open a new terminal.
@@ -150,15 +150,16 @@ shell finds it, bash or zsh. Otherwise, if `python3` is too old but a newer
 `python3.N` is installed, it writes a `QQ_PYTHON` line for that one.
 
 - **Update** runs steps 1 to 3 again, which re-clones `~/qq-tools/depot`. If
-  that checkout has work of yours in it, the form warns you first; pick
+  that checkout has work of yours in it, the page warns you first; pick
   **Keep** to leave it.
 - **Remove** deletes `~/qq-tools`, qq's cache and the `PATH` line, as "Remove
   everything" below does. The demo folders `~/qq-try` and `~/qq-ci-venv`, and
   the `QQ_PYTHON` line, are boxes left unticked: they stay unless you tick
   them.
 
-The form's other choices print the commands for a repo you name, or the plan
-for [putting an org's repos on qq](/docs/add-a-repo#onboarding-repos-in-your-own-org).
+Step 2 of the page, **Set up repos in an org you own**, prints the plan for
+[putting an org's repos on qq](/docs/add-a-repo#onboarding-repos-in-your-own-org)
+in your terminal.
 In a terminal without a browser, add `install --only qq` to the end of the
 command: it asks the same questions there, and `--dry-run` shows the commands
 without running them.
@@ -166,9 +167,9 @@ without running them.
 <Callout type="info">
   **Today:** qq-setup is not on npm yet. It never writes to GitHub, and on
   your machine it changes only your home folder (and Homebrew's, for the Mac
-  Python step). For an org, the form only shows the plan: it creates no repo
-  and changes no setting. The form listens on `127.0.0.1` only and its link
-  works once. qq-setup refuses to open the form while `GH_TOKEN`,
+  Python step). For an org, it only prints the plan: it creates no repo
+  and changes no setting. The page listens on `127.0.0.1` only and its link
+  works once. qq-setup refuses to open the page while `GH_TOKEN`,
   `GITHUB_TOKEN` or a GitHub Enterprise token variable is set, so it only
   ever acts as your own `gh` login.
 </Callout>
