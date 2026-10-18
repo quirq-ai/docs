@@ -121,27 +121,46 @@ toolchains, which are published for Linux x86_64 only:
 - `qq run` uses the tools on your `PATH` and names the pinned toolchains it
   could not use.
 
-## Let qq-setup check your machine
+## Let qq-setup install it for you
 
-If you prefer a guided start, `qq-setup` checks your tools (Node 22 or
-later, `git`, `gh` logged in, Python 3.11.4 or later (`QQ_PYTHON` if set)), asks in a small local
-form what you want to do, and prints install commands for the repo you
-name.
-
-Replace `<commit>` with the full id of the latest commit on
-[`main`](https://github.com/quirq-ai/setup/commits/main). Pinning it means
-the link serves exactly that commit.
+`qq-setup` can run this page for you. It runs straight from GitHub with
+`npx`: replace `<commit>` with the full id of the latest commit on
+[`main`](https://github.com/quirq-ai/setup/commits/main), so the link serves
+exactly that commit.
 
 ```sh
-npx --allow-remote=root https://codeload.github.com/quirq-ai/setup/tar.gz/<commit>
+npx --allow-remote=root https://codeload.github.com/quirq-ai/setup/tar.gz/<commit> install
 ```
 
+It starts by saying what is already here: qq and qqsync in `~/qq-tools`,
+and whether they are on your `PATH`. Then it asks what to do: install qq if
+it is missing, or update, remove or keep it if it is there. It prints the
+exact commands from this page, runs them only after you say yes, and stops at
+the first one that fails. On a Mac with no new enough Python, its first step
+is the `brew install python@3.13` line above. When `QQ_PYTHON` is not set and
+it has to use a newer `python3.N` instead of `python3`, it writes the
+`QQ_PYTHON` line for you. It installs xo too, if you want it. Add `--dry-run` to see the commands without running them.
+
+Run the same command later to update or remove qq:
+
+- **Update** runs steps 1 to 3 again. That re-clones `~/qq-tools/depot`, so
+  if that checkout has work of yours in it, qq-setup keeps it as it is unless
+  you choose otherwise.
+- **Remove** deletes `~/qq-tools`, qq's cache and the `PATH` line, as
+  "Remove everything" below does. It asks before deleting the demo folders `~/qq-try` and `~/qq-ci-venv`, and it leaves the
+  `QQ_PYTHON` line for you to delete.
+
+Without `install`, the same link opens a small form in your browser instead.
+It checks your tools (Node 22 or later, `git`, `gh` logged in, Python 3.11.4
+or later, `QQ_PYTHON` if set) and prints the commands for a repo you name, or
+the plan for [putting an org's repos on qq](/docs/add-a-repo#onboarding-repos-in-your-own-org).
+
 <Callout type="info">
-  **Today:** qq-setup only reads. It prints commands and stops: it installs
-  nothing, creates no repo and changes no setting. It is not on npm yet.
-  Its form listens on `127.0.0.1` only and its link works once. It refuses
-  to run while `GH_TOKEN` or `GITHUB_TOKEN` is set, so it only ever acts as
-  your own `gh` login.
+  **Today:** qq-setup is not on npm yet. `install` never writes to GitHub and
+  needs no `gh` login. The form only reads: it installs nothing, creates no
+  repo and changes no setting. It listens on `127.0.0.1` only, its link works
+  once, and it refuses to run while a GitHub token is set in your
+  environment, so it only ever acts as your own `gh` login.
 </Callout>
 
 <Accordions>
@@ -162,7 +181,8 @@ in it:
 ```
 
 On a Mac, also delete the `export QQ_PYTHON=python3.13` line from `~/.zshrc`
-(or from your bash file), unless something else uses that Python.
+(or from your bash file), unless something else uses that Python. qq-setup
+leaves this line too.
 
 pip's download cache is shared with every other use of pip, so this leaves
 it. To delete it too, remove `~/.cache/pip` on Linux or `~/Library/Caches/pip`
