@@ -88,7 +88,7 @@ on its `release-state` branch.
 checkout on exactly that commit:
 
 ```sh
-( set -e; python3 -m venv ~/qq-tools/qqinstall; ~/qq-tools/qqinstall/bin/pip install -q "qqinstall @ git+https://github.com/quirq-ai/installer@ca288255da24fa4477aa459c2110d10f5278374c"; ~/qq-tools/qqinstall/bin/qqinstall resolve --repo xo-space --channel canary )
+( set -e; "${QQ_PYTHON:-python3}" -m venv ~/qq-tools/qqinstall; ~/qq-tools/qqinstall/bin/pip install -q "qqinstall @ git+https://github.com/quirq-ai/installer@ca288255da24fa4477aa459c2110d10f5278374c"; ~/qq-tools/qqinstall/bin/qqinstall resolve --repo xo-space --channel canary )
 ```
 
 It prints one line, for example:
