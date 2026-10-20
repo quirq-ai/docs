@@ -23,7 +23,7 @@ export function SectionTabs() {
             href={s.url}
             aria-current={active ? "true" : undefined}
             className={cn(
-              "inline-flex min-h-11 items-center border-b-2 px-2 text-sm font-medium transition-colors sm:px-3",
+              "inline-flex min-h-11 items-center justify-center border-b-2 px-2 text-sm font-medium transition-colors max-sm:min-w-11 sm:px-3",
               active
                 ? "border-fd-primary text-fd-foreground"
                 : "border-transparent text-fd-muted-foreground hover:text-fd-foreground",

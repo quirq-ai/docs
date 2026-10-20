@@ -5,11 +5,14 @@ import { usePathname } from "next/navigation";
 import { inXo } from "@/lib/sections";
 
 // Below md the sidebar is a drawer: this bar opens it with the section's pages.
+// Like fumadocs' own docs header it stays under the site header as you scroll
+// (the site header is h-14, hence the banner height), and it sets the header
+// height so the "On this page" bar stacks below it.
 export function PhonePageList() {
   const label = inXo(usePathname()) ? "xo pages" : "qq pages";
 
   return (
-    <div className="flex items-center border-b border-fd-border px-4 [grid-area:header] md:hidden">
+    <div className="sticky top-(--fd-docs-row-1) z-30 flex h-(--fd-header-height) items-center border-b border-fd-border bg-fd-background/80 px-4 backdrop-blur-sm [grid-area:header] md:hidden max-md:layout:[--fd-banner-height:--spacing(14)] max-md:layout:[--fd-header-height:--spacing(11)]">
       <SidebarTrigger
         type="button"
         aria-label={label}
