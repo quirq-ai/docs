@@ -1,7 +1,8 @@
 {
-  "title": "qq docs",
+  "title": "quirq docs",
   "pages": [
     "index",
+    "xo",
     "---Get started---",
     "install",
     "first-build",
@@ -17,7 +18,6 @@
     "infrastructure",
     "problems",
     "roadmap",
-    "glossary",
-    "xo"
+    "glossary"
   ]
 }

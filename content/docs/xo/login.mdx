@@ -15,11 +15,15 @@ xo login
 xo first prints the three services it logs in to, `me`, `xo` and `github`.
 Then:
 
-1. **XO, in your browser.** xo prints a link and opens it. Sign in to XO, and
-   the browser comes back to xo on this machine (`127.0.0.1`). The xo server
-   then sends xo your account's key: the one an earlier browser login made
-   for you, or a new one that works for 90 days. If a key you saved before
-   still works, xo says "already logged in" and skips this.
+1. **XO, in your browser.** When the xo server offers browser login
+   (`https://xo.quirq.dev` does), xo prints a link and opens it. Sign in to XO,
+   and the browser comes back to xo on this machine (`127.0.0.1`). The xo
+   server then sends xo your account's key: the one an earlier browser login
+   made for you, or a new one that works for 90 days. If a key you saved
+   before still works, xo says "already logged in" and skips this. A server
+   without browser login, or a key piped in, gets the key prompt below
+   instead. If the sign-in fails or does not come back within 5 minutes, xo
+   saves nothing and exits 1.
 2. **GitHub, through gh.** If the [GitHub CLI](https://cli.github.com) (`gh`)
    is installed, xo checks that it is connected to github.com, and runs
    `gh auth login` in your browser if it isn't. xo never sees or saves the
@@ -52,7 +56,14 @@ an XO API key. Paste the key at the
 you type, and the key stays out of your shell history. xo refuses anything
 that isn't an XO API key (those start with `ak_`) without sending it anywhere,
 then checks the key with XO, which can take up to a minute. Only a key that
-passes is saved.
+passes is saved. A saved key that still works wins here too: to replace it,
+run `xo logout` first.
+
+<Callout type="info">
+  Browser login and `--key` came with xo `436bfbe`. If `xo login --key` stops
+  with `unrecognized arguments`, your xo is older:
+  [update it](/docs/xo/install#update-or-remove).
+</Callout>
 
 **Over SSH,** the browser on your own machine cannot come back to the remote
 one. xo says so and prints the port: reconnect with

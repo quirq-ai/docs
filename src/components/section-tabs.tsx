@@ -21,7 +21,7 @@ export function SectionTabs() {
           <Link
             key={s.id}
             href={s.url}
-            aria-current={active ? "page" : undefined}
+            aria-current={active ? "true" : undefined}
             className={cn(
               "inline-flex min-h-11 items-center border-b-2 px-2 text-sm font-medium transition-colors sm:px-3",
               active

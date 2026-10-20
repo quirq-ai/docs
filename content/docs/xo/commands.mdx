@@ -47,7 +47,7 @@ flags. The options go before or after the command.
 
 | Command | Does |
 |---|---|
-| `xo share space:S USER` / `xo share project:OWNER/REPO USER` | invites USER to a copy |
+| `xo share space:S USER` / `xo share project:P USER` | invites USER to a copy (GitHub projects only) |
 | `xo list shared` | the invites waiting on you |
 | `xo accept ID` | shows the invite, asks, then adds it (`--as NAME`, `--space S`, `--ref REF`, `--yes`) |
 | `xo reject ID` | takes the invite off |
@@ -68,7 +68,8 @@ stderr, starting `xo:`, that says why.
 
 ## Lower level and self-hosting
 
-`xo ops`, `xo call` and `xo api` reach XO Cloud's API operation by operation;
+`xo ops`, `xo call` and `xo api` reach XO Cloud's API operation by operation
+(through the xo server, only the creates and `xo spaces --space-id` pass);
 the [xo README](https://github.com/quirq-ai/xo#lower-level) covers them. To
 run your own xo server, see
 [deploy-vercel.md](https://github.com/quirq-ai/xo/blob/main/docs/deploy-vercel.md)

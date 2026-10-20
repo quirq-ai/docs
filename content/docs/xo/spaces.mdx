@@ -65,9 +65,11 @@ xo spaces --space-id THE_ID
 | `xo create space N nebius-openclaw --token-factory-api-key -` | a Nebius OpenClaw space (behind a feature flag; HTTP 404 when it is off for you) |
 | `xo create space N` | a space here only: the folder `./N`, recorded in your spaces, nothing on XO Cloud |
 
-- N is 1 to 32 letters, digits or hyphens, starts with a letter or digit, and
-  can't be `new` or `create`. XO keeps names in lowercase, so `MyDev` becomes
-  `mydev`, and xo says so. A name you already used fails.
+- With a kind, N is 1 to 32 letters, digits or hyphens, starts with a letter
+  or digit, and can't be `new` or `create`. A space here only (no kind) can be
+  1 to 64 letters, digits, `_`, `.` or `-`, can't be a kind's name, and takes
+  no `--dry-run`. XO keeps names in lowercase, so `MyDev` becomes `mydev`, and
+  xo says so. A name you already used fails.
 - `--volume-size` is in GB, 20 to 100.
 - When you give a provider key or bot token as `-`, xo asks for it without
   showing it. Only one `-` works per command. Put other secrets in a JSON file

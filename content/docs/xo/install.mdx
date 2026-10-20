@@ -8,7 +8,8 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 xo needs Python 3.11 or newer and git. The installs below pin xo to the
 commit its [quickstart](https://github.com/quirq-ai/xo/blob/main/docs/quickstart.md)
-installs, `436bfbe`.
+installs, `436bfbe`. For GitHub, also install the
+[GitHub CLI](https://cli.github.com) (`gh`): xo logs in to GitHub through it.
 
 ## With qq-setup (one command)
 
@@ -28,8 +29,9 @@ The page opens on step 1, **This machine**. Each tool starts at **Keep** (or
 Then press **Done: close qq-setup** and open a new terminal.
 
 - **Linux and macOS:** it makes a venv in `~/.xo` and adds `~/.xo/bin` to your
-  `PATH`, in the same startup file qq's `PATH` line uses. On a Mac with no new
-  enough Python, it first runs `brew install python@3.13`.
+  `PATH`, in your shell's startup file (`~/.zshrc`, or for bash `~/.bashrc` on
+  Linux and `~/.bash_profile` on a Mac). On a Mac with no new enough Python, it
+  first runs `brew install python@3.13`.
 - **Windows:** run the command in cmd or PowerShell. There it offers xo only
   (qq needs Linux, macOS or WSL). It makes the venv in `%USERPROFILE%\.xo` and
   adds `%USERPROFILE%\.xo\Scripts` to your user `PATH`. It uses `python`, else
@@ -64,15 +66,19 @@ The last line prints `xo 0.1.0`. If a step fails, the ones after it don't run.
 
 ## Update or remove
 
+The commands here are for Mac and Linux. On Windows, use qq-setup's
+**Update** and **Remove**.
+
 To update by hand, replace `NEW_SHA` with the commit you were given:
 
 ```sh
 ~/.xo/bin/pip install --force-reinstall --no-deps "quirq-xo @ git+https://github.com/quirq-ai/xo@NEW_SHA"
 ```
 
-`~/.xo/bin/pip freeze | grep quirq-xo` shows which commit you have. qq-setup's
-**Update** moves xo to the pinned commit, so it reports an xo at another
-commit instead of calling it out of date.
+`~/.xo/bin/pip freeze | grep quirq-xo` shows which commit you have. qq-setup
+reports an xo at another commit instead of calling it out of date, since the
+XO team may have given you a newer one: its **Update** would move it back to
+the pin, `436bfbe`.
 
 To remove xo, log out first, so the saved key goes too, then delete its folder
 and the `PATH` line from your startup file:
