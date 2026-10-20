@@ -4,12 +4,26 @@ import type * as PageTree from "fumadocs-core/page-tree";
 export const xoRoute = "/docs/xo";
 
 export const sections = [
-  { id: "qq", title: "qq", url: "/docs" },
-  { id: "xo", title: "xo", url: xoRoute },
+  {
+    id: "qq",
+    title: "qq",
+    url: "/docs",
+    repo: "https://github.com/quirq-ai/qq",
+  },
+  {
+    id: "xo",
+    title: "xo",
+    url: xoRoute,
+    repo: "https://github.com/quirq-ai/xo",
+  },
 ] as const;
 
 export function inXo(pathname: string): boolean {
   return pathname === xoRoute || pathname.startsWith(`${xoRoute}/`);
+}
+
+export function sectionOf(pathname: string) {
+  return sections[inXo(pathname) ? 1 : 0];
 }
 
 // content/docs/xo/ (meta.json lists its index as a page, so the folder has no
