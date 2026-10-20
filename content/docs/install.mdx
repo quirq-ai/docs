@@ -133,16 +133,16 @@ so the link serves exactly that commit:
 npx --allow-remote=root https://codeload.github.com/quirq-ai/setup/tar.gz/<commit>
 ```
 
-It needs Node 22 or newer, and installs qq on Linux and macOS. On Windows,
-step 1 says it can't install qq or xo there, and suggests trying WSL with
-Node 22 or newer installed inside it (qq-setup is not tested in WSL).
+It needs Node 22 or newer, and installs qq on Linux and macOS. On Windows it
+installs only [xo](/docs/xo/install), and for qq suggests WSL with Node 22 or
+newer installed inside it (qq-setup is not tested in WSL).
 
 It checks your tools and opens a page in your browser, on step 1, **This
 machine** (it says "Start here" when qq is missing). It shows what is already
 here: qq and qqsync in `~/qq-tools`, and whether they are on your `PATH`. Each
 tool starts at **Keep** (or **Don't install**), so nothing changes until you
 choose. For qq, pick **Install** if it is missing, or **Update**, **Add to
-PATH** or **Remove** if it is there, and leave xo as it is. The page shows the
+PATH** or **Remove** if it is there. For [xo](/docs/xo/install), do the same or leave it. The page shows the
 exact commands, and **Run** runs them one at a time, with their output on the
 page, stopping at the first that fails. Press **Done: close qq-setup** when
 you are finished, then open a new terminal.

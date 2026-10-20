@@ -1,0 +1,77 @@
+---
+title: Projects in a space
+description: Add your GitHub repos as projects, connect them to a space at a branch, tag or commit, and install, update and sync them with your own git.
+icon: GitFork
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+A project is one of your repos. A space holds projects, each at a ref (a
+branch, tag or commit), so anyone who installs the space gets the same
+checkouts. xo keeps both lists in your XO account; the clones are on your
+machine.
+
+## Add a project
+
+```sh
+xo create project https://github.com/juanfont/headscale   # cloned into ./headscale
+xo create project notes                                    # no GitHub remote: ./notes, git init
+xo projects                                                # your projects
+```
+
+A GitHub project is called by its repo's name, `headscale`, in every command.
+When two of your projects share that name, such as a fork and its upstream,
+call it by `OWNER/REPO`; its folder is then `./OWNER/REPO`.
+
+A project made from a plain name can get its repo later:
+
+```sh
+xo connect notes --repo https://github.com/OWNER/REPO
+```
+
+It is called `REPO` from then on, and `./notes` gets that origin if it has
+none and moves to `./REPO`.
+
+## Put it in a space
+
+```sh
+xo connect headscale my-cc --ref main   # the project headscale in the space my-cc, at main
+xo connect dev                          # a new space entry, with no XO Cloud space
+xo connect old --id THE_ID              # an entry for an XO Cloud space you already have
+xo spaces                               # your spaces, with their projects and refs
+xo list                                 # your projects and your spaces together
+```
+
+xo works out which name is the project and which the space, so
+`xo connect my-cc headscale` works too. For a space named like one of your
+projects, say `space:NAME`; `project:` and `space:` work in front of any name.
+
+## Install, update and sync
+
+```sh
+xo install space:dev    # ./dev/REPO for each project, at its ref
+xo update space:dev     # push each branch under ./dev, then record the refs
+xo sync space:dev       # rebase and push each branch, merge the space's refs, record
+```
+
+The same three work on one project: `xo install project:headscale` clones it
+here (or fetches and fast-forwards it), `xo update project:headscale` pushes
+its branch, and `xo sync project:headscale` runs `git pull --rebase`, then
+pushes.
+
+- They use your own git and its login, over https, without submodules.
+  `./SPACE/.xo/state.json` remembers what was installed.
+- `update` is refused when the remote is ahead or the space changed since you
+  installed it: run `xo sync`. A ref its remote does not have is refused too,
+  so nobody else's install breaks.
+- `sync` keeps your changes and the space's. If both changed the same
+  project, it stops and changes nothing. If git cannot rebase a branch
+  cleanly, xo undoes the rebase and says so.
+
+<Callout type="info">
+  xo never touches a checkout with uncommitted changes, never forces a push,
+  and refuses a folder whose origin is another repository or carries a login
+  (`https://USER@github.com/...`).
+</Callout>
+
+Next: [share a space or a project](/docs/xo/share).

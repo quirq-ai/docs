@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAISearchContext } from "@/components/ai/search";
 import { cn } from "@/lib/cn";
+import { inXo } from "@/lib/sections";
 
 /** Hide the bar near the page end so the docs footer / social links stay reachable. */
 const HIDE_NEAR_BOTTOM_PX = 160;
@@ -11,14 +12,18 @@ const HIDE_NEAR_BOTTOM_PX = 160;
 const BAR_HEIGHT_PX = 60;
 
 /**
- * Fixed bottom bar: Ask AI + Install qq. Client-only (scroll / AI context).
+ * Fixed bottom bar: Ask AI + Install qq (Install xo in the xo section). Client-only (scroll / AI context).
  * Always available after mount; hides near the document bottom so the site
  * footer and social links are not covered. Reserves bottom padding while shown.
  */
 export function StartFreeBar() {
   const [awayFromFooter, setAwayFromFooter] = useState(true);
   const { open, setOpen } = useAISearchContext();
-  const onInstallPage = usePathname() === "/docs/install";
+  const pathname = usePathname();
+  const install = inXo(pathname)
+    ? { url: "/docs/xo/install", text: "Install xo" }
+    : { url: "/docs/install", text: "Install qq" };
+  const onInstallPage = pathname === install.url;
 
   useEffect(() => {
     const update = () => {
@@ -77,11 +82,11 @@ export function StartFreeBar() {
         </button>
         {!onInstallPage && (
           <a
-            href="/docs/install"
+            href={install.url}
             className="inline-flex items-center rounded-lg bg-fd-primary px-4 py-1.5 text-sm font-semibold text-fd-primary-foreground transition-opacity hover:opacity-90"
             tabIndex={showBar ? 0 : -1}
           >
-            Install qq
+            {install.text}
           </a>
         )}
       </div>

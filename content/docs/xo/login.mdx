@@ -1,0 +1,89 @@
+---
+title: Log in
+description: xo login signs you in to XO in your browser and connects GitHub through gh. xo login --key takes a pasted XO API key instead.
+icon: Key
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Run `xo login` on its own line, not pasted together with other commands:
+
+```sh
+xo login
+```
+
+xo first prints the three services it logs in to, `me`, `xo` and `github`.
+Then:
+
+1. **XO, in your browser.** xo prints a link and opens it. Sign in to XO, and
+   the browser comes back to xo on this machine (`127.0.0.1`). The xo server
+   then sends xo your account's key: the one an earlier browser login made
+   for you, or a new one that works for 90 days. If a key you saved before
+   still works, xo says "already logged in" and skips this.
+2. **GitHub, through gh.** If the [GitHub CLI](https://cli.github.com) (`gh`)
+   is installed, xo checks that it is connected to github.com, and runs
+   `gh auth login` in your browser if it isn't. xo never sees or saves the
+   GitHub token: gh keeps it. Without gh, this step says `skipped`.
+
+Each service ends with one line, such as `xo: me: logged in as ...` or
+`xo: github: connected to github.com as ...`. One failure does not stop the
+others. Check where you are logged in with:
+
+```sh
+xo status
+```
+
+<Callout type="info">
+  gh may ask "Authenticate Git with your GitHub credentials?". Yes (gh's
+  default) makes gh git's login for github.com, which changes `~/.gitconfig`
+  or the login your system keeps for git (the Keychain on a Mac). Answer `n`
+  to leave git as it is.
+</Callout>
+
+## Paste a key instead
+
+```sh
+xo login --key
+```
+
+Use this when the browser can't come back to xo, or when the XO team gave you
+an XO API key. Paste the key at the
+`XO API key (hidden: paste it, then press Enter):` prompt. Nothing shows while
+you type, and the key stays out of your shell history. xo refuses anything
+that isn't an XO API key (those start with `ak_`) without sending it anywhere,
+then checks the key with XO, which can take up to a minute. Only a key that
+passes is saved.
+
+**Over SSH,** the browser on your own machine cannot come back to the remote
+one. xo says so and prints the port: reconnect with
+`ssh -L PORT:127.0.0.1:PORT <host>` using that port, or use `xo login --key`.
+
+## Where the key is kept
+
+xo saves the key and the address it logged in to in
+`~/.config/xo/credentials`, which only you can read (on Windows, xo cannot
+limit who reads it, and says so). Every later command, in
+any terminal, uses that key and sends it only to that address. A key in
+`XO_API_KEY` wins over the saved one.
+
+```sh
+xo login xo       # only the XO key
+xo login github   # only GitHub
+xo logout         # deletes your XO key; asks before logging gh out
+```
+
+If `GH_TOKEN` or `GITHUB_TOKEN` is set in your terminal, gh uses that token
+instead of its own login, and xo says so.
+
+## Check it works
+
+This creates nothing:
+
+```sh
+xo spaces --space-id 00000000-0000-0000-0000-000000000000
+```
+
+It should end with `HTTP 404: Space not found`: your key reaches XO Cloud. A
+401 means XO does not know the key; run `xo login` again.
+
+Next: [create a space](/docs/xo/spaces).

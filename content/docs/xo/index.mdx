@@ -1,0 +1,51 @@
+---
+title: What is xo
+description: xo is the command line for XO Cloud. It creates spaces, keeps your projects in them, and shares them, with one login.
+icon: Terminal
+---
+
+import { Cards, Card } from "@/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+
+`xo` is the command line for [XO Cloud](https://dev.xo.builders). Every XO
+Cloud call is a command, and xo sends your XO API key on each request without
+ever printing it. xo is separate from qq: you can use either without the
+other.
+
+With xo you:
+
+- **create spaces** on XO Cloud, such as a Claude Code, Codex or OpenClaw
+  space, or a space that lives only on your machine;
+- **keep projects in a space**: your GitHub repos, each at a branch, tag or
+  commit, cloned and pushed with your own git;
+- **share a space or a project** with another XO user, who accepts it into
+  their own spaces.
+
+## One login, three services
+
+One `xo login` logs you in to all three. `xo status` shows each one and
+whether you are logged in.
+
+| Service | Address | What it does | You log in with |
+|---|---|---|---|
+| `me` | `https://xo.quirq.dev` | the xo server: answers `xo me`, keeps your projects and spaces, passes creates on to XO Cloud | your XO API key, which `xo login` gets when you sign in to XO in your browser |
+| `xo` | `https://dev.xo.builders` | XO Cloud: creates the spaces | the same key, through the xo server |
+| `github` | `https://github.com` | your GitHub account, through the GitHub CLI (`gh`) | gh's own login, in your browser |
+
+xo keeps your keys only on your machine, and the xo server stores none. Your
+XO key is still sent to the xo server and to XO Cloud on every call, and a
+create copies it into the new space.
+
+<Cards>
+  <Card title="Install xo" href="/docs/xo/install" description="One command with qq-setup, or one paste by hand. Linux, macOS and Windows." />
+  <Card title="Log in" href="/docs/xo/login" description="Sign in to XO in your browser, and connect GitHub." />
+  <Card title="Create a space" href="/docs/xo/spaces" description="Preview it first, then create it on XO Cloud." />
+  <Card title="Projects in a space" href="/docs/xo/projects" description="Add repos, put them in a space, install, update and sync." />
+</Cards>
+
+<Callout type="info">
+  **XO Space and XO Cloud** themselves, their agents and the web app are
+  documented at [docs.xo.builders](https://docs.xo.builders). This section is
+  about the `xo` command line. Its source and its own guides are in
+  [quirq-ai/xo](https://github.com/quirq-ai/xo).
+</Callout>

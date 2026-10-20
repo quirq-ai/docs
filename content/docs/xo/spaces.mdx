@@ -1,0 +1,80 @@
+---
+title: Create a space
+description: Preview a create with --dry-run, then create a Claude Code, Codex or other space on XO Cloud, or a space that lives only on your machine.
+icon: Cloud
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+A space is where an agent works on XO Cloud. `xo create space NAME KIND`
+creates one and records it in your spaces as NAME.
+
+## 1. See what a kind takes
+
+```sh
+xo create space --help                  # the kinds of space
+xo create space NAME codex --help       # the flags of one kind
+```
+
+## 2. Preview it (sends nothing)
+
+```sh
+xo create space my-first-space codex --volume-size 20 --dry-run
+```
+
+This prints the request xo would send, a notice that a real create copies your
+key into the space, then `xo: dry run, nothing sent`.
+
+## 3. Create it for real
+
+<Callout type="warn">
+  Before you create anything, know three things:
+
+  - XO Cloud can't delete, start or stop a space, and xo has no command for
+    it. A space you create stays, so create only one you mean to keep.
+  - Every create except `nebius-openclaw` stores your XO API key inside the
+    new space. xo prints a notice as the request goes out; it does not pause
+    or ask first. Anything that can read the space's environment, an agent
+    steered by a message for example, can act as you. If the XO team can give
+    you a second key, use that one for creates.
+  - `xo spaces --space-id ID` prints URLs that carry a session token. Don't
+    share them.
+</Callout>
+
+```sh
+xo create space my-first-space codex --volume-size 20
+```
+
+This creates the space on your account and records it in your spaces. To see
+it again, with its XO id, and then XO Cloud's own view of it with its
+connection URLs:
+
+```sh
+xo spaces
+xo spaces --space-id THE_ID
+```
+
+## The kinds
+
+| Command | Creates |
+|---|---|
+| `xo create space N codex --volume-size 20` | a Codex space |
+| `xo create space N antigravity --volume-size 20` | an Antigravity space |
+| `xo create space N claude-code --volume-size 20 --providers-anthropic-api-key -` | a Claude Code space (`-` asks for the key) |
+| `xo create space N hermes …`, `… openclaw …`, `… xo-cowork …` | spaces with providers and chat channels; see `xo create space N openclaw --help` |
+| `xo create space N nebius-openclaw --token-factory-api-key -` | a Nebius OpenClaw space (behind a feature flag; HTTP 404 when it is off for you) |
+| `xo create space N` | a space here only: the folder `./N`, recorded in your spaces, nothing on XO Cloud |
+
+- N is 1 to 32 letters, digits or hyphens, starts with a letter or digit, and
+  can't be `new` or `create`. XO keeps names in lowercase, so `MyDev` becomes
+  `mydev`, and xo says so. A name you already used fails.
+- `--volume-size` is in GB, 20 to 100.
+- When you give a provider key or bot token as `-`, xo asks for it without
+  showing it. Only one `-` works per command. Put other secrets in a JSON file
+  and pass it with `--data @body.json` (make it readable only by you, and
+  delete it afterwards). Anything typed on the command line lands in your
+  shell history.
+- If a create times out or is interrupted, XO may still have made the space:
+  check `xo spaces` before you try again.
+
+Next: [put your projects in a space](/docs/xo/projects).

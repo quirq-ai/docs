@@ -1,0 +1,90 @@
+---
+title: Install xo
+description: Install xo with qq-setup's one command, on Linux, macOS or Windows, or by hand with one paste. Then update or remove it.
+icon: Download
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+xo needs Python 3.11 or newer and git. The installs below pin xo to the
+commit its [quickstart](https://github.com/quirq-ai/xo/blob/main/docs/quickstart.md)
+installs, `436bfbe`.
+
+## With qq-setup (one command)
+
+[qq-setup](/docs/install#let-qq-setup-install-it-for-you) installs, updates and
+removes xo from a page in your browser. It needs Node 22 or newer. Replace
+`<commit>` with the full id of the latest commit on
+[`main`](https://github.com/quirq-ai/setup/commits/main):
+
+```sh
+npx --allow-remote=root https://codeload.github.com/quirq-ai/setup/tar.gz/<commit>
+```
+
+The page opens on step 1, **This machine**. Each tool starts at **Keep** (or
+**Don't install**). For xo, pick **Install** (or **Update**, **Add to PATH** or
+**Remove** when it is there), and leave qq as it is if you only want xo. Press
+**Run**: it runs the commands one at a time, with their output on the page.
+Then press **Done: close qq-setup** and open a new terminal.
+
+- **Linux and macOS:** it makes a venv in `~/.xo` and adds `~/.xo/bin` to your
+  `PATH`, in the same startup file qq's `PATH` line uses. On a Mac with no new
+  enough Python, it first runs `brew install python@3.13`.
+- **Windows:** run the command in cmd or PowerShell. There it offers xo only
+  (qq needs Linux, macOS or WSL). It makes the venv in `%USERPROFILE%\.xo` and
+  adds `%USERPROFILE%\.xo\Scripts` to your user `PATH`. It uses `python`, else
+  `py`; with neither new enough, it links
+  [python.org's Windows installer](https://www.python.org/downloads/windows/)
+  (tick "Add python.exe to PATH").
+
+In a terminal without a browser, add `install --only xo` to the end of the
+command. `--dry-run` shows the commands without running them.
+
+## By hand (Mac or Linux)
+
+You need Python 3.11 or newer (`python3 --version`; stock macOS ships 3.9, so
+run `brew install python@3.13` and use `python3.13` below), git, and on Debian
+or Ubuntu `sudo apt install python3-venv`. Using bash? Change `~/.zshrc`
+(twice) to `~/.bash_profile` on a Mac or `~/.bashrc` on Linux.
+
+```sh
+python3 -m venv ~/.xo \
+  && ~/.xo/bin/pip install "quirq-xo @ git+https://github.com/quirq-ai/xo@436bfbef0d222c128bd10d3ae6b32bc407ce1b51" \
+  && { grep -qxF 'export PATH="$HOME/.xo/bin:$PATH"' ~/.zshrc 2>/dev/null || echo 'export PATH="$HOME/.xo/bin:$PATH"' >> ~/.zshrc; } \
+  && export PATH="$HOME/.xo/bin:$PATH" \
+  && xo --version
+```
+
+The last line prints `xo 0.1.0`. If a step fails, the ones after it don't run.
+
+<Callout type="warn">
+  The package is `quirq-xo`, not `xo`. PyPI's `xo` is an unrelated game, and
+  `pip install -U xo` would replace this tool with it.
+</Callout>
+
+## Update or remove
+
+To update by hand, replace `NEW_SHA` with the commit you were given:
+
+```sh
+~/.xo/bin/pip install --force-reinstall --no-deps "quirq-xo @ git+https://github.com/quirq-ai/xo@NEW_SHA"
+```
+
+`~/.xo/bin/pip freeze | grep quirq-xo` shows which commit you have. qq-setup's
+**Update** moves xo to the pinned commit, so it reports an xo at another
+commit instead of calling it out of date.
+
+To remove xo, log out first, so the saved key goes too, then delete its folder
+and the `PATH` line from your startup file:
+
+```sh
+xo logout
+rm -rf ~/.xo
+unset XO_API_KEY
+```
+
+qq-setup's **Remove** does the same: `xo logout`, then `~/.xo` (or
+`%USERPROFILE%\.xo` on Windows) and its `PATH` entry. Run from the page, `xo
+logout` keeps your gh login; to log gh out too, run `gh auth logout`.
+
+Next: [log in](/docs/xo/login).

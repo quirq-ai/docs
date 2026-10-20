@@ -1,9 +1,10 @@
-import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import { HomeLayout } from "fumadocs-ui/layouts/home";
 import type { LinkItemType } from "fumadocs-ui/layouts/shared";
 import { AISearch, AISearchPanel } from "@/components/ai/search";
+import { SectionDocsLayout } from "@/components/section-docs-layout";
 import { StartFreeBar } from "@/components/start-free-bar";
 import { baseOptions, socialLinks } from "@/lib/layout.shared";
+import { splitTree } from "@/lib/sections";
 import { source } from "@/lib/source";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -14,8 +15,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <HomeLayout {...baseOptions()}>
-      <DocsLayout
-        tree={source.getPageTree()}
+      <SectionDocsLayout
+        trees={splitTree(source.getPageTree())}
         nav={{ enabled: false }}
         searchToggle={{ enabled: false }}
         themeSwitch={{ enabled: false }}
@@ -28,7 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </AISearch>
 
         {children}
-      </DocsLayout>
+      </SectionDocsLayout>
     </HomeLayout>
   );
 }

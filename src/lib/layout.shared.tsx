@@ -1,17 +1,14 @@
 import type { BaseLayoutProps, LinkItemType } from "fumadocs-ui/layouts/shared";
 import { BrandIcon } from "@/components/brand-icon";
+import { SectionTabs } from "@/components/section-tabs";
 import { gitConfig } from "./shared";
 
 const logo = (
   <span className="inline-flex items-center gap-2">
     <BrandIcon name="quirq" size={24} />
-    <span className="whitespace-nowrap text-base font-bold">qq docs</span>
+    <span className="whitespace-nowrap text-base font-bold">quirq docs</span>
   </span>
 );
-
-const tabLinks: LinkItemType[] = [
-  { text: "Guides", url: "/docs", active: "nested-url" },
-];
 
 export const socialLinks: LinkItemType[] = [
   {
@@ -42,8 +39,9 @@ export const socialLinks: LinkItemType[] = [
 
 export function baseOptions(): BaseLayoutProps {
   return {
-    nav: { title: logo },
-    links: tabLinks,
+    // qq and xo are separate sections, each with its own sidebar. The tabs sit
+    // beside the title, so they stay in the header on a phone too.
+    nav: { title: logo, children: <SectionTabs /> },
     githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
   };
 }
