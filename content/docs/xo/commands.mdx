@@ -1,0 +1,76 @@
+---
+title: Commands
+description: Every xo command on one page, the settings it reads, and where to go for the lower-level API commands.
+icon: Terminal
+---
+
+`xo --help` lists every command, and `--help` after any of them shows its
+flags. The options go before or after the command.
+
+## Log in
+
+| Command | Does |
+|---|---|
+| `xo login` | signs you in to XO in your browser and connects gh to GitHub |
+| `xo login --key` | asks for an XO API key instead of opening the browser |
+| `xo login xo` / `xo login github` | only the XO key / only GitHub |
+| `xo status` | each service, its address, and whether you are logged in; never a key |
+| `xo logout` | deletes your XO key; asks before logging gh out |
+| `xo me` | your profile: name, image, email, public and private metadata |
+
+## Spaces
+
+| Command | Does |
+|---|---|
+| `xo create space NAME KIND` | creates a space on XO Cloud and records it as NAME ([kinds](/docs/xo/spaces#the-kinds)) |
+| `xo create space NAME` | a space here only: `./NAME`, recorded in your spaces, nothing on XO Cloud |
+| `xo spaces` (or `xo list spaces`) | your spaces, with their projects and refs |
+| `xo spaces --space-id ID` | XO Cloud's view of a space you own, with its connection URLs |
+| `xo connect P S --ref REF` | puts project P in space S at a branch, tag or commit (default `main`) |
+| `xo connect S` / `xo connect S --id ID` | a new space entry / one for an XO Cloud space you already have |
+| `xo install space:S` | clones or fetches each project into `./S/REPO` at its ref |
+| `xo update space:S` | pushes each branch under `./S`, then records the refs |
+| `xo sync space:S` | rebases and pushes each branch, merges the space's changes with yours, records them |
+
+## Projects
+
+| Command | Does |
+|---|---|
+| `xo create project URL` / `xo create project NAME` | adds a project: a clone at `./REPO`, or an empty repository at `./NAME` |
+| `xo projects` (or `xo list projects`) | your projects |
+| `xo projects add NAME` | adds a name to your projects list |
+| `xo connect P --repo URL` | gives a plain project its GitHub repo |
+| `xo install`, `update`, `sync project:P` | clone or fast-forward, push, or rebase and push one project |
+| `xo list` | your projects and your spaces together |
+
+## Sharing
+
+| Command | Does |
+|---|---|
+| `xo share space:S USER` / `xo share project:P USER` | invites USER to a copy (GitHub projects only) |
+| `xo list shared` | the invites waiting on you |
+| `xo accept ID` | shows the invite, asks, then adds it (`--as NAME`, `--space S`, `--ref REF`, `--yes`) |
+| `xo reject ID` | takes the invite off |
+
+## Settings
+
+| Setting | Variable | Flag | Default |
+|---|---|---|---|
+| XO API key | `XO_API_KEY` | `--api-key -` (asks without showing it) | the key `xo login` saved |
+| Address | `XO_URL` | `--url URL` | the one `xo login` saved, then `https://xo.quirq.dev` |
+
+A saved key is only ever sent to the address it was saved with, so a one-off
+`--url` needs `--api-key -` or `XO_API_KEY`. Avoid `--api-key KEY` itself: the
+key would land in your shell history and the process list.
+
+Responses print as JSON on stdout. Any problem exits 1 with one line on
+stderr, starting `xo:`, that says why.
+
+## Lower level and self-hosting
+
+`xo ops`, `xo call` and `xo api` reach XO Cloud's API operation by operation
+(through the xo server, only the creates and `xo spaces --space-id` pass);
+the [xo README](https://github.com/quirq-ai/xo#lower-level) covers them. To
+run your own xo server, see
+[deploy-vercel.md](https://github.com/quirq-ai/xo/blob/main/docs/deploy-vercel.md)
+in the xo repo.
