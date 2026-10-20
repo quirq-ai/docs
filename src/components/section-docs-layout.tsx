@@ -2,16 +2,22 @@
 
 import type * as PageTree from "fumadocs-core/page-tree";
 import { DocsLayout, type DocsLayoutProps } from "fumadocs-ui/layouts/docs";
+import type { LinkItemType } from "fumadocs-ui/layouts/shared";
 import { usePathname } from "next/navigation";
-import { inXo } from "@/lib/sections";
+import { sectionOf } from "@/lib/sections";
 
-// The docs layout with the sidebar of the section the page is in: qq or xo.
+type PerSection<T> = { qq: T; xo: T };
+
+// The docs layout with the sidebar and links of the section the page is in:
+// qq or xo.
 export function SectionDocsLayout({
   trees,
+  sectionLinks,
   ...props
-}: Omit<DocsLayoutProps, "tree"> & {
-  trees: { qq: PageTree.Root; xo: PageTree.Root };
+}: Omit<DocsLayoutProps, "tree" | "links"> & {
+  trees: PerSection<PageTree.Root>;
+  sectionLinks: PerSection<LinkItemType[]>;
 }) {
-  const pathname = usePathname();
-  return <DocsLayout {...props} tree={inXo(pathname) ? trees.xo : trees.qq} />;
+  const id = sectionOf(usePathname()).id;
+  return <DocsLayout {...props} tree={trees[id]} links={sectionLinks[id]} />;
 }

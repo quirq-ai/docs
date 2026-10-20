@@ -1,5 +1,6 @@
 import type { BaseLayoutProps, LinkItemType } from "fumadocs-ui/layouts/shared";
 import { BrandIcon } from "@/components/brand-icon";
+import { SectionGithubLink } from "@/components/section-github-link";
 import { SectionTabs } from "@/components/section-tabs";
 import { gitConfig } from "./shared";
 
@@ -10,15 +11,7 @@ const logo = (
   </span>
 );
 
-export const socialLinks: LinkItemType[] = [
-  {
-    type: "icon",
-    label: "GitHub",
-    text: "GitHub",
-    icon: <span className="icon-[ph--github-logo-fill] size-3.5" />,
-    url: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
-    external: true,
-  },
+const otherLinks: LinkItemType[] = [
   {
     type: "icon",
     label: "quirq.ai",
@@ -37,11 +30,32 @@ export const socialLinks: LinkItemType[] = [
   },
 ];
 
+// The GitHub link goes to the repo of the section you are in.
+export function socialLinksFor(githubUrl: string): LinkItemType[] {
+  return [
+    {
+      type: "icon",
+      label: "GitHub",
+      text: "GitHub",
+      icon: <span className="icon-[ph--github-logo-fill] size-3.5" />,
+      url: githubUrl,
+      external: true,
+    },
+    ...otherLinks,
+  ];
+}
+
+export const socialLinks = socialLinksFor(
+  `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
+);
+
 export function baseOptions(): BaseLayoutProps {
   return {
     // qq and xo are separate sections, each with its own sidebar. The tabs sit
     // beside the title, so they stay in the header on a phone too.
     nav: { title: logo, children: <SectionTabs /> },
-    githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
+    links: [
+      { type: "custom", secondary: true, children: <SectionGithubLink /> },
+    ],
   };
 }

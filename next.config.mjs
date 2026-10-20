@@ -12,8 +12,8 @@ const config = {
   },
   async redirects() {
     return [
-      // The site is qq only. Old guide, per-repo and start pages land on the
-      // page that now covers them; the quirq proposal section was removed.
+      // Old qq guide, per-repo and start pages land on the page that now
+      // covers them; the quirq proposal section was removed.
       ...[
         ["/start", "/docs/install"],
         ["/docs/start", "/docs/install"],

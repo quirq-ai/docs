@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { BrandIcon } from "@/components/brand-icon";
+import { SectionTabs } from "@/components/section-tabs";
 import { Video } from "@/components/video";
 import { socialLinks } from "@/lib/layout.shared";
 
@@ -23,25 +24,24 @@ export function QqHome() {
     <main className="min-h-screen bg-fd-background text-fd-foreground">
       {/* Header */}
       <header className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-5 sm:px-8">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2.5 text-sm font-semibold tracking-tight"
-        >
-          <BrandIcon name="quirq" size={24} />
-          <span className="whitespace-nowrap text-base font-bold">qq docs</span>
-        </Link>
+        <div className="flex items-center">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2.5 text-sm font-semibold tracking-tight"
+          >
+            <BrandIcon name="quirq" size={24} />
+            <span className="whitespace-nowrap text-base font-bold">
+              quirq docs
+            </span>
+          </Link>
+          <SectionTabs />
+        </div>
         <nav aria-label="Primary" className="flex items-center gap-4 text-sm">
           <Link
             href="/docs/install"
-            className="whitespace-nowrap py-3 font-medium text-fd-foreground transition-colors hover:text-fd-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
+            className="hidden whitespace-nowrap py-3 font-medium sm:inline-block text-fd-foreground transition-colors hover:text-fd-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
           >
             Install
-          </Link>
-          <Link
-            href="/docs"
-            className="hidden whitespace-nowrap text-fd-muted-foreground transition-colors hover:text-fd-foreground sm:inline-block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
-          >
-            Docs
           </Link>
           <Link
             href="/docs/commands"
@@ -60,7 +60,7 @@ export function QqHome() {
           </a>
           <Link
             href="/docs/first-build"
-            className="rounded-lg bg-fd-primary px-4 py-2 font-medium text-fd-primary-foreground transition-opacity sm:whitespace-nowrap hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
+            className="rounded-lg bg-fd-primary px-4 py-2 font-medium text-fd-primary-foreground whitespace-nowrap transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-primary"
           >
             Get started
           </Link>
