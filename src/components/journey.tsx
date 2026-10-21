@@ -15,7 +15,7 @@ import { buttonVariants } from "./ui/button";
 // A guided journey: numbered steps beside a terminal. The terminal replays a
 // real run recorded by scripts/videos/recorder.py (see scripts/journeys/):
 // typing or tapping a step's command plays back what that command printed,
-// with its timings. Nothing typed here runs anywhere; "Run it for real" opens
+// with long waits cut short. Nothing typed here runs anywhere; "Run it for real" opens
 // a Codespace where it does.
 
 type RecEvent =
@@ -39,7 +39,6 @@ type Replay = {
 type JourneyState = {
   active: string;
   done: Set<string>;
-  wide: boolean;
   busy: boolean;
   select: (id: string) => void;
   run: (id: string, typed?: string) => void;
@@ -76,18 +75,6 @@ function replays(rec: Recording, shownFor: Record<string, string>) {
     }
   }
   return out;
-}
-
-function useWide() {
-  const [wide, setWide] = useState(false);
-  useEffect(() => {
-    const q = window.matchMedia("(min-width: 1024px)");
-    const on = () => setWide(q.matches);
-    on();
-    q.addEventListener("change", on);
-    return () => q.removeEventListener("change", on);
-  }, []);
-  return wide;
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -136,8 +123,11 @@ export function Journey({
       text: "Replay of a real run. Type a command from the steps, or press Run on a step. Type help for more.",
     },
   ]);
-  const [prompt, setPrompt] = useState(reps[steps[0]?.id]?.prompt ?? "~");
-  const wide = useWide();
+  const [prompt, setPrompt] = useState("~");
+  // The input and its history live here, so both terminal places (beside the
+  // steps on desktop, inside the current step on phones) share them.
+  const [value, setValue] = useState("");
+  const [history, setHistory] = useState<string[]>([]);
   const stop = useRef(false);
 
   const push = useCallback((l: Line) => setLines((ls) => [...ls, l]), []);
@@ -163,8 +153,14 @@ export function Journey({
           return [...ls, { kind: "out", text: o.text }];
         });
       }
-      if (stop.current) push({ kind: "note", text: "^C" });
-      else if (r.code < 0)
+      if (stop.current) {
+        // Stopped by the reader: the step is not done, and stays current.
+        push({ kind: "note", text: "^C" });
+        setPrompt(r.prompt);
+        setBusy(false);
+        return;
+      }
+      if (r.code < 0)
         push({
           kind: "note",
           text: "(stopped here; on your machine it keeps running until Ctrl-C)",
@@ -195,9 +191,21 @@ export function Journey({
             .join("\n")}\nTo run anything else, use "Run it for real" below.`,
         });
       if (cmd === "pwd") return push({ kind: "out", text: `${prompt}\n` });
+      const known = [...new Set(Object.values(reps).map((r) => r.prompt))];
+      // `mkdir -p DIR && cd DIR`, as the guides write it, for a folder the
+      // recording used.
+      const mk = /^mkdir -p (\S+?)\/?( && cd \1\/?)?$/.exec(cmd);
+      if (mk) {
+        if (!known.includes(mk[1]))
+          return push({
+            kind: "note",
+            text: `mkdir: ${mk[1]}: not a folder in this replay`,
+          });
+        if (mk[2]) setPrompt(mk[1]);
+        return;
+      }
       if (cmd === "cd" || cmd.startsWith("cd ")) {
         const to = cmd.slice(3).replace(/\/$/, "") || "~";
-        const known = [...new Set(Object.values(reps).map((r) => r.prompt))];
         const hit = known.find(
           (p) => p === to || p.endsWith(`/${to}`) || p === `${prompt}/${to}`,
         );
@@ -220,6 +228,10 @@ export function Journey({
       lines={lines}
       prompt={prompt}
       busy={busy}
+      value={value}
+      setValue={setValue}
+      history={history}
+      setHistory={setHistory}
       onCommand={onCommand}
       onStop={() => {
         stop.current = true;
@@ -233,7 +245,6 @@ export function Journey({
   const state: JourneyState = {
     active,
     done,
-    wide,
     busy,
     select: setActive,
     run: (id, typed) => void run(id, typed),
@@ -244,11 +255,9 @@ export function Journey({
     <Ctx.Provider value={state}>
       <div className="not-prose my-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <ol className="flex min-w-0 flex-col gap-3">{children}</ol>
-        {wide && (
-          <aside className="min-w-0">
-            <div className="sticky top-24">{terminal}</div>
-          </aside>
-        )}
+        <aside className="min-w-0 max-lg:hidden">
+          <div className="sticky top-24">{terminal}</div>
+        </aside>
       </div>
     </Ctx.Provider>
   );
@@ -269,6 +278,18 @@ export function JourneyStep({
   if (!j) throw new Error("JourneyStep must be inside Journey");
   const isActive = j.active === id;
   const isDone = j.done.has(id);
+  const here = useRef<HTMLDivElement>(null);
+  const started = j.done.size > 0;
+  // On phones the terminal moves into the next step when one ends; bring it
+  // into view there, so the output just shown does not jump off screen.
+  useEffect(() => {
+    if (
+      isActive &&
+      started &&
+      !window.matchMedia("(min-width: 1024px)").matches
+    )
+      here.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [isActive, started]);
   return (
     <li
       className={`rounded-xl border bg-fd-card p-4 text-sm leading-relaxed transition-colors ${
@@ -312,7 +333,11 @@ export function JourneyStep({
           </button>
         </div>
       </div>
-      {!j.wide && isActive && <div className="mt-4">{j.terminal}</div>}
+      {isActive && (
+        <div ref={here} className="mt-4 scroll-mb-24 lg:hidden">
+          {j.terminal}
+        </div>
+      )}
     </li>
   );
 }
@@ -321,6 +346,10 @@ function Terminal({
   lines,
   prompt,
   busy,
+  value,
+  setValue,
+  history,
+  setHistory,
   onCommand,
   onStop,
   title,
@@ -330,14 +359,16 @@ function Terminal({
   lines: Line[];
   prompt: string;
   busy: boolean;
+  value: string;
+  setValue: (v: string) => void;
+  history: string[];
+  setHistory: (f: (h: string[]) => string[]) => void;
   onCommand: (cmd: string) => void;
   onStop: () => void;
   title: string;
   realUrl: string;
   recordedOn: string;
 }) {
-  const [value, setValue] = useState("");
-  const [history, setHistory] = useState<string[]>([]);
   const [hi, setHi] = useState(-1);
   const box = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
@@ -365,7 +396,7 @@ function Terminal({
         ref={box}
         role="log"
         aria-label="Terminal output"
-        className="h-[22rem] overflow-y-auto px-3 py-3 font-mono text-[0.8rem] leading-relaxed lg:h-[28rem]"
+        className="h-[22rem] overflow-y-auto px-3 py-3 font-mono text-[0.8rem] leading-relaxed focus-within:ring-2 focus-within:ring-inset focus-within:ring-sky-400 lg:h-[28rem]"
         onClick={() => input.current?.focus()}
       >
         {lines.map((l, i) => (
@@ -437,7 +468,11 @@ function Terminal({
           href={realUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-11 items-center rounded-md border border-neutral-600 px-3 font-medium text-neutral-100 hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+          className={buttonVariants({
+            variant: "outline",
+            className:
+              "min-h-11 border-neutral-600 px-3 text-neutral-100 hover:bg-neutral-800 hover:text-neutral-100 focus-visible:ring-sky-400",
+          })}
         >
           Run it for real ↗
         </a>

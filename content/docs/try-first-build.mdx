@@ -10,15 +10,15 @@ import recording from "@/journeys/first-build.json";
 <Lead>
   The same five steps as [Your first build](/docs/first-build), with a
   terminal beside them. Type each command, or press **Run this step**, and
-  the terminal plays back what that command printed in a real run, at its
-  real speed. It is a replay: nothing you type here runs anywhere. To run
-  anything you like, press **Run it for real**, which opens a free GitHub
-  Codespace with qq installed.
+  the terminal plays back what that command printed in a real run, with
+  long waits cut short. It is a replay: nothing you type here runs anywhere. To run
+  anything you like, press **Run it for real**, which opens a GitHub
+  Codespace on your own GitHub account, with qq installed.
 </Lead>
 
 <Journey
   recording={recording}
-  realUrl="https://codespaces.new/quirq-ai/docs?devcontainer_path=.devcontainer%2Fplayground%2Fdevcontainer.json"
+  realUrl="https://codespaces.new/quirq-ai/docs/tree/claude/project-thread-7y1z6r?devcontainer_path=.devcontainer%2Fplayground%2Fdevcontainer.json"
   recordedOn="Recorded 2026-10-21 on Linux. That machine could not reach ghcr.io, so it cloned with git and passed Node 24 in."
   steps={[
     { id: "get", cmd: "qq fetch https://github.com/quirq-ai/innernet" },
@@ -30,9 +30,14 @@ import recording from "@/journeys/first-build.json";
 >
   <JourneyStep id="get" n={1} title="Get the repo">
     `qq fetch` clones a repo and runs `qq sync` in it, which downloads the
-    repo's pinned toolchains and checks each against its digest.
+    repo's pinned toolchains and checks each against its digest. Make a
+    folder for it first, and go into the clone after:
+
+    `mkdir -p ~/qq-try && cd ~/qq-try`
 
     `qq fetch https://github.com/quirq-ai/innernet`
+
+    `cd innernet`
   </JourneyStep>
   <JourneyStep id="show" n={2} title="See what it builds">
     A repo is a list of **targets**, each with a **kind** such as `node-app`
@@ -55,7 +60,10 @@ import recording from "@/journeys/first-build.json";
   </JourneyStep>
   <JourneyStep id="run" n={5} title="Run it">
     `qq run` runs a command with the repo's pinned toolchains first on
-    `PATH`. innernet starts at http://127.0.0.1:3470 on your machine.
+    `PATH`. innernet starts at http://127.0.0.1:3470 on your machine. The
+    replay's first line, `not synced here`, is there only because the
+    recording machine could not run `qq sync`; after `qq fetch` you will not
+    see it.
 
     `qq run "pnpm start"`
   </JourneyStep>
@@ -66,6 +74,7 @@ import recording from "@/journeys/first-build.json";
 **Run it for real** opens a GitHub Codespace: a Linux machine in your
 browser, made from this docs repo, with qq, qqsync and the xo CLI already
 installed. Every command runs there, so you can go off the guide and try
-anything. It is your own Codespace, on your GitHub account's free monthly
-allowance, and you can delete it when you are done. Nothing in it is shared
-with quirq.
+anything. You need a GitHub account, and it works best on a computer. It is
+your own Codespace, on your account's monthly Codespaces allowance (free up to
+its limit; past it, GitHub bills your account if it has a payment method), and
+you can delete it when you are done. It holds no key or token of quirq's.

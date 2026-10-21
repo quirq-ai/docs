@@ -10,6 +10,8 @@ qq fetch https://github.com/quirq-ai/innernet
 cd innernet && qq test
 ```
 
-It is your own machine, on your GitHub account's free Codespaces allowance.
-`xo login` signs in your own account. Delete the Codespace at
-https://github.com/codespaces when you are done.
+It is your own machine, on your GitHub account's Codespaces allowance (free
+up to its monthly limit). `xo login` cannot finish its browser sign-in here,
+because the sign-in returns to 127.0.0.1 on your own device, not this
+Codespace; if you have an XO API key, use `xo login --key`. Delete the
+Codespace at https://github.com/codespaces when you are done.

@@ -6,13 +6,12 @@
   "steps": [
     {
       "id": "get",
-      "cmd": "mkdir -p ~/qq-try && cd ~/qq-try && git clone -q https://github.com/quirq-ai/innernet && echo cloned into innernet",
+      "cmd": "git clone -q https://github.com/quirq-ai/innernet && echo cloned into innernet",
       "accept": [
         "qq fetch https://github.com/quirq-ai/innernet",
         "git clone https://github.com/quirq-ai/innernet"
       ],
-      "cd": "~",
-      "cd_after": "~/qq-try"
+      "cd": "~/qq-try"
     },
     { "id": "show", "cmd": "qqsync show", "cd": "~/qq-try/innernet" },
     {

@@ -10,7 +10,10 @@ import json, os, pty, re, select, subprocess, sys, time
 
 spec = json.load(open(sys.argv[1]))
 home = spec["home"]
-env = dict(os.environ, HOME=home, TERM="dumb", COLUMNS="96", LINES="40", NO_COLOR="1")
+# Recorded commands never see a key, token or secret from the machine running them.
+secret = re.compile(r"_KEY$|^KEY$|TOKEN|SECRET|PASSWORD|CREDENTIAL", re.I)
+env = {k: v for k, v in os.environ.items() if not secret.search(k)}
+env.update(HOME=home, TERM="dumb", COLUMNS="96", LINES="40", NO_COLOR="1")
 env.pop("HTTPS_PROXY", None) if spec.get("noproxy") else None
 env.update(spec.get("env", {}))
 env["PATH"] = spec.get("path", "").replace("~", home) + ":" + env["PATH"] if spec.get("path") else env["PATH"]

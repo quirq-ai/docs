@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # Installs qq, qqsync and the xo CLI the way the docs say, for the playground
-# Codespace. The commits are the ones content/docs/install.mdx and
-# content/docs/xo/install.mdx pin; bump them together.
+# Codespace. qqsync and xo are at the commits content/docs/install.mdx and
+# content/docs/xo/install.mdx pin; bump them together. qq has no release
+# tag yet, so it is pinned here to a main commit of quirq-ai/qq.
 set -euo pipefail
 
 mkdir -p ~/qq-tools ~/qq-tools/bin
 rm -rf ~/qq-tools/depot ~/qq-tools/qqsync
 git clone -q https://github.com/quirq-ai/qq ~/qq-tools/depot
+git -C ~/qq-tools/depot checkout -q b205b0ecb5b528db5e582b7371ca39dba53f638a
 python3 -m venv ~/qq-tools/qqsync
 ~/qq-tools/qqsync/bin/pip install -q --disable-pip-version-check \
   "qqsync @ git+https://github.com/quirq-ai/sync@9821f745690d5150cac70cd2eee54c97d431e6c3"
