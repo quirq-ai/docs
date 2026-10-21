@@ -6,10 +6,9 @@ icon: Download
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-xo needs Python 3.11 or newer and git. The install by hand pins xo to the
+xo needs Python 3.11 or newer and git. The installs below pin xo to the
 commit its [quickstart](https://github.com/quirq-ai/xo/blob/8344bf838a5567ff89e4e0ba2eeded57a252af37/docs/quickstart.md)
-installs, `10937c6`; qq-setup still installs `436bfbe` until it moves to
-`10937c6` too. For GitHub, also install the
+installs, `10937c6`. For GitHub, also install the
 [GitHub CLI](https://cli.github.com) (`gh`): xo logs in to GitHub through it.
 
 ## With qq-setup (one command)
@@ -79,7 +78,7 @@ To update by hand, replace `NEW_SHA` with the commit you were given:
 `~/.xo/bin/pip freeze | grep quirq-xo` shows which commit you have. qq-setup
 reports an xo at another commit instead of calling it out of date, since the
 XO team may have given you a newer one: its **Update** would move it back to
-its pin, `436bfbe` for now.
+the pin, `10937c6`.
 
 To remove xo, log out first, so the saved key goes too, then delete its folder
 and the `PATH` line from your startup file:
