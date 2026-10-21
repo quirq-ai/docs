@@ -1,0 +1,88 @@
+{
+  "title": "qq",
+  "home": "/home/qq-demo",
+  "cwd": "~",
+  "path": "~/qq-tools/bin:~/.xo/bin",
+  "steps": [
+    {
+      "id": "qq-version",
+      "cmd": "qq --version",
+      "cd": "~"
+    },
+    {
+      "id": "qqsync-version",
+      "cmd": "qqsync --version"
+    },
+    {
+      "id": "clone",
+      "cmd": "mkdir -p ~/qq-try && cd ~/qq-try && git clone -q https://github.com/quirq-ai/innernet && echo cloned into innernet"
+    },
+    {
+      "id": "qq-help",
+      "cmd": "qq --help",
+      "cd": "~/qq-try/innernet"
+    },
+    {
+      "id": "qqsync-show",
+      "cmd": "qqsync show"
+    },
+    {
+      "id": "qqsync-validate",
+      "cmd": "qqsync validate && echo valid"
+    },
+    {
+      "id": "qqsync-pins",
+      "cmd": "qqsync pins"
+    },
+    {
+      "id": "qqsync-guard",
+      "cmd": "qqsync guard && echo guard passed"
+    },
+    {
+      "id": "qq-build",
+      "cmd": "qq build --toolchain node=~/toolchains/node",
+      "accept": ["qq build"]
+    },
+    {
+      "id": "qq-test",
+      "cmd": "qq test --toolchain node=~/toolchains/node",
+      "accept": ["qq test"]
+    },
+    {
+      "id": "out",
+      "cmd": "ls .qq/out .qq/out/logs",
+      "accept": ["ls .qq/out"]
+    },
+    {
+      "id": "qq-run",
+      "cmd": "PATH=~/toolchains/node/bin:$PATH qq run \"node --version\"",
+      "accept": ["qq run \"node --version\"", "qq run 'node --version'"]
+    },
+    {
+      "id": "qq-create",
+      "cmd": "qq create hello echo \"hello from innernet\"",
+      "accept": ["qq create hello echo 'hello from innernet'"]
+    },
+    {
+      "id": "qq-name",
+      "cmd": "qq hello"
+    },
+    {
+      "id": "qqinstall-show",
+      "cmd": "qqinstall show",
+      "cd": "~"
+    },
+    {
+      "id": "qqinstall-resolve",
+      "cmd": "qqinstall resolve --repo xo-space --channel canary"
+    },
+    {
+      "id": "xo-version",
+      "cmd": "xo --version"
+    },
+    {
+      "id": "xo-help",
+      "cmd": "xo --help"
+    }
+  ]
+}

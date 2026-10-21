@@ -1,0 +1,406 @@
+{
+  "title": "xo against a stand-in server",
+  "events": [
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo login me --key --url http://127.0.0.1:8790 < ~/.demo-key",
+      "id": "xo-login",
+      "accept": [
+        "xo login",
+        "xo login --key",
+        "xo login me",
+        "xo login me --key"
+      ]
+    },
+    {
+      "k": "out",
+      "dt": 0.137,
+      "text": "xo: services from the xo server at https://xo.quirq.dev:\nxo:   me     https://xo.quirq.dev (the xo server; your XO key is only sent here)\nxo:   xo     https://dev.xo.builders (creates and xo spaces --space-id; your key reaches it through the xo server)\nxo:   github https://github.com (gh's own login; xo never sees the token)\nxo: the server's list gives no address for xo; showing xo's own, which may not be where it sends creates\nxo: logging in to https://xo.quirq.dev; the key will only ever be sent there\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.021,
+      "text": "xo: checking the key with XO through https://xo.quirq.dev ...\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.012,
+      "text": "xo: me: logged in as sam (user_sam); key and URL saved to ~/.config/xo/credentials (only you can read it); xo logout deletes them\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.027,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo status",
+      "id": "xo-status"
+    },
+    {
+      "k": "out",
+      "dt": 0.108,
+      "text": "me     https://xo.quirq.dev              key saved by xo login\nxo     https://dev.xo.builders            uses the same key, through the xo server (me)\ngithub https://github.com                 the GitHub CLI is not installed\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.014,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo me",
+      "id": "xo-me"
+    },
+    {
+      "k": "out",
+      "dt": 0.149,
+      "text": "{\n  \"xo\": {\n    \"username\": \"sam\",\n    \"imageUrl\": null,\n    \"firstName\": \"Sam\",\n    \"lastName\": null,\n    \"email\": \"sam@example.com\",\n    \"id\": \"user_sam\",\n    \"createdAt\": 1760000000000,\n    \"public_data\": {},\n    \"private_data\": {\n      \"shared\": [\n        {\n          \"id\": \"e01df761b8062010\",\n          \"from\": \"alex\",\n          \"item\": \"space:notes\",\n          \"at\": \"2026-10-21T18:32:07Z\",\n          \"projects\": [\n            {\n              \"quirq-ai/wiki\": \"main\"\n            }\n          ]\n        },\n        {\n          \"id\": \"c6d31997ae40a5d1\",\n          \"from\": \"alex\",\n          \"item\": \"project:quirq-ai/wiki\",\n          \"at\": \"2026-10-21T18:32:09Z\"\n        }\n      ]\n    }\n  }\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.023,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo create space demo",
+      "id": "xo-create-space"
+    },
+    {
+      "k": "out",
+      "dt": 0.144,
+      "text": "xo: POST https://xo.quirq.dev/me/spaces/connect\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.312,
+      "text": "xo: ./demo: a new space with no projects (add one with xo connect PROJECT demo; to make it on XO, use xo create space with a KIND instead)\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.0,
+      "text": "{\n  \"name\": \"demo\",\n  \"rev\": 1,\n  \"projects\": []\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.031,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo create project hello",
+      "id": "xo-create-project"
+    },
+    {
+      "k": "out",
+      "dt": 0.126,
+      "text": "xo: POST https://xo.quirq.dev/me/projects\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.312,
+      "text": "xo: ./hello: an empty git repository\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.0,
+      "text": "[\n  {\n    \"name\": \"hello\"\n  }\n]\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.017,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo create project https://github.com/quirq-ai/innernet",
+      "id": "xo-create-project-url"
+    },
+    {
+      "k": "out",
+      "dt": 0.16,
+      "text": "xo: POST https://xo.quirq.dev/me/projects\n"
+    },
+    {
+      "k": "out",
+      "dt": 4.065,
+      "text": "xo: ./innernet: cloned https://github.com/quirq-ai/innernet\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.0,
+      "text": "[\n  {\n    \"name\": \"hello\"\n  },\n  {\n    \"name\": \"innernet\",\n    \"owner\": \"quirq-ai\"\n  }\n]\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.021,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo projects add notes-app",
+      "id": "xo-projects-add"
+    },
+    {
+      "k": "out",
+      "dt": 0.126,
+      "text": "xo: POST https://xo.quirq.dev/me/projects\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.31,
+      "text": "[\n  {\n    \"name\": \"hello\"\n  },\n  {\n    \"name\": \"innernet\",\n    \"owner\": \"quirq-ai\"\n  },\n  {\n    \"name\": \"notes-app\"\n  }\n]\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.022,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo projects",
+      "id": "xo-projects"
+    },
+    {
+      "k": "out",
+      "dt": 0.136,
+      "text": "[\n  {\n    \"name\": \"hello\"\n  },\n  {\n    \"name\": \"innernet\",\n    \"owner\": \"quirq-ai\"\n  },\n  {\n    \"name\": \"notes-app\"\n  }\n]\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.019,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo connect innernet demo",
+      "id": "xo-connect"
+    },
+    {
+      "k": "out",
+      "dt": 0.15,
+      "text": "xo: POST https://xo.quirq.dev/me/spaces/demo/projects\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.307,
+      "text": "{\n  \"name\": \"demo\",\n  \"rev\": 2,\n  \"projects\": [\n    {\n      \"quirq-ai/innernet\": \"main\"\n    }\n  ]\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.018,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo list",
+      "id": "xo-list"
+    },
+    {
+      "k": "out",
+      "dt": 0.167,
+      "text": "{\n  \"projects\": [\n    {\n      \"name\": \"hello\"\n    },\n    {\n      \"name\": \"innernet\",\n      \"owner\": \"quirq-ai\"\n    },\n    {\n      \"name\": \"notes-app\"\n    }\n  ],\n  \"spaces\": [\n    {\n      \"name\": \"demo\",\n      \"rev\": 2,\n      \"projects\": [\n        {\n          \"quirq-ai/innernet\": \"main\"\n        }\n      ]\n    }\n  ]\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.016,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo install space:demo",
+      "id": "xo-install"
+    },
+    {
+      "k": "out",
+      "dt": 4.265,
+      "text": "xo: ./demo/innernet: main\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.001,
+      "text": "{\n  \"space\": \"demo\",\n  \"rev\": 2,\n  \"projects\": [\n    {\n      \"quirq-ai/innernet\": \"main\"\n    }\n  ]\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.034,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo create space lab claude-code --volume-size 20 --dry-run",
+      "id": "xo-create-kind-dry"
+    },
+    {
+      "k": "out",
+      "dt": 0.193,
+      "text": "{\n  \"method\": \"POST\",\n  \"url\": \"https://xo.quirq.dev/me/spaces\",\n  \"headers\": {},\n  \"body\": {\n    \"kind\": \"claude-code\",\n    \"name\": \"lab\",\n    \"body\": {\n      \"volumeSize\": 20,\n      \"name\": \"lab\"\n    }\n  }\n}\nxo: the new space gets a copy of this API key (as xo_api_key)\nxo: dry run, nothing sent\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.022,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo create space lab claude-code --volume-size 20",
+      "id": "xo-create-kind"
+    },
+    {
+      "k": "out",
+      "dt": 0.192,
+      "text": "xo: POST https://xo.quirq.dev/me/spaces\nxo: the new space gets a copy of this API key (as xo_api_key)\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.319,
+      "text": "{\n  \"success\": true,\n  \"data\": {\n    \"space\": {\n      \"name\": \"lab\",\n      \"kind\": \"claude-code\",\n      \"id\": \"181772e3-3c50-5fc6-b0c8-05c9292c3b7a\",\n      \"rev\": 1,\n      \"projects\": []\n    },\n    \"xo\": {\n      \"id\": \"181772e3-3c50-5fc6-b0c8-05c9292c3b7a\",\n      \"name\": \"lab\",\n      \"owner\": \"user_sam\",\n      \"type\": \"claude-code\"\n    }\n  }\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.026,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo spaces",
+      "id": "xo-spaces"
+    },
+    {
+      "k": "out",
+      "dt": 0.194,
+      "text": "[\n  {\n    \"name\": \"demo\",\n    \"rev\": 2,\n    \"projects\": [\n      {\n        \"quirq-ai/innernet\": \"main\"\n      }\n    ]\n  },\n  {\n    \"name\": \"lab\",\n    \"kind\": \"claude-code\",\n    \"id\": \"181772e3-3c50-5fc6-b0c8-05c9292c3b7a\",\n    \"rev\": 1,\n    \"projects\": []\n  }\n]\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.024,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo spaces --space-id 181772e3-3c50-5fc6-b0c8-05c9292c3b7a",
+      "id": "xo-space-id"
+    },
+    {
+      "k": "out",
+      "dt": 0.212,
+      "text": "{\n  \"success\": true,\n  \"data\": {\n    \"userId\": \"user_sam\",\n    \"spaceName\": \"lab\",\n    \"spaceApiUrl\": \"https://lab.spaces.example.com\",\n    \"openClawRestartUrl\": \"https://lab.spaces.example.com/restart\",\n    \"sharedUsers\": []\n  }\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.026,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo share space:demo alex",
+      "id": "xo-share"
+    },
+    {
+      "k": "out",
+      "dt": 0.189,
+      "text": "xo: POST https://xo.quirq.dev/me/share\n"
+    },
+    {
+      "k": "out",
+      "dt": 1.507,
+      "text": "{\n  \"to\": \"alex\",\n  \"item\": \"space:demo\",\n  \"projects\": [\n    {\n      \"quirq-ai/innernet\": \"main\"\n    }\n  ]\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.021,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo list shared",
+      "id": "xo-list-shared"
+    },
+    {
+      "k": "out",
+      "dt": 0.146,
+      "text": "[\n  {\n    \"id\": \"e01df761b8062010\",\n    \"from\": \"alex\",\n    \"item\": \"space:notes\",\n    \"at\": \"2026-10-21T18:32:07Z\",\n    \"projects\": [\n      {\n        \"quirq-ai/wiki\": \"main\"\n      }\n    ]\n  },\n  {\n    \"id\": \"c6d31997ae40a5d1\",\n    \"from\": \"alex\",\n    \"item\": \"project:quirq-ai/wiki\",\n    \"at\": \"2026-10-21T18:32:09Z\"\n  }\n]\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.017,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo accept e01df761b8062010 --as team-notes --yes",
+      "id": "xo-accept"
+    },
+    {
+      "k": "out",
+      "dt": 0.126,
+      "text": "xo: POST https://xo.quirq.dev/me/shared/accept\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.308,
+      "text": "{\n  \"id\": \"e01df761b8062010\",\n  \"item\": \"space:notes\",\n  \"space\": {\n    \"name\": \"team-notes\",\n    \"rev\": 1,\n    \"projects\": [\n      {\n        \"quirq-ai/wiki\": \"main\"\n      }\n    ]\n  },\n  \"projectsAdded\": [\n    \"quirq-ai/wiki\"\n  ]\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.017,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo reject c6d31997ae40a5d1",
+      "id": "xo-reject"
+    },
+    {
+      "k": "out",
+      "dt": 0.119,
+      "text": "xo: POST https://xo.quirq.dev/me/shared/reject\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.311,
+      "text": "{\n  \"id\": \"c6d31997ae40a5d1\",\n  \"item\": \"project:quirq-ai/wiki\"\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.019,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo logout",
+      "id": "xo-logout"
+    },
+    {
+      "k": "out",
+      "dt": 0.097,
+      "text": "xo: me: deleted ~/.config/xo/credentials\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.014,
+      "code": 0
+    }
+  ]
+}

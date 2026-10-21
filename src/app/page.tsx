@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { QqHome } from "@/components/qq-home";
+import { DocsHome } from "@/components/docs-home";
 
 export const metadata: Metadata = {
   title: "qq docs",
@@ -18,5 +18,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootPage() {
-  return <QqHome />;
+  return <DocsHome />;
 }

@@ -1,0 +1,54 @@
+{
+  "title": "xo against a stand-in server",
+  "home": "/home/xo-demo",
+  "cwd": "~",
+  "path": "~/.xo/bin",
+  "env": {
+    "NO_PROXY": "127.0.0.1,localhost",
+    "no_proxy": "127.0.0.1,localhost"
+  },
+  "replace": { "http://127.0.0.1:8790": "https://xo.quirq.dev" },
+  "steps": [
+    {
+      "id": "xo-login",
+      "cmd": "xo login me --key --url http://127.0.0.1:8790 < ~/.demo-key",
+      "accept": [
+        "xo login",
+        "xo login --key",
+        "xo login me",
+        "xo login me --key"
+      ]
+    },
+    { "id": "xo-status", "cmd": "xo status" },
+    { "id": "xo-me", "cmd": "xo me" },
+    { "id": "xo-create-space", "cmd": "xo create space demo" },
+    { "id": "xo-create-project", "cmd": "xo create project hello" },
+    {
+      "id": "xo-create-project-url",
+      "cmd": "xo create project https://github.com/quirq-ai/innernet"
+    },
+    { "id": "xo-projects-add", "cmd": "xo projects add notes-app" },
+    { "id": "xo-projects", "cmd": "xo projects" },
+    { "id": "xo-connect", "cmd": "xo connect innernet demo" },
+    { "id": "xo-list", "cmd": "xo list" },
+    { "id": "xo-install", "cmd": "xo install space:demo" },
+    {
+      "id": "xo-create-kind-dry",
+      "cmd": "xo create space lab claude-code --volume-size 20 --dry-run"
+    },
+    {
+      "id": "xo-create-kind",
+      "cmd": "xo create space lab claude-code --volume-size 20"
+    },
+    { "id": "xo-spaces", "cmd": "xo spaces" },
+    { "id": "xo-space-id", "cmd": "xo spaces --space-id {LAB_ID}" },
+    { "id": "xo-share", "cmd": "xo share space:demo alex" },
+    { "id": "xo-list-shared", "cmd": "xo list shared" },
+    {
+      "id": "xo-accept",
+      "cmd": "xo accept {SPACE_INVITE} --as team-notes --yes"
+    },
+    { "id": "xo-reject", "cmd": "xo reject {PROJECT_INVITE}" },
+    { "id": "xo-logout", "cmd": "xo logout" }
+  ]
+}

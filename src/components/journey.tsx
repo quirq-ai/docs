@@ -25,9 +25,13 @@ type RecEvent =
 
 export type Recording = { title: string; events: RecEvent[] };
 
-type Line = { kind: "cmd" | "out" | "note"; prompt?: string; text: string };
+export type Line = {
+  kind: "cmd" | "out" | "note";
+  prompt?: string;
+  text: string;
+};
 
-type Replay = {
+export type Replay = {
   prompt: string;
   shown: string;
   recorded: string;
@@ -49,7 +53,7 @@ const Ctx = createContext<JourneyState | null>(null);
 const norm = (s: string) => s.trim().replace(/\s+/g, " ");
 
 // Each recorded command, keyed by its step id, with what it printed.
-function replays(rec: Recording, shownFor: Record<string, string>) {
+export function replays(rec: Recording, shownFor: Record<string, string>) {
   const out: Record<string, Replay> = {};
   let cur: { id: string; r: Replay } | null = null;
   for (const e of rec.events) {
@@ -337,7 +341,7 @@ export function JourneyStep({
   );
 }
 
-function Terminal({
+export function Terminal({
   lines,
   prompt,
   busy,
@@ -349,6 +353,8 @@ function Terminal({
   onStop,
   title,
   recordedOn,
+  logClassName = "h-[22rem] lg:h-[28rem]",
+  children,
 }: {
   lines: Line[];
   prompt: string;
@@ -360,7 +366,11 @@ function Terminal({
   onCommand: (cmd: string) => void;
   onStop: () => void;
   title: string;
-  recordedOn: string;
+  recordedOn: ReactNode;
+  /** the output area's height */
+  logClassName?: string;
+  /** shown between the output and the footer */
+  children?: ReactNode;
 }) {
   const [hi, setHi] = useState(-1);
   const box = useRef<HTMLDivElement>(null);
@@ -389,7 +399,7 @@ function Terminal({
         ref={box}
         role="log"
         aria-label="Terminal output"
-        className="h-[22rem] overflow-y-auto px-3 py-3 font-mono text-[0.8rem] leading-relaxed focus-within:ring-2 focus-within:ring-inset focus-within:ring-fd-ring lg:h-[28rem]"
+        className={`${logClassName} overflow-y-auto px-3 py-3 font-mono text-[0.8rem] leading-relaxed focus-within:ring-2 focus-within:ring-inset focus-within:ring-fd-ring`}
         onClick={() => input.current?.focus()}
       >
         {lines.map((l, i) => (
@@ -455,6 +465,7 @@ function Terminal({
           />
         </form>
       </div>
+      {children}
       <div className="border-t border-fd-border px-3 py-2 text-xs text-[var(--term-dim)]">
         {recordedOn}
       </div>
