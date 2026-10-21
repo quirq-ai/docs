@@ -90,6 +90,24 @@ export const examples: Record<string, Example> = {
     code: 0,
     from: "xo 10937c6 src/xo/workspace.py update() (project) and _say; JSON as xo prints it, with the name resolve() returns (OWNER/REPO for a GitHub project)",
   },
+  "xo-create-space": {
+    prompt: "~/work",
+    out:
+      "xo: xo create space demo makes /home/sam/work a space: each folder here becomes its own branch of github.com/sam/demo, and main lists them.\n" +
+      "  notes                             12.4 KB\n" +
+      "  site                               1.3 MB  (a git clone: its files only, not its history)\n" +
+      "  Files directly in this folder and hidden folders are not included. Each folder's .gitignore (and this folder's) is followed; .env files, keys, credential stores, nested repositories and .github/workflows are left out, and a file that looks like it holds a key, token or password stops it before anything is pushed. xo cannot find every secret (one in an archive, say), so look through these folders first. Everything else is pushed to a new public repository github.com/sam/demo, which xo asks you to make. Anyone can read it, and what is pushed stays public. Nothing in these folders is changed.\n" +
+      "xo: Make this folder the space? [y/N] y\n" +
+      "xo: ./.git: 2 branches and main, sha256:226b2d0bcd2477b35a7cc37af38a3b9bc7a7a00408f7f95e50d2cde287332ccc\n" +
+      "xo: github.com/sam/demo does not exist yet (or is private). Make it here, empty (no README, license or .gitignore):\n" +
+      "  https://github.com/new?name=demo&owner=sam&visibility=public\n" +
+      "xo: Press Enter once it exists, or n to stop here \n" +
+      "xo: pushed main and 2 branches to https://github.com/sam/demo\n" +
+      "xo: POST https://xo.quirq.dev/me/spaces/connect\n" +
+      '{\n  "space": "demo",\n  "github": "sam/demo",\n  "hash": "sha256:226b2d0bcd2477b35a7cc37af38a3b9bc7a7a00408f7f95e50d2cde287332ccc",\n  "main": "b28b7af69320201d1cf206ebf28373980add1451",\n  "branches": {\n    "notes": "3add7b9612102f2a7dbe4ed4fe886e07e847c24d",\n    "site": "c099a42a5555825cdb50df0c04932bcd29613457"\n  },\n  "pushed": true\n}\n',
+    code: 0,
+    from: "xo ca83435 src/xo/cli.py _create_local_space and src/xo/spacerepo.py create(): the listing and question, build() (its ./.git line), the github.com/new link and wait, push(), then POST /me/spaces/connect and the JSON; a made-up user sam, folders, hash and commits",
+  },
   "xo-sync": {
     prompt: "~",
     out: 'xo: ./innernet: rebased on its upstream and pushed\n{\n  "project": "quirq-ai/innernet"\n}\n',
@@ -367,9 +385,12 @@ export const commands: Command[] = [
   {
     id: "xo-create-space",
     cmd: "xo create space demo",
-    src: "stand-in",
-    more: D.xoSpaces,
-    what: "A space here only: the folder ./demo, recorded in your spaces, nothing on XO Cloud.",
+    src: "example",
+    more: {
+      href: "/docs/xo/spaces#a-space-from-your-folders",
+      label: "Spaces",
+    },
+    what: "This folder as space demo: one branch per folder, pushed to a public GitHub repository after you say yes. Nothing on XO Cloud.",
     next: ["xo-connect", "xo-create-kind-dry"],
   },
   {

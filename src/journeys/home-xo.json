@@ -68,32 +68,6 @@
     {
       "k": "cmd",
       "prompt": "~",
-      "text": "xo create space demo",
-      "id": "xo-create-space"
-    },
-    {
-      "k": "out",
-      "dt": 0.144,
-      "text": "xo: POST https://xo.quirq.dev/me/spaces/connect\n"
-    },
-    {
-      "k": "out",
-      "dt": 0.312,
-      "text": "xo: ./demo: a new space with no projects (add one with xo connect PROJECT demo; to make it on XO, use xo create space with a KIND instead)\n"
-    },
-    {
-      "k": "out",
-      "dt": 0.0,
-      "text": "{\n  \"name\": \"demo\",\n  \"rev\": 1,\n  \"projects\": []\n}\n"
-    },
-    {
-      "k": "end",
-      "dt": 0.031,
-      "code": 0
-    },
-    {
-      "k": "cmd",
-      "prompt": "~",
       "text": "xo create project hello",
       "id": "xo-create-project"
     },

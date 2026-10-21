@@ -21,7 +21,6 @@
     },
     { "id": "xo-status", "cmd": "xo status" },
     { "id": "xo-me", "cmd": "xo me" },
-    { "id": "xo-create-space", "cmd": "xo create space demo" },
     { "id": "xo-create-project", "cmd": "xo create project hello" },
     {
       "id": "xo-create-project-url",
