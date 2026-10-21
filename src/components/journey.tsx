@@ -167,7 +167,7 @@ export function Journey({
         });
       const i = steps.findIndex((s) => s.id === id);
       const next = steps[i + 1]?.id;
-      setPrompt(next ? (reps[next]?.prompt ?? r.prompt) : r.prompt);
+      setPrompt(r.prompt);
       setDone((d) => new Set(d).add(id));
       if (next) setActive(next);
       setBusy(false);
