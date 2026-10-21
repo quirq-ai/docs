@@ -90,31 +90,44 @@ xo create space demo      # lists each folder with its size, then asks
 
 <Callout type="warn">
   The repository is public: anyone can read it, and what is pushed stays
-  public, since xo deletes nothing. xo leaves out `.env` files, keys and
-  credential stores, and stops before pushing a file that looks like it holds
-  a key, token or password, but it cannot find every secret (one in an
-  archive, say). Look through the folders before you say yes.
+  public. xo never deletes a branch or the repository and never force-pushes,
+  so a file you take out later is still in the history, and a folder you
+  remove keeps its branch. xo leaves out `.env` files, keys and credential
+  stores, and stops before pushing a file that looks like it holds a key,
+  token or password, but it cannot find every secret (one in an archive,
+  say). Look through the folders before you say yes.
 </Callout>
 
 - xo lists each folder with its size and where it goes, and asks first.
-  `--yes` answers for a script. Files directly in the folder and hidden
-  folders are not included. Nothing in your folders is changed: xo makes a
-  bare `./.git` beside them.
-- Each folder's `.gitignore` is followed. Repositories nested deeper and
-  `.github/workflows` are left out, and a clone that is one of the folders
-  goes up as its files only, not its history. A file over 100 MB, a Git LFS
-  pointer or a file git-crypt keeps encrypted stops it before anything is
-  pushed.
+  `--yes` answers that question for you, but it does not make the
+  repository: without a terminal xo cannot wait for you, so when the
+  repository is not there yet it stops before pushing (and still exits 0).
+  Run it again once the repository exists. Files directly in the folder,
+  hidden folders and links to folders are not included. Nothing in your
+  folders is changed: xo makes a bare `./.git` beside them.
+- This folder's `.gitignore` is followed, and can leave out whole folders (xo
+  lists them), and so is each folder's own. `.env` files, keys, credential
+  stores, `node_modules`, `.DS_Store` and Terraform state are always left
+  out, as are repositories nested deeper and `.github/workflows`. A clone
+  that is one of the folders goes up as its files only, not its history. A
+  file over 100 MB, a Git LFS pointer, a file git-crypt keeps encrypted or a
+  bare repository among the files stops it before anything is pushed.
 - The repository is `github.com/OWNER/NAME`, OWNER being your gh login or
-  `--owner`. When it is not there, xo prints a link to make it (empty, with
-  no README) and waits for Enter, then pushes with your own git. The space
-  goes in your spaces once it is pushed.
+  `--owner`; with neither, xo stops and says so. When the repository is not
+  there, xo prints a link to make it (empty, with no README) and, at a
+  terminal, waits for Enter, then pushes with your own git. The space goes
+  in your spaces once it is pushed.
 - Run it again in the same folder to push what changed.
-- It refuses your home folder, `/`, a folder holding `.ssh`, `.aws` or
-  `.gnupg`, hidden folders of your home (such as `~/.config`) and
-  `~/Library`, and a folder inside another git repository.
+- It refuses your home folder and the folders above it (`/` too), a hidden
+  folder of your home or anything in one (such as `~/.config`), `~/Library`
+  and `~/AppData` and anything in them, a folder holding `.ssh`, `.aws`,
+  `.gnupg`, `.kube`, `.docker`, `.azure`, `.password-store` or
+  `.config/gcloud`, a git repository's own `.git` folder or a bare
+  repository, a folder that is already a git repository (a clone, say), and
+  a folder inside one.
 - NAME is 1 to 64 letters, digits, `_`, `.` or `-`, starts with a letter or
-  digit, can't be a kind's name, `new` or `create`, and takes no `--dry-run`.
-  It is lowercased, as on XO and GitHub.
+  digit, doesn't end in `.git`, and can't be a kind's name, `new` or
+  `create`. It is lowercased, as on XO and GitHub. This form takes no
+  `--dry-run`.
 
 Next: [put your projects in a space](/docs/xo/projects).

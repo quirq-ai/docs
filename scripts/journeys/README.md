@@ -28,7 +28,8 @@ The docs home (`src/components/home-terminal.tsx`) replays every qq and xo comma
 
 - **Recorded**: `home-qq.json`, recorded like a journey into `src/journeys/home-qq.json`, on
   2026-10-21 with qq b205b0e, qqsync 9821f74, qqinstall ca28825 and xo 10937c6 (`qq build` and
-  `qq test` take `--toolchain node=~/toolchains/node`, since ghcr.io was out of reach).
+  `qq test` take `--toolchain node=~/toolchains/node`, since ghcr.io was out of reach). `xo --help`
+  was recorded again the same day with xo ca83435, whose no-KIND `xo create space` it describes.
 - **Stand-in**: `record-home-xo.sh` records `home-xo.json` into `src/journeys/home-xo.json`. It
   runs the real xo CLI against the real `xo serve`, which talks to `xo-standin.py`: a fake Clerk and
   a fake XO core API on 127.0.0.1 with two made-up users, so no real account, Clerk, XO or
@@ -36,7 +37,9 @@ The docs home (`src/components/home-terminal.tsx`) replays every qq and xo comma
   `https://xo.quirq.dev`, and the page says so. The invite IDs and the space ID are filled in when
   it runs, so they match what the recording printed. Since xo ca83435, `xo create space NAME`
   publishes a folder to GitHub, so it is an example below; the script makes sam's space `demo`
-  with `xo connect demo` before recording.
+  with `xo connect demo` before recording. The committed `home-xo.json` is still the xo 10937c6
+  recording with that step taken out by hand. Run again with xo ca83435, every output matches
+  apart from IDs and times, except that `xo me` then lists `demo`, since the script makes it first.
 
   ```sh
   ./record-home-xo.sh ~/.xo ../../src/journeys/home-xo.json   # ~/.xo: a venv with xo installed
