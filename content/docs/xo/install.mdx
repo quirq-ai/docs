@@ -6,9 +6,10 @@ icon: Download
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-xo needs Python 3.11 or newer and git. The installs below pin xo to the
-commit its [quickstart](https://github.com/quirq-ai/xo/blob/f35ded98f8c91f38ca99a557487d257985efda98/docs/quickstart.md)
-installs, `436bfbe`. For GitHub, also install the
+xo needs Python 3.11 or newer and git. The install by hand pins xo to the
+commit its [quickstart](https://github.com/quirq-ai/xo/blob/8344bf838a5567ff89e4e0ba2eeded57a252af37/docs/quickstart.md)
+installs, `10937c6`; qq-setup still installs `436bfbe` until it moves to
+`10937c6` too. For GitHub, also install the
 [GitHub CLI](https://cli.github.com) (`gh`): xo logs in to GitHub through it.
 
 ## With qq-setup (one command)
@@ -51,7 +52,7 @@ or Ubuntu `sudo apt install python3-venv`. Using bash? Change `~/.zshrc`
 
 ```sh
 python3 -m venv ~/.xo \
-  && ~/.xo/bin/pip install "quirq-xo @ git+https://github.com/quirq-ai/xo@436bfbef0d222c128bd10d3ae6b32bc407ce1b51" \
+  && ~/.xo/bin/pip install "quirq-xo @ git+https://github.com/quirq-ai/xo@10937c629fae9bb823dc1ff77f3ca59b4dc1aa29" \
   && { grep -qxF 'export PATH="$HOME/.xo/bin:$PATH"' ~/.zshrc 2>/dev/null || echo 'export PATH="$HOME/.xo/bin:$PATH"' >> ~/.zshrc; } \
   && export PATH="$HOME/.xo/bin:$PATH" \
   && xo --version
@@ -78,7 +79,7 @@ To update by hand, replace `NEW_SHA` with the commit you were given:
 `~/.xo/bin/pip freeze | grep quirq-xo` shows which commit you have. qq-setup
 reports an xo at another commit instead of calling it out of date, since the
 XO team may have given you a newer one: its **Update** would move it back to
-the pin, `436bfbe`.
+its pin, `436bfbe` for now.
 
 To remove xo, log out first, so the saved key goes too, then delete its folder
 and the `PATH` line from your startup file:
