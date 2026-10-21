@@ -1,0 +1,71 @@
+---
+title: "Try it: your first build"
+description: Follow the first build step by step beside a terminal that replays a real run, then open a real machine to try anything you like.
+icon: Terminal
+full: true
+---
+
+import recording from "@/journeys/first-build.json";
+
+<Lead>
+  The same five steps as [Your first build](/docs/first-build), with a
+  terminal beside them. Type each command, or press **Run this step**, and
+  the terminal plays back what that command printed in a real run, at its
+  real speed. It is a replay: nothing you type here runs anywhere. To run
+  anything you like, press **Run it for real**, which opens a free GitHub
+  Codespace with qq installed.
+</Lead>
+
+<Journey
+  recording={recording}
+  realUrl="https://codespaces.new/quirq-ai/docs?devcontainer_path=.devcontainer%2Fplayground%2Fdevcontainer.json"
+  recordedOn="Recorded 2026-10-21 on Linux. That machine could not reach ghcr.io, so it cloned with git and passed Node 24 in."
+  steps={[
+    { id: "get", cmd: "qq fetch https://github.com/quirq-ai/innernet" },
+    { id: "show", cmd: "qqsync show" },
+    { id: "test", cmd: "qq test" },
+    { id: "results", cmd: "ls .qq/out .qq/out/logs" },
+    { id: "run", cmd: 'qq run "pnpm start"' },
+  ]}
+>
+  <JourneyStep id="get" n={1} title="Get the repo">
+    `qq fetch` clones a repo and runs `qq sync` in it, which downloads the
+    repo's pinned toolchains and checks each against its digest.
+
+    `qq fetch https://github.com/quirq-ai/innernet`
+  </JourneyStep>
+  <JourneyStep id="show" n={2} title="See what it builds">
+    A repo is a list of **targets**, each with a **kind** such as `node-app`
+    that tells qq how to build and test it. Ask `qqsync` rather than reading
+    `infra/repo.toml` yourself. innernet has one target, `app`.
+
+    `qqsync show`
+  </JourneyStep>
+  <JourneyStep id="test" n={3} title="Build and test it">
+    `qq test` builds every target, then tests it, one line per step. Read
+    each line as *result, target, step*.
+
+    `qq test`
+  </JourneyStep>
+  <JourneyStep id="results" n={4} title="Read the results">
+    Everything a run produces lands in `.qq/out`: `results.json` for scripts
+    and agents, one log per step in `logs/`, and JUnit XML in `junit/`.
+
+    `ls .qq/out .qq/out/logs`
+  </JourneyStep>
+  <JourneyStep id="run" n={5} title="Run it">
+    `qq run` runs a command with the repo's pinned toolchains first on
+    `PATH`. innernet starts at http://127.0.0.1:3470 on your machine.
+
+    `qq run "pnpm start"`
+  </JourneyStep>
+</Journey>
+
+## Run it for real
+
+**Run it for real** opens a GitHub Codespace: a Linux machine in your
+browser, made from this docs repo, with qq, qqsync and the xo CLI already
+installed. Every command runs there, so you can go off the guide and try
+anything. It is your own Codespace, on your GitHub account's free monthly
+allowance, and you can delete it when you are done. Nothing in it is shared
+with quirq.

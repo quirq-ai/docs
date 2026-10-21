@@ -1,0 +1,141 @@
+{
+  "title": "Your first build: innernet",
+  "events": [
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "mkdir -p ~/qq-try && cd ~/qq-try && git clone -q https://github.com/quirq-ai/innernet && echo cloned into innernet",
+      "id": "get",
+      "accept": [
+        "qq fetch https://github.com/quirq-ai/innernet",
+        "git clone https://github.com/quirq-ai/innernet"
+      ]
+    },
+    {
+      "k": "out",
+      "dt": 3.468,
+      "text": "cloned into innernet\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.0,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "qqsync show",
+      "id": "show"
+    },
+    {
+      "k": "out",
+      "dt": 0.159,
+      "text": "{\n  \"qq\": {\n    \"version\": \"0.1.0\"\n  },\n  \"schema\": \"quirq-repo/1\",\n  \"targets\": [\n    {\n      \"kind\": \"node-app\",\n      \"name\": \"app\",\n      \"outs\": [\n        \".next/\"\n      ],\n      \"srcs\": [\n        \"app/**\",\n        \"components/**\",\n        \"lib/**\",\n        \"public/**\",\n        \"scripts/**\",\n        \"data/demo/**\",\n        \"package.json\",\n        \"pnpm-lock.yaml\",\n        \"pnpm-workspace.yaml\",\n        \"tsconfig.json\",\n        \"next.config.ts\",\n        \"proxy.ts\",\n        \"instrumentation.ts\",\n        \"postcss.config.mjs\",\n        \"innernet.config.json\",\n        \"CONTRIBUTING.md\",\n        \"DESIGN.md\"\n      ]\n    }\n  ],\n  \"toolchains\": {\n    \"node\": {\n      \"platforms\": {\n        \"linux-x86_64\": {\n          \"digest\": \"sha256:8c0ab89a2bc9a397f443ae9196ec95535e60e5ead1378a920cf44b2b2b392d01\",\n          \"source\": \"oci://ghcr.io/quirq-ai/toolchains/node@sha256:a84e067c794c73ba5ecf72064bcb6940e67f51f3fce7803edc54040e8c69a173\"\n        }\n      },\n      \"version\": \"24.21.0\"\n    }\n  }\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.021,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "qq test --toolchain node=~/toolchains/node",
+      "id": "test",
+      "accept": ["qq test"]
+    },
+    {
+      "k": "out",
+      "dt": 0.54,
+      "text": "PASS app fetch:toolchain-check (0.0s)\n"
+    },
+    {
+      "k": "out",
+      "dt": 5.529,
+      "text": "PASS app fetch:install (5.5s)\n"
+    },
+    {
+      "k": "out",
+      "dt": 12.438,
+      "text": "PASS app build:build (12.3s)\n"
+    },
+    {
+      "k": "out",
+      "dt": 1.021,
+      "text": "PASS app test:typecheck (1.0s)\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.037,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "ls .qq/out .qq/out/logs",
+      "id": "results",
+      "accept": ["ls .qq/out", "ls .qq/out/logs"]
+    },
+    {
+      "k": "out",
+      "dt": 0.006,
+      "text": ".qq/out:\njunit  logs  results.json\n\n.qq/out/logs:\napp.build.build.log    app.fetch.toolchain-check.log\napp.fetch.install.log  app.test.typecheck.log\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.0,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "PATH=~/toolchains/node/bin:$PATH qq run \"pnpm start\"",
+      "id": "run",
+      "accept": [
+        "qq run \"pnpm start\"",
+        "qq run 'pnpm start'",
+        "qq run pnpm start"
+      ]
+    },
+    {
+      "k": "out",
+      "dt": 0.322,
+      "text": "qq: not synced here: node; using PATH for them. Run qq sync\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.101,
+      "text": "$ next start -p 3470 -H 127.0.0.1\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.257,
+      "text": "\u25b2 Next.js 16.3.8\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.0,
+      "text": "- Local:         http://127.0.0.1:3470\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.0,
+      "text": "- Network:       http://127.0.0.1:3470\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.0,
+      "text": "\u2713 Ready in 130ms\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.042,
+      "text": "\u2713 Running next.config.ts took 41ms\n"
+    },
+    {
+      "k": "end",
+      "dt": 8.355,
+      "code": -15
+    }
+  ]
+}

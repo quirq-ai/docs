@@ -2,7 +2,8 @@
 
 Usage: python3 recorder.py script.json out.json
 script.json: {"title": str, "home": str, "env": {..}, "cwd": str, "steps": [
-  {"say": "a comment shown as # ..."} | {"cmd": "shell command", "cd": "dir (optional, applied before)", "hide": "regex lines to drop", "max": seconds-cap}
+  {"say": "a comment shown as # ..."} | {"cmd": "shell command", "cd": "dir (optional, applied before)", "hide": "regex lines to drop", "max": seconds-cap,
+   "id": "journey step id", "accept": ["what a reader may type for it"]}
 ]}
 """
 import json, os, pty, re, select, subprocess, sys, time
@@ -26,7 +27,7 @@ for step in spec["steps"]:
         continue
     if "cd" in step:
         cwd = step["cd"].replace("~", home)
-    events.append({"k": "cmd", "prompt": pretty(cwd), "text": step["cmd"]})
+    events.append({"k": "cmd", "prompt": pretty(cwd), "text": step["cmd"], **{k: step[k] for k in ("id", "accept") if k in step}})
     pid, fd = pty.fork()
     if pid == 0:
         os.chdir(cwd)

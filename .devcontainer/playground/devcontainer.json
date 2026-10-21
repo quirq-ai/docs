@@ -1,0 +1,16 @@
+{
+  // The "Run it for real" machine of the journeys on docs.quirq.dev: a
+  // reader's own Codespace with qq, qqsync and the xo CLI installed, so every
+  // command in a guide really runs. It holds no key or token of ours; xo
+  // login there signs in the reader's own account.
+  "name": "quirq playground",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.13" }
+  },
+  "hostRequirements": { "cpus": 2 },
+  "postCreateCommand": "bash .devcontainer/playground/setup.sh",
+  "customizations": {
+    "codespaces": { "openFiles": [".devcontainer/playground/README.md"] }
+  }
+}
