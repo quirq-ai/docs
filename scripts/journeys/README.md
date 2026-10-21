@@ -34,14 +34,16 @@ The docs home (`src/components/home-terminal.tsx`) replays every qq and xo comma
   a fake XO core API on 127.0.0.1 with two made-up users, so no real account, Clerk, XO or
   xo.quirq.dev is touched. The spec's `replace` shows the stand-in's address as
   `https://xo.quirq.dev`, and the page says so. The invite IDs and the space ID are filled in when
-  it runs, so they match what the recording printed.
+  it runs, so they match what the recording printed. Since xo ca83435, `xo create space NAME`
+  publishes a folder to GitHub, so it is an example below; the script makes sam's space `demo`
+  with `xo connect demo` before recording.
 
   ```sh
   ./record-home-xo.sh ~/.xo ../../src/journeys/home-xo.json   # ~/.xo: a venv with xo installed
   ```
 
 - **Example**: commands that need GitHub, a signed-in gh or ghcr.io (`qq fetch`, `sync`,
-  `upload`, `try`, `status`, `land`, `xo update`, `xo sync`). Their output is written in
+  `upload`, `try`, `status`, `land`, `xo update`, `xo sync`, `xo create space`). Their output is written in
   `home-commands.ts` from the source of the version named there, each with a `from` note saying
   where every line comes from, and a made-up pull request, branch and commit.
 

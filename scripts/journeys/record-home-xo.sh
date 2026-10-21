@@ -18,8 +18,11 @@ for _ in $(seq 50); do curl -sf --noproxy '*' http://127.0.0.1:8790/healthz >/de
 # alex shares a space and a project with sam before the recording starts.
 (cd /tmp/xo-alex && export HOME=/tmp/xo-alex
  printf '%s\n' "ak_demo_alex" | xo login me --key --url http://127.0.0.1:8790
- xo create space notes && xo connect quirq-ai/wiki notes
+ xo connect notes && xo connect quirq-ai/wiki notes
  xo share space:notes sam && xo share project:wiki sam) > /dev/null 2>&1
+# sam's space demo, as an entry only: since xo ca83435, xo create space NAME with no KIND publishes
+# a folder to GitHub, so the home page shows that command as an example instead.
+(cd /tmp && HOME="$home" XO_API_KEY=ak_demo_sam xo connect demo --url http://127.0.0.1:8790) > /dev/null 2>&1
 shared=$(cd /tmp/xo-alex && HOME=/tmp/xo-alex XO_API_KEY=ak_demo_sam xo list shared --url http://127.0.0.1:8790 2>/dev/null)
 pick() { python3 -c 'import json,sys; d=json.loads(sys.argv[1]); print([i["id"] for i in d if i["item"].startswith(sys.argv[2])][0])' "$shared" "$1"; }
 lab=$(python3 -c 'import uuid; print(uuid.uuid5(uuid.NAMESPACE_URL, "standin/lab"))')

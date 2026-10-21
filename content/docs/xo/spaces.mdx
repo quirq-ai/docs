@@ -1,6 +1,6 @@
 ---
 title: Create a space
-description: Preview a create with --dry-run, then create a Claude Code, Codex or other space on XO Cloud, or a space that lives only on your machine.
+description: Preview a create with --dry-run, then create a Claude Code, Codex or other space on XO Cloud, or make a folder of your folders a space on GitHub.
 icon: Cloud
 ---
 
@@ -63,13 +63,11 @@ xo spaces --space-id THE_ID
 | `xo create space N claude-code --volume-size 20 --providers-anthropic-api-key -` | a Claude Code space (`-` asks for the key) |
 | `xo create space N hermes …`, `… openclaw …`, `… xo-cowork …` | spaces with providers and chat channels; see `xo create space N openclaw --help` |
 | `xo create space N nebius-openclaw --token-factory-api-key -` | a Nebius OpenClaw space (behind a feature flag; HTTP 404 when it is off for you) |
-| `xo create space N` | a space here only: the folder `./N`, recorded in your spaces, nothing on XO Cloud |
+| `xo create space N` | the folder you are in as a space on GitHub, nothing on XO Cloud ([below](#a-space-from-your-folders)) |
 
 - With a kind, N is 1 to 32 letters, digits or hyphens, starts with a letter
-  or digit, and can't be `new` or `create`. A space here only (no kind) can be
-  1 to 64 letters, digits, `_`, `.` or `-`, can't be a kind's name, and takes
-  no `--dry-run`. XO keeps names in lowercase, so `MyDev` becomes `mydev`, and
-  xo says so. A name you already used fails.
+  or digit, and can't be `new` or `create`. XO keeps names in lowercase, so
+  `MyDev` becomes `mydev`, and xo says so. A name you already used fails.
 - `--volume-size` is in GB, 20 to 100.
 - When you give a provider key or bot token as `-`, xo asks for it without
   showing it. Only one `-` works per command. Put other secrets in a JSON file
@@ -78,5 +76,45 @@ xo spaces --space-id THE_ID
   shell history.
 - If a create times out or is interrupted, XO may still have made the space:
   check `xo spaces` before you try again.
+
+## A space from your folders
+
+With no kind, `xo create space NAME` makes the folder you run it in a space,
+published on GitHub: each folder in it becomes its own branch of
+`github.com/YOU/NAME`, and `main` lists them. Nothing is made on XO Cloud.
+
+```sh
+cd ~/work                 # the folder that holds the folders you mean
+xo create space demo      # lists each folder with its size, then asks
+```
+
+<Callout type="warn">
+  The repository is public: anyone can read it, and what is pushed stays
+  public, since xo deletes nothing. xo leaves out `.env` files, keys and
+  credential stores, and stops before pushing a file that looks like it holds
+  a key, token or password, but it cannot find every secret (one in an
+  archive, say). Look through the folders before you say yes.
+</Callout>
+
+- xo lists each folder with its size and where it goes, and asks first.
+  `--yes` answers for a script. Files directly in the folder and hidden
+  folders are not included. Nothing in your folders is changed: xo makes a
+  bare `./.git` beside them.
+- Each folder's `.gitignore` is followed. Repositories nested deeper and
+  `.github/workflows` are left out, and a clone that is one of the folders
+  goes up as its files only, not its history. A file over 100 MB, a Git LFS
+  pointer or a file git-crypt keeps encrypted stops it before anything is
+  pushed.
+- The repository is `github.com/OWNER/NAME`, OWNER being your gh login or
+  `--owner`. When it is not there, xo prints a link to make it (empty, with
+  no README) and waits for Enter, then pushes with your own git. The space
+  goes in your spaces once it is pushed.
+- Run it again in the same folder to push what changed.
+- It refuses your home folder, `/`, a folder holding `.ssh`, `.aws` or
+  `.gnupg`, hidden folders of your home (such as `~/.config`) and
+  `~/Library`, and a folder inside another git repository.
+- NAME is 1 to 64 letters, digits, `_`, `.` or `-`, starts with a letter or
+  digit, can't be a kind's name, `new` or `create`, and takes no `--dry-run`.
+  It is lowercased, as on XO and GitHub.
 
 Next: [put your projects in a space](/docs/xo/projects).
