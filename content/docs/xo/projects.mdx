@@ -61,21 +61,17 @@ the space, and says so.
   project with no repo, which `xo connect NAME --repo URL` can give one later.
 - Nothing is added when the space is missing. If the space then refuses the
   project (it is full, say), the project stays in your projects.
-- A plain name close to one of your projects, most likely a typo, is refused
-  with the name it is close to, since xo cannot delete a project. To add it
-  anyway, say `project:NAME`.
-- Put a new plain name first. `xo connect my-cc notes` is refused when `my-cc`
-  is one of your spaces, since `notes` could be a space you have not made yet:
-  say `xo connect project:notes space:my-cc`. `OWNER/REPO` and a URL work in
-  either order.
+- Put a new plain name first. Given first, a plain name close to one of your
+  projects, most likely a typo, is refused with the name it is close to, since
+  xo cannot delete a project. To add it anyway, say `project:NAME`.
+- `xo connect my-cc notes` is refused when `my-cc` is one of your spaces, since
+  `notes` could be a space you have not made yet: say
+  `xo connect project:notes space:my-cc`, which adds `notes` as you typed it.
+  `OWNER/REPO` and a URL work in either order.
 
 <Callout type="info">
-  This came with xo `595cb82`, after the commit the installs pin
-  (`436bfbe`). On `436bfbe`, `xo connect` takes neither a GitHub URL nor a
-  project that is not in your projects yet, so the first command above stops
-  with `connect what?`. Run `xo create project https://github.com/OWNER/REPO`
-  first, then `xo connect REPO my-cc`, or
-  [update xo](/docs/xo/install#update-or-remove) to `595cb82` or later.
+  If the first command above stops with `connect what?` or `invalid choice`,
+  your xo is older than this: [update it](/docs/xo/install#update-or-remove).
 </Callout>
 
 ## Install, update and sync
