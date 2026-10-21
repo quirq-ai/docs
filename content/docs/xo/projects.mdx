@@ -46,6 +46,32 @@ xo works out which name is the project and which the space, so
 `xo connect my-cc headscale` works too. For a space named like one of your
 projects, say `space:NAME`; `project:` and `space:` work in front of any name.
 
+### A project you have not added yet
+
+```sh
+xo connect https://github.com/OWNER/REPO my-cc   # adds the project, then puts it in my-cc
+xo install space:my-cc                           # clones it into ./my-cc/REPO
+```
+
+`xo connect PROJECT SPACE` adds a project that is not in your projects yet,
+as `xo create project` does but without making its folder, then puts it in
+the space, and says so.
+
+- Give the project as `OWNER/REPO` or a GitHub URL. A plain name becomes a
+  project with no repo, which `xo connect NAME --repo URL` can give one later.
+- Nothing is added when the space is missing. If the space then refuses the
+  project (it is full, say), the project stays in your projects.
+- A plain name close to one of your projects, most likely a typo, is refused
+  with the name it is close to. xo has no delete, so say `project:NAME` to add
+  it anyway.
+
+<Callout type="info">
+  This came with xo `595cb82`, after the commit the installs pin
+  (`436bfbe`). On `436bfbe`, `xo connect` refuses a project that is not in
+  your projects yet: run `xo create project` first, or
+  [update xo](/docs/xo/install#update-or-remove) to `595cb82` or later.
+</Callout>
+
 ## Install, update and sync
 
 ```sh

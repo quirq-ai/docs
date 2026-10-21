@@ -26,7 +26,7 @@ flags. The options go before or after the command.
 | `xo create space NAME` | a space here only: `./NAME`, recorded in your spaces, nothing on XO Cloud |
 | `xo spaces` (or `xo list spaces`) | your spaces, with their projects and refs |
 | `xo spaces --space-id ID` | XO Cloud's view of a space you own, with its connection URLs |
-| `xo connect P S --ref REF` | puts project P in space S at a branch, tag or commit (default `main`) |
+| `xo connect P S --ref REF` | puts project P in space S at a branch, tag or commit (default `main`); adds P to your projects first if it is not there yet ([since `595cb82`](/docs/xo/projects#a-project-you-have-not-added-yet)) |
 | `xo connect S` / `xo connect S --id ID` | a new space entry / one for an XO Cloud space you already have |
 | `xo install space:S` | clones or fetches each project into `./S/REPO` at its ref |
 | `xo update space:S` | pushes each branch under `./S`, then records the refs |
