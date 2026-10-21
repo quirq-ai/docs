@@ -95,8 +95,9 @@ export function DocsHome() {
               Install it and run the same commands.
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-fd-muted-foreground sm:text-base">
-              qq runs on Linux x86_64 first. xo runs on Mac and Linux. Or watch
-              the three-minute film on what qq is, with sound and captions.
+              qq runs on Linux x86_64 first. xo runs on Linux, macOS and
+              Windows. Or watch the three-minute film on what qq is, with sound
+              and captions.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link

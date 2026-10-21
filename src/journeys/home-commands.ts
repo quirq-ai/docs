@@ -86,15 +86,15 @@ export const examples: Record<string, Example> = {
   },
   "xo-update": {
     prompt: "~",
-    out: 'xo: ./innernet: pushed\n{\n  "project": "innernet"\n}\n',
+    out: 'xo: ./innernet: pushed\n{\n  "project": "quirq-ai/innernet"\n}\n',
     code: 0,
-    from: "xo 10937c6 src/xo/workspace.py update() (project) and _say; JSON as xo prints it",
+    from: "xo 10937c6 src/xo/workspace.py update() (project) and _say; JSON as xo prints it, with the name resolve() returns (OWNER/REPO for a GitHub project)",
   },
   "xo-sync": {
     prompt: "~",
-    out: 'xo: ./innernet: rebased on its upstream and pushed\n{\n  "project": "innernet"\n}\n',
+    out: 'xo: ./innernet: rebased on its upstream and pushed\n{\n  "project": "quirq-ai/innernet"\n}\n',
     code: 0,
-    from: "xo 10937c6 src/xo/workspace.py sync() (project) and _say; JSON as xo prints it",
+    from: "xo 10937c6 src/xo/workspace.py sync() (project) and _say; JSON as xo prints it, with the name resolve() returns (OWNER/REPO for a GitHub project)",
   },
 };
 
@@ -183,7 +183,7 @@ export const commands: Command[] = [
     src: "recorded",
     accept: ["qqsync guard && echo guard passed"],
     more: D.sync,
-    what: "Fails if anything but qqsync parses repo.toml. Every repo runs it in presubmit.",
+    what: "Fails if anything but qqsync parses repo.toml. Any repo's presubmit can run it; qq and sync run it in theirs.",
     next: ["qq-build", "qq-test"],
   },
   // qq: every day
@@ -218,7 +218,7 @@ export const commands: Command[] = [
     src: "recorded",
     accept: ["qq run 'node --version'"],
     more: D.build,
-    what: "Runs a command from the repo root with the pinned toolchains first on PATH. The not synced line is only there because the recording machine could not reach ghcr.io for qq sync.",
+    what: "Runs a command from the repo root with the pinned toolchains first on PATH. The recording machine could not reach ghcr.io for qq sync, so qq said not synced and used that machine's node, v24.22.1; after qq sync it is the pinned v24.21.0.",
     next: ["qq-create", "qq-test"],
   },
   {
@@ -307,11 +307,11 @@ export const commands: Command[] = [
   },
   {
     id: "xo-login",
-    cmd: "xo login --key",
+    cmd: "xo login me --key",
     src: "stand-in",
-    accept: ["xo login", "xo login me --key", "xo login me"],
+    accept: ["xo login", "xo login --key", "xo login me"],
     more: D.xoLogin,
-    what: "Checks your XO API key through the xo server and saves it where only you can read it. On the real server, plain xo login signs you in in your browser instead.",
+    what: "Checks your XO API key through the xo server and saves it where only you can read it. Typed, the key is asked for without showing it. The line about no address for xo comes from the stand-in. Plain xo login also connects GitHub through gh, and signs you in to XO in your browser when the server offers browser login.",
     next: ["xo-status", "xo-me"],
   },
   {

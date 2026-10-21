@@ -102,15 +102,15 @@ export function HomeTerminal() {
       setBusy(true);
       stop.current = false;
       setTool(id.startsWith("xo") ? "xo" : "qq");
-      if (!auto && !window.matchMedia("(min-width: 1024px)").matches)
-        termRef.current?.scrollIntoView({
-          block: "nearest",
-          behavior: "smooth",
-        });
-      const text = typed ?? c.cmd;
       const calm = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
+      if (!auto && !window.matchMedia("(min-width: 1024px)").matches)
+        termRef.current?.scrollIntoView({
+          block: "nearest",
+          behavior: calm ? "auto" : "smooth",
+        });
+      const text = typed ?? c.cmd;
       if (typed || calm) push({ kind: "cmd", prompt: r.prompt, text });
       else {
         // A tapped command types itself.
@@ -130,8 +130,15 @@ export function HomeTerminal() {
           kind: "note",
           text: "example: written from the source, not a recorded run",
         });
-      else if (norm(r.recorded) !== norm(text))
-        push({ kind: "note", text: `recorded as: ${r.recorded}` });
+      else {
+        if (c.src === "stand-in")
+          push({
+            kind: "note",
+            text: "stand-in: the real xo against made-up users on 127.0.0.1, shown here as https://xo.quirq.dev",
+          });
+        if (norm(r.recorded) !== norm(text))
+          push({ kind: "note", text: `recorded as: ${r.recorded}` });
+      }
       for (const o of r.out) {
         // Real timings, but no single wait longer than 1.5 s.
         await sleep(Math.min(o.dt, 1.5) * 1000);
@@ -184,7 +191,7 @@ export function HomeTerminal() {
       const near = commands.find((c) => c.cmd.startsWith(cmd.split(" ")[0]));
       push({
         kind: "note",
-        text: `${cmd.split(" ")[0]}: not in this replay. ${
+        text: `${cmd}: not in this replay. ${
           near ? `Try ${near.cmd}, or type help.` : "Type help for the list."
         }`,
       });
@@ -372,9 +379,9 @@ function Legend() {
     <span>
       <strong className="font-semibold">Recorded</strong>: a real run.{" "}
       <strong className="font-semibold">Stand-in</strong>: the real xo CLI and
-      server with made-up users.{" "}
-      <strong className="font-semibold">Example</strong>: needs GitHub, so
-      written from the source.
+      server with made-up users on the recording machine, its address shown as
+      xo.quirq.dev. <strong className="font-semibold">Example</strong>: needs
+      GitHub, so written from the source.
     </span>
   );
 }
