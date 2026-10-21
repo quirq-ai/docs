@@ -20,3 +20,29 @@ grep -nE 'ak_|sk[-_]|gh[opsu]_|github_pat_|xi-api-key|AKIA[0-9A-Z]{16}|eyJ[A-Za-
 ```
 
 Nothing a reader types runs anywhere.
+
+## The home page terminal
+
+The docs home (`src/components/home-terminal.tsx`) replays every qq and xo command it lists in
+`src/journeys/home-commands.ts`, from three sources, and labels each one:
+
+- **Recorded**: `home-qq.json`, recorded like a journey into `src/journeys/home-qq.json`, on
+  2026-10-21 with qq b205b0e, qqsync 9821f74, qqinstall ca28825 and xo 10937c6 (`qq build` and
+  `qq test` take `--toolchain node=~/toolchains/node`, since ghcr.io was out of reach).
+- **Stand-in**: `record-home-xo.sh` records `home-xo.json` into `src/journeys/home-xo.json`. It
+  runs the real xo CLI against the real `xo serve`, which talks to `xo-standin.py`: a fake Clerk and
+  a fake XO core API on 127.0.0.1 with two made-up users, so no real account, Clerk, XO or
+  xo.quirq.dev is touched. The spec's `replace` shows the stand-in's address as
+  `https://xo.quirq.dev`, and the page says so. The invite IDs and the space ID are filled in when
+  it runs, so they match what the recording printed.
+
+  ```sh
+  ./record-home-xo.sh ~/.xo ../../src/journeys/home-xo.json   # ~/.xo: a venv with xo installed
+  ```
+
+- **Example**: commands that need GitHub, a signed-in gh or ghcr.io (`qq fetch`, `sync`,
+  `upload`, `try`, `status`, `land`, `xo update`, `xo sync`). Their output is written in
+  `home-commands.ts` from the source of the version named there, each with a `from` note saying
+  where every line comes from, and a made-up pull request, branch and commit.
+
+Check both recordings with the grep above before committing them.

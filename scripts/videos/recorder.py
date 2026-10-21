@@ -4,7 +4,7 @@ Usage: python3 recorder.py script.json out.json
 script.json: {"title": str, "home": str, "env": {..}, "cwd": str, "steps": [
   {"say": "a comment shown as # ..."} | {"cmd": "shell command", "cd": "dir (optional, applied before)", "hide": "regex lines to drop", "max": seconds-cap,
    "id": "journey step id", "accept": ["what a reader may type for it"]}
-]}
+], "replace": {"text in the output": "what to show instead (optional; say so where the recording is shown)"}}
 """
 import json, os, pty, re, select, subprocess, sys, time
 
@@ -52,6 +52,8 @@ for step in spec["steps"]:
             now = time.time()
             text = ansi.sub("", data.decode("utf-8", "replace")).replace("\r\n", "\n")
             text = text.replace(home, "~")
+            for old, new in spec.get("replace", {}).items():
+                text = text.replace(old, new)
             if step.get("hide"):
                 text = "".join(l for l in text.splitlines(True) if not re.search(step["hide"], l))
             if text:

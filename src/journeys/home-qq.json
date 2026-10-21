@@ -1,0 +1,353 @@
+{
+  "title": "qq",
+  "events": [
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "qq --version",
+      "id": "qq-version"
+    },
+    {
+      "k": "out",
+      "dt": 0.246,
+      "text": "qq 0.1.0\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.022,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "qqsync --version",
+      "id": "qqsync-version"
+    },
+    {
+      "k": "out",
+      "dt": 0.143,
+      "text": "qqsync 0.1.0\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.016,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "mkdir -p ~/qq-try && cd ~/qq-try && git clone -q https://github.com/quirq-ai/innernet && echo cloned into innernet",
+      "id": "clone"
+    },
+    {
+      "k": "out",
+      "dt": 4.153,
+      "text": "cloned into innernet\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.0,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "qq --help",
+      "id": "qq-help"
+    },
+    {
+      "k": "out",
+      "dt": 0.504,
+      "text": "usage: qq [-h] [--version] COMMAND ...\n\nqq: the quirq infra command line.\n\nRun inside a repo, qq runs the version that repo pins in infra/repo.toml.\nOther qq repos add subcommands through the `qq.commands` entry point group, and a repo adds its\nown with `qq create NAME COMMAND` (saved in infra/commands; then `qq NAME` runs it).\n\npositional arguments:\n  COMMAND\n    sync      fetch the repo's pinned toolchains and dependencies\n    fetch     clone a repo, then qq sync in it\n    build     build targets here with recipes\n    test      build and test targets here with recipes\n    upload    push this branch and open or update its change\n    try       upload, return a run ID now, push the gate's verdict later\n    land      land through the gate; returns at once\n    status    the gate's verdict now (exit 0 pass, 1 refused, 3 pending)\n    run       run a command once, with the repo's pinned toolchains\n    create    give this repo a qq command of its own (qq create NAME COMMAND)\n\noptions:\n  -h, --help  show this help message and exit\n  --version   show program's version number and exit\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.026,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "qqsync show",
+      "id": "qqsync-show"
+    },
+    {
+      "k": "out",
+      "dt": 0.168,
+      "text": "{\n  \"qq\": {\n    \"version\": \"0.1.0\"\n  },\n  \"schema\": \"quirq-repo/1\",\n  \"targets\": [\n    {\n      \"kind\": \"node-app\",\n      \"name\": \"app\",\n      \"outs\": [\n        \".next/\"\n      ],\n      \"srcs\": [\n        \"app/**\",\n        \"components/**\",\n        \"lib/**\",\n        \"public/**\",\n        \"scripts/**\",\n        \"data/demo/**\",\n        \"package.json\",\n        \"pnpm-lock.yaml\",\n        \"pnpm-workspace.yaml\",\n        \"tsconfig.json\",\n        \"next.config.ts\",\n        \"proxy.ts\",\n        \"instrumentation.ts\",\n        \"postcss.config.mjs\",\n        \"innernet.config.json\",\n        \"CONTRIBUTING.md\",\n        \"DESIGN.md\"\n      ]\n    }\n  ],\n  \"toolchains\": {\n    \"node\": {\n      \"platforms\": {\n        \"linux-x86_64\": {\n          \"digest\": \"sha256:8c0ab89a2bc9a397f443ae9196ec95535e60e5ead1378a920cf44b2b2b392d01\",\n          \"source\": \"oci://ghcr.io/quirq-ai/toolchains/node@sha256:a84e067c794c73ba5ecf72064bcb6940e67f51f3fce7803edc54040e8c69a173\"\n        }\n      },\n      \"version\": \"24.21.0\"\n    }\n  }\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.023,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "qqsync validate && echo valid",
+      "id": "qqsync-validate"
+    },
+    {
+      "k": "out",
+      "dt": 0.167,
+      "text": "infra/repo.toml: PASS\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.022,
+      "text": "valid\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.0,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "qqsync pins",
+      "id": "qqsync-pins"
+    },
+    {
+      "k": "out",
+      "dt": 0.257,
+      "text": "toolchains.node.platforms.linux-x86_64\tsha256:8c0ab89a2bc9a397f443ae9196ec95535e60e5ead1378a920cf44b2b2b392d01\toci://ghcr.io/quirq-ai/toolchains/node@sha256:a84e067c794c73ba5ecf72064bcb6940e67f51f3fce7803edc54040e8c69a173\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.029,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "qqsync guard && echo guard passed",
+      "id": "qqsync-guard"
+    },
+    {
+      "k": "out",
+      "dt": 0.701,
+      "text": ".: PASS (no parser of repo.toml outside qqsync)\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.018,
+      "text": "guard passed\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.0,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "qq build --toolchain node=~/toolchains/node",
+      "id": "qq-build",
+      "accept": ["qq build"]
+    },
+    {
+      "k": "out",
+      "dt": 0.528,
+      "text": "PASS app fetch:toolchain-check (0.0s)\n"
+    },
+    {
+      "k": "out",
+      "dt": 8.253,
+      "text": "PASS app fetch:install (8.3s)\n"
+    },
+    {
+      "k": "out",
+      "dt": 13.44,
+      "text": "PASS app build:build (13.3s)\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.037,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "qq test --toolchain node=~/toolchains/node",
+      "id": "qq-test",
+      "accept": ["qq test"]
+    },
+    {
+      "k": "out",
+      "dt": 0.684,
+      "text": "PASS app fetch:toolchain-check (0.1s)\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.168,
+      "text": "PASS app fetch:install (0.2s)\n"
+    },
+    {
+      "k": "out",
+      "dt": 2.72,
+      "text": "PASS app build:build (2.6s)\n"
+    },
+    {
+      "k": "out",
+      "dt": 1.074,
+      "text": "PASS app test:typecheck (1.1s)\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.032,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "ls .qq/out .qq/out/logs",
+      "id": "out",
+      "accept": ["ls .qq/out"]
+    },
+    {
+      "k": "out",
+      "dt": 0.004,
+      "text": ".qq/out:\njunit  logs  results.json\n\n.qq/out/logs:\napp.build.build.log    app.fetch.toolchain-check.log\napp.fetch.install.log  app.test.typecheck.log\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.0,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "PATH=~/toolchains/node/bin:$PATH qq run \"node --version\"",
+      "id": "qq-run",
+      "accept": ["qq run \"node --version\"", "qq run 'node --version'"]
+    },
+    {
+      "k": "out",
+      "dt": 0.276,
+      "text": "qq: not synced here: node; using PATH for them. Run qq sync\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.006,
+      "text": "v24.22.1\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.0,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "qq create hello echo \"hello from innernet\"",
+      "id": "qq-create",
+      "accept": ["qq create hello echo 'hello from innernet'"]
+    },
+    {
+      "k": "out",
+      "dt": 0.306,
+      "text": "qq: created qq hello (infra/commands/hello.sh); commit it to share it\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.027,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~/qq-try/innernet",
+      "text": "qq hello",
+      "id": "qq-name"
+    },
+    {
+      "k": "out",
+      "dt": 0.312,
+      "text": "qq: not synced here: node; using PATH for them. Run qq sync\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.002,
+      "text": "hello from innernet\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.0,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "qqinstall show",
+      "id": "qqinstall-show"
+    },
+    {
+      "k": "out",
+      "dt": 0.552,
+      "text": "{\n  \"innernet canary\": {\n    \"channel\": \"canary\",\n    \"commit\": \"7afd5031c40bf857c21599018a364035a3bef0a9\",\n    \"digest\": \"sha256:de70f459a65d79d16c91c56919d33c8d5f5669bdc49c737745b0b001987e5743\",\n    \"generation\": 4,\n    \"op\": \"dfc365490982a31edae6eece51aab6e5\",\n    \"repo\": \"innernet\",\n    \"updated_at\": \"2026-10-10T07:44:53Z\"\n  },\n  \"xo-space canary\": {\n    \"channel\": \"canary\",\n    \"commit\": \"577850bfe9363b04e17c012ebe2c014df9490bc1\",\n    \"digest\": \"sha256:8bed133640035f658a5b260a1dfbf529d0c1b07765597b194f582d56643df756\",\n    \"generation\": 8,\n    \"op\": \"f1dc9733dfcc84080985e254a102ea2d\",\n    \"repo\": \"xo-space\",\n    \"updated_at\": \"2026-10-17T07:47:02Z\"\n  }\n}\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.014,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "qqinstall resolve --repo xo-space --channel canary",
+      "id": "qqinstall-resolve"
+    },
+    {
+      "k": "out",
+      "dt": 0.253,
+      "text": "xo-space canary: commit 577850bfe9363b04e17c012ebe2c014df9490bc1 digest sha256:8bed133640035f658a5b260a1dfbf529d0c1b07765597b194f582d56643df756 (generation 8)\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.015,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo --version",
+      "id": "xo-version"
+    },
+    {
+      "k": "out",
+      "dt": 0.11,
+      "text": "xo 0.1.0\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.014,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo --help",
+      "id": "xo-help"
+    },
+    {
+      "k": "out",
+      "dt": 0.107,
+      "text": "usage: xo [-h] [--api-key KEY|-] [--url URL] [--spec FILE] [--timeout TIMEOUT] [--version]\n          COMMAND ...\n\nxo: the command line for the XO Cloud core API (dev.xo.builders/api/core/v1, through the xo server).\n\n    xo ENDPOINT [ACTION] [--flag VALUE ...]  one command per API endpoint, made from the spec:\n                                            GET /spaces/{spaceId} is `xo spaces --space-id ID` (bare\n                                            `xo spaces` lists your spaces); the space creates\n                                            (POST /openclaw, ...) are kinds of `xo create space`\n                                            instead. Its parameters and body\n                                            fields are its flags, nested fields too\n                                            (--providers-anthropic-api-key); `xo ENDPOINT --help`\n                                            lists them. A path with several methods has actions\n                                            (list, get, create, update, replace, delete).\n    xo ops [FILTER]                         list the API's operations: id, method, path, summary.\n                                            FILTER keeps those whose id, path or tag contains it.\n    xo call OPERATION [--param NAME=VALUE ...] [--data JSON|@FILE|-] [--field KEY=VALUE ...]\n                                            run one operation from the spec. --param fills path,\n                                            query and header parameters; --data or --field give the\n                                            JSON body.\n    xo api METHOD PATH [--query NAME=VALUE ...] [--data JSON|@FILE|-] [--field KEY=VALUE ...]\n                                            send any request, spec or not. Through the xo server\n                                            only the creates and GET /spaces/{id} pass; for the\n                                            rest, add --url https://dev.xo.builders with\n                                            $XO_API_KEY or --api-key - (not the saved key).\n    xo serve [--host H] [--port P]          run the xo server: it answers `xo me` (and the admin-only\n                                            /user-metadata route) with the Clerk credentials it holds,\n                                            and passes the creates and GET /spaces/{id} on to XO's\n                                            core API.\n    xo login [xo|me|github] [--key] [--url URL]\n                                            log in to every service the xo server lists (or the one\n                                            named): me (the xo server) and xo take your API key, unless\n                                            a saved key still works. When the xo server has browser\n                                            login, you sign in to XO in your browser and the server\n                                            sends your key; otherwise, with --key, or with a key piped\n                                            in, it is asked for without showing it. github runs gh auth\n                                            login for github.com, unless gh is already connected.\n    xo status                               each service, its address, and whether you are logged in.\n    xo projects [add NAME]                  show the projects list in your private metadata, or add\n                                            NAME to it. The xo server makes the change and writes only\n                                            that list; xo sends just the name.\n    xo create project NAME [GITHUB-URL]     add a project and make its folder here. Give a name, a\n                                            GitHub URL, or both: a GitHub project is called by its repo's\n                                            name (headscale, from juanfont/headscale), cloned into\n                                            ./headscale and listed with its owner; any other name gets\n                                            `git init` (its repo can be added later wit"
+    },
+    {
+      "k": "out",
+      "dt": 0.0,
+      "text": "h xo connect\n                                            NAME --repo URL).\n    xo create space NAME [KIND [flags]]     with a KIND (claude-code, codex, antigravity, hermes,\n                                            openclaw, xo-cowork, nebius-openclaw): create a space on XO\n                                            named NAME there too, and record it in your spaces. With no\n                                            KIND: a space here only, the folder ./NAME, recorded in your\n                                            spaces with no projects and nothing on XO.\n    xo connect PROJECT SPACE [--ref R]      set PROJECT in SPACE at ref R (default main); the names\n                                            need no project: or space: in front, and xo connect\n                                            SPACE PROJECT works too (when both names are your\n                                            projects, the one that is a space is SPACE). A\n                                            PROJECT not in your projects yet (a plain name,\n                                            OWNER/REPO or a GitHub URL) is added to them first;\n                                            a plain name close to one of yours, or one that could\n                                            be the space, needs project:NAME.\n    xo connect PROJECT --repo URL           give PROJECT, made with a name only, its GitHub repo; it\n                                            is recorded as OWNER/REPO and its folder becomes ./REPO.\n    xo connect SPACE [--id ID]              a new space entry SPACE in your metadata (refused for a\n                                            name in your projects: say space:NAME); --id ties it to\n                                            an XO space you already have.\n    xo list [projects | spaces | shared]    show your projects, your spaces, or the invites shared\n                                            with you; with nothing after it, your projects and spaces.\n    xo spaces                               the spaces linked to your account (xo list spaces); with\n                                            --space-id ID, XO's connection URLs for that space.\n    xo share space:S|project:P USERNAME     invite that user to a copy of the space (its name and\n                                            projects) or the project.\n    xo accept ID [--as NAME] [--yes]        show invite ID (from xo list shared), ask, then add a\n                                            shared space as a space of your own.\n    xo accept ID --space S [--ref R]        the same for a shared project: into your space S, at\n                                            ref R (default main).\n    xo reject ID                            take invite ID off your list (its sender can share again).\n    xo install project:P | space:S          clone or fetch P here; for a space, each of its projects\n                                            into ./S/ at its ref. A GitHub project's folder is its repo's\n                                            name; call it by that name, or by OWNER/REPO when two of\n                                            your projects share it.\n    xo update project:P | space:S           push P's branch (never forced); for a space, record the\n                                            refs checked out under ./S/ (refused if the space moved on).\n    xo sync project:P | space:S             pull --rebase and push P; for a space, take its changes,\n                                            keep yours, then record the result.\n    (the xo key step:)                      ask for your API key without showing it, check it with\n                                            XO through the xo server, and save it with the URL.\n    xo logout                               delete the saved key, URL and addresses; asks before\n                                            logging gh out of github.com.\n\nA request that is not a GET changes things on XO, so it prints one line on stderr first; a create\nthat stores your "
+    },
+    {
+      "k": "out",
+      "dt": 0.0,
+      "text": "API key in the new space says so on a second line. --dry-run prints the request\nand sends nothing, with provider keys and bot tokens shown as <hidden> unless --show-secrets is\ngiven. A DELETE also needs --yes.\n\nXO API commands go to one URL: --url, else $XO_URL, else the one xo login saved, else\nhttps://xo.quirq.dev. The core API is under its /api/core/v1.\n\nThe API key comes from --api-key - (one line on stdin), $XO_API_KEY, or the key xo login saved,\nin that order; the saved key is only ever sent to the URL it was saved with. --api-key KEY also\nworks but lands in your shell history and the process list. xo sends the key as a bearer token,\nnever prints it, and never follows a redirect. The spec comes from --spec FILE, $XO_SPEC, or the\ncopy bundled with xo.\n\nPrints the response as JSON on stdout. Exit 1 on any problem, with one line on stderr saying why.\n\npositional arguments:\n  COMMAND\n    ops              list the API's operations\n    call             run one operation from the spec\n    api              send any request (through the xo server, only the creates and GET\n                     /spaces/{id} pass); non-GET changes things on XO, DELETE needs --yes\n    login            log in to every service the xo server lists (me and xo with your XO API\n                     key), and to GitHub with gh's login, or to the one named\n    logout           delete the key and addresses xo login saved, and log gh out of github.com\n                     (asked first)\n    status           each service, its address, and whether you are logged in (never a key)\n    serve            run the xo server that holds the Clerk credentials (see docs/server.md)\n    projects         show the projects list in your private metadata, or add one (the xo\n                     server makes the change and touches nothing else)\n    create           create a project or a space and record it in your private metadata (the\n                     xo server makes the change)\n    connect          set a project's ref in one of your spaces, give a project its repo, or\n                     make a new space entry\n    install          clone or fetch a project here, or each of a space's projects into ./SPACE\n                     at its ref\n    update           push a project's branch, or record the refs checked out under ./SPACE in\n                     the space (refused if the space moved on: run xo sync)\n    sync             pull --rebase and push a project, or merge a space's changes with yours\n                     and record the result\n    share            invite a user to a copy of one of your spaces or GitHub projects (it\n                     waits in their shared list until they accept or reject it)\n    accept           add an invite from your shared list: a space as a space of your own, a\n                     project into one of your spaces (shows what it adds and asks first)\n    reject           take an invite off your shared list (its sender can share it again)\n    list             show your projects and spaces, or one of them, or the invites shared with\n                     you\n    me               GET /me Show the account this API key belongs to (xo server)\n    spaces           the spaces linked to your account; with --space-id ID, GET\n                     /spaces/{spaceId} Get a space's connection URLs and sharing info (owner\n                     only; URLs carry a session token)\n\noptions:\n  -h, --help         show this help message and exit\n  --api-key KEY|-    the XO API key; - reads it from stdin (default $XO_API_KEY, then the key\n                     xo login saved, both safer)\n  --url URL          the server XO API commands go to (default $XO_URL, then the one xo login\n                     saved, then https://xo.quirq.dev)\n  --spec FILE        an OpenAPI JSON file (default $XO_SPEC, then the one bundled with xo)\n  --timeout TIMEOUT  seconds per request (default 30)\n  --version          show program's version number and exit\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.014,
+      "code": 0
+    }
+  ]
+}
