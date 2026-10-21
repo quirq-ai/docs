@@ -68,7 +68,7 @@ export function DocsHome() {
           <div className="max-w-3xl">
             <p className="inline-flex items-center gap-2 rounded-full border border-fd-border bg-fd-background/80 px-3 py-1 text-xs font-medium text-fd-muted-foreground">
               <span className="icon-[ph--terminal-window-fill] size-3.5 text-fd-primary" />
-              Try every command before you install
+              Try the commands before you install
             </p>
             <h1 className="mt-4 text-balance text-[2.15rem] leading-[1.05] font-bold tracking-[-0.05em] sm:text-5xl lg:text-6xl">
               See what each command does.
