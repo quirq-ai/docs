@@ -80,7 +80,7 @@ export function HomeTerminal() {
   const [lines, setLines] = useState<Line[]>([
     {
       kind: "note",
-      text: "Every qq and xo command, replayed. Tap one below, or type it here. Type help for the list.",
+      text: `${commands.length} commands, replayed. Tap one below, or type it here. Type help for the list.`,
     },
   ]);
   const [prompt, setPrompt] = useState("~");
