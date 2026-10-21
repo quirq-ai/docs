@@ -2,14 +2,19 @@
 
 Usage: python3 recorder.py script.json out.json
 script.json: {"title": str, "home": str, "env": {..}, "cwd": str, "steps": [
-  {"say": "a comment shown as # ..."} | {"cmd": "shell command", "cd": "dir (optional, applied before)", "hide": "regex lines to drop", "max": seconds-cap}
+  {"say": "a comment shown as # ..."} | {"cmd": "shell command", "cd": "dir (optional, applied before)", "hide": "regex lines to drop", "max": seconds-cap,
+   "id": "journey step id", "accept": ["what a reader may type for it"]}
 ]}
 """
 import json, os, pty, re, select, subprocess, sys, time
 
 spec = json.load(open(sys.argv[1]))
 home = spec["home"]
-env = dict(os.environ, HOME=home, TERM="dumb", COLUMNS="96", LINES="40", NO_COLOR="1")
+# Recorded commands do not see variables named like a key, token or secret (names only:
+# still grep each recording before committing it).
+secret = re.compile(r"_KEY$|^KEY$|TOKEN|SECRET|PASSWORD|CREDENTIAL|_PASS$|_PWD$|_PAT$|_AUTH|COOKIE|_DSN$", re.I)
+env = {k: v for k, v in os.environ.items() if not secret.search(k)}
+env.update(HOME=home, TERM="dumb", COLUMNS="96", LINES="40", NO_COLOR="1")
 env.pop("HTTPS_PROXY", None) if spec.get("noproxy") else None
 env.update(spec.get("env", {}))
 env["PATH"] = spec.get("path", "").replace("~", home) + ":" + env["PATH"] if spec.get("path") else env["PATH"]
@@ -26,7 +31,7 @@ for step in spec["steps"]:
         continue
     if "cd" in step:
         cwd = step["cd"].replace("~", home)
-    events.append({"k": "cmd", "prompt": pretty(cwd), "text": step["cmd"]})
+    events.append({"k": "cmd", "prompt": pretty(cwd), "text": step["cmd"], **{k: step[k] for k in ("id", "accept") if k in step}})
     pid, fd = pty.fork()
     if pid == 0:
         os.chdir(cwd)

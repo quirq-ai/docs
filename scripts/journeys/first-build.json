@@ -1,0 +1,38 @@
+{
+  "title": "Your first build: innernet",
+  "home": "/home/qq-demo",
+  "cwd": "~",
+  "path": "~/qq-tools/bin",
+  "steps": [
+    {
+      "id": "get",
+      "cmd": "git clone -q https://github.com/quirq-ai/innernet && echo cloned into innernet",
+      "accept": [
+        "qq fetch https://github.com/quirq-ai/innernet",
+        "git clone https://github.com/quirq-ai/innernet"
+      ],
+      "cd": "~/qq-try"
+    },
+    { "id": "show", "cmd": "qqsync show", "cd": "~/qq-try/innernet" },
+    {
+      "id": "test",
+      "cmd": "qq test --toolchain node=~/toolchains/node",
+      "accept": ["qq test"]
+    },
+    {
+      "id": "results",
+      "cmd": "ls .qq/out .qq/out/logs",
+      "accept": ["ls .qq/out", "ls .qq/out/logs"]
+    },
+    {
+      "id": "run",
+      "cmd": "PATH=~/toolchains/node/bin:$PATH qq run \"pnpm start\"",
+      "accept": [
+        "qq run \"pnpm start\"",
+        "qq run 'pnpm start'",
+        "qq run pnpm start"
+      ],
+      "max": 9
+    }
+  ]
+}
