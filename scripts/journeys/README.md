@@ -19,5 +19,4 @@ the commands see. It goes by names only, so still check a recording before commi
 grep -nE 'ak_|sk[-_]|gh[opsu]_|github_pat_|xi-api-key|AKIA[0-9A-Z]{16}|eyJ[A-Za-z0-9_-]{20}|/home/' ../../src/journeys/first-build.json
 ```
 
-Nothing a reader types runs anywhere; the page's "Run it for real" button opens the
-Codespace in `.devcontainer/playground/`, where it does.
+Nothing a reader types runs anywhere.

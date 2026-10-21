@@ -15,8 +15,7 @@ import { buttonVariants } from "./ui/button";
 // A guided journey: numbered steps beside a terminal. The terminal replays a
 // real run recorded by scripts/videos/recorder.py (see scripts/journeys/):
 // typing or tapping a step's command plays back what that command printed,
-// with long waits cut short. Nothing typed here runs anywhere; "Run it for real" opens
-// a Codespace where it does.
+// with long waits cut short. Nothing typed here runs anywhere.
 
 type RecEvent =
   | { k: "say"; text: string }
@@ -82,15 +81,12 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export function Journey({
   recording,
   steps,
-  realUrl,
   recordedOn,
   children,
 }: {
   recording: Recording;
   /** step id -> the command a reader types, in the order of the guide */
   steps: { id: string; cmd: string }[];
-  /** where "Run it for real" goes: a Codespace with the tools installed */
-  realUrl: string;
   /** when and where the recording was made, shown under the terminal */
   recordedOn: string;
   children: ReactNode;
@@ -188,7 +184,7 @@ export function Journey({
           kind: "note",
           text: `This terminal replays a real run of this guide. It knows these commands:\n${steps
             .map((s) => `  ${s.cmd}`)
-            .join("\n")}\nTo run anything else, use "Run it for real" below.`,
+            .join("\n")}`,
         });
       if (cmd === "pwd") return push({ kind: "out", text: `${prompt}\n` });
       const known = [...new Set(Object.values(reps).map((r) => r.prompt))];
@@ -217,7 +213,7 @@ export function Journey({
       }
       push({
         kind: "note",
-        text: `${cmd.split(" ")[0]}: not in this replay. Only the guide's commands are recorded here; "Run it for real" opens a machine where anything runs.`,
+        text: `${cmd.split(" ")[0]}: not in this replay. Only the guide's commands are recorded here.`,
       });
     },
     [accepts, run, push, prompt, steps, reps],
@@ -237,7 +233,6 @@ export function Journey({
         stop.current = true;
       }}
       title={recording.title}
-      realUrl={realUrl}
       recordedOn={recordedOn}
     />
   );
@@ -353,7 +348,6 @@ function Terminal({
   onCommand,
   onStop,
   title,
-  realUrl,
   recordedOn,
 }: {
   lines: Line[];
@@ -366,7 +360,6 @@ function Terminal({
   onCommand: (cmd: string) => void;
   onStop: () => void;
   title: string;
-  realUrl: string;
   recordedOn: string;
 }) {
   const [hi, setHi] = useState(-1);
@@ -379,15 +372,15 @@ function Terminal({
   }, [lines]);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-fd-border bg-neutral-950 text-neutral-100 shadow-sm">
-      <div className="flex items-center gap-2 border-b border-neutral-800 px-3 py-2 text-xs text-neutral-400">
+    <div className="overflow-hidden rounded-xl border border-fd-border bg-[var(--term-bg)] text-[var(--term-fg)] shadow-sm">
+      <div className="flex items-center gap-2 border-b border-fd-border bg-[var(--term-bar)] px-3 py-2 text-xs text-[var(--term-dim)]">
         <span aria-hidden className="flex gap-1.5">
-          <span className="size-2.5 rounded-full bg-neutral-700" />
-          <span className="size-2.5 rounded-full bg-neutral-700" />
-          <span className="size-2.5 rounded-full bg-neutral-700" />
+          <span className="size-2.5 rounded-full bg-[var(--term-dot)]" />
+          <span className="size-2.5 rounded-full bg-[var(--term-dot)]" />
+          <span className="size-2.5 rounded-full bg-[var(--term-dot)]" />
         </span>
         <span className="truncate">{title}</span>
-        <span className="ms-auto shrink-0 rounded border border-neutral-700 px-1.5 py-0.5 text-[0.7rem] uppercase tracking-wide">
+        <span className="ms-auto shrink-0 rounded border border-fd-border px-1.5 py-0.5 text-[0.7rem] uppercase tracking-wide">
           replay
         </span>
       </div>
@@ -396,7 +389,7 @@ function Terminal({
         ref={box}
         role="log"
         aria-label="Terminal output"
-        className="h-[22rem] overflow-y-auto px-3 py-3 font-mono text-[0.8rem] leading-relaxed focus-within:ring-2 focus-within:ring-inset focus-within:ring-sky-400 lg:h-[28rem]"
+        className="h-[22rem] overflow-y-auto px-3 py-3 font-mono text-[0.8rem] leading-relaxed focus-within:ring-2 focus-within:ring-inset focus-within:ring-fd-ring lg:h-[28rem]"
         onClick={() => input.current?.focus()}
       >
         {lines.map((l, i) => (
@@ -404,13 +397,13 @@ function Terminal({
             // biome-ignore lint/suspicious/noArrayIndexKey: lines only ever append
             key={i}
             className={`whitespace-pre-wrap break-words ${
-              l.kind === "note" ? "text-neutral-400" : ""
+              l.kind === "note" ? "text-[var(--term-dim)]" : ""
             }`}
           >
             {l.kind === "cmd" ? (
               <>
-                <span className="text-emerald-400">{l.prompt}</span>
-                <span className="text-neutral-400"> $ </span>
+                <span className="text-[var(--term-prompt)]">{l.prompt}</span>
+                <span className="text-[var(--term-dim)]"> $ </span>
                 {l.text}
               </>
             ) : l.kind === "note" ? (
@@ -431,8 +424,8 @@ function Terminal({
             setValue("");
           }}
         >
-          <span className="shrink-0 text-emerald-400">{prompt}</span>
-          <span className="shrink-0 text-neutral-400">&nbsp;$&nbsp;</span>
+          <span className="shrink-0 text-[var(--term-prompt)]">{prompt}</span>
+          <span className="shrink-0 text-[var(--term-dim)]">&nbsp;$&nbsp;</span>
           <input
             ref={input}
             value={value}
@@ -458,24 +451,12 @@ function Terminal({
             autoCorrect="off"
             autoComplete="off"
             spellCheck={false}
-            className="min-w-0 flex-1 bg-transparent font-mono text-[16px] text-neutral-100 caret-emerald-400 outline-none sm:text-[0.8rem]"
+            className="min-w-0 flex-1 bg-transparent font-mono text-[16px] text-[var(--term-fg)] caret-[var(--term-prompt)] outline-none sm:text-[0.8rem]"
           />
         </form>
       </div>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-neutral-800 px-3 py-2 text-xs text-neutral-400">
-        <span className="min-w-0 flex-1">{recordedOn}</span>
-        <a
-          href={realUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={buttonVariants({
-            variant: "outline",
-            className:
-              "min-h-11 border-neutral-600 px-3 text-neutral-100 hover:bg-neutral-800 hover:text-neutral-100 focus-visible:ring-sky-400",
-          })}
-        >
-          Run it for real ↗
-        </a>
+      <div className="border-t border-fd-border px-3 py-2 text-xs text-[var(--term-dim)]">
+        {recordedOn}
       </div>
     </div>
   );

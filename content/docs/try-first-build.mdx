@@ -1,6 +1,6 @@
 ---
 title: "Try it: your first build"
-description: Follow the first build step by step beside a terminal that replays a real run, then open a real machine to try anything you like.
+description: Follow the first build step by step beside a terminal that replays a real run.
 icon: Terminal
 full: true
 ---
@@ -11,14 +11,13 @@ import recording from "@/journeys/first-build.json";
   The same five steps as [Your first build](/docs/first-build), with a
   terminal beside them. Type each command, or press **Run this step**, and
   the terminal plays back what that command printed in a real run, with
-  long waits cut short. It is a replay: nothing you type here runs anywhere. To run
-  anything you like, press **Run it for real**, which opens a GitHub
-  Codespace on your own GitHub account, with qq installed.
+  long waits cut short. It is a replay: nothing you type here runs anywhere.
+  To run the commands for real, [install qq](/docs/install) on your own
+  machine.
 </Lead>
 
 <Journey
   recording={recording}
-  realUrl="https://codespaces.new/quirq-ai/docs/tree/claude/project-thread-7y1z6r?devcontainer_path=.devcontainer%2Fplayground%2Fdevcontainer.json"
   recordedOn="Recorded 2026-10-21 on Linux. That machine could not reach ghcr.io, so it cloned with git and passed Node 24 in."
   steps={[
     { id: "get", cmd: "qq fetch https://github.com/quirq-ai/innernet" },
@@ -69,12 +68,3 @@ import recording from "@/journeys/first-build.json";
   </JourneyStep>
 </Journey>
 
-## Run it for real
-
-**Run it for real** opens a GitHub Codespace: a Linux machine in your
-browser, made from this docs repo, with qq, qqsync and the xo CLI already
-installed. Every command runs there, so you can go off the guide and try
-anything. You need a GitHub account, and it works best on a computer. It is
-your own Codespace, on your account's monthly Codespaces allowance (free up to
-its limit; past it, GitHub bills your account if it has a payment method), and
-you can delete it when you are done. It holds no key or token of quirq's.
