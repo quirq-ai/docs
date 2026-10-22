@@ -101,8 +101,9 @@ export type Recipe = {
   play: string[];
 };
 
+// A repo name never starts with "-" (xo's _REPO rule) and is never "." or "..".
 const GITHUB_URL =
-  /^https:\/\/github\.com\/[A-Za-z0-9][A-Za-z0-9-]{0,38}\/[A-Za-z0-9._-]{1,100}$/;
+  /^https:\/\/github\.com\/[A-Za-z0-9][A-Za-z0-9-]{0,38}\/[A-Za-z0-9_.][A-Za-z0-9._-]{0,99}$/;
 const repoOf = (url: string) =>
   url
     .split("/")
@@ -114,7 +115,7 @@ const repoUrl: Field = {
   label: "GitHub repo",
   placeholder: "https://github.com/quirq-ai/innernet",
   rule: "a https://github.com/OWNER/REPO address",
-  ok: (v) => GITHUB_URL.test(v) && !/\.\.|\.git$/.test(v),
+  ok: (v) => GITHUB_URL.test(v) && !/\.\.|\.git$|\/\.$/.test(v),
 };
 
 // xo's rules (src/xo/names.py): a new space on XO Cloud is 1 to 32 letters,
@@ -177,7 +178,7 @@ export const recipes: Recipe[] = [
         label: "Volume size (GB)",
         placeholder: "20",
         rule: "a whole number from 20 to 100",
-        ok: (v) => /^\d{2,3}$/.test(v) && +v >= 20 && +v <= 100,
+        ok: (v) => /^[1-9]\d{1,2}$/.test(v) && +v >= 20 && +v <= 100,
       },
     ],
     build: (v) => {

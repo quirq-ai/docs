@@ -5,6 +5,7 @@ import { useId, useState } from "react";
 import { CopyButton } from "@/components/copy-button";
 import type { TerminalControl } from "@/components/home-terminal";
 import { buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { commands } from "@/journeys/home-commands";
 import { recipes, useCases } from "@/journeys/home-use-cases";
 
@@ -18,7 +19,13 @@ const cmdOf = new Map(commands.map((c) => [c.id, c.cmd]));
 
 const PLAY = "min-h-11 gap-1.5 sm:min-h-8";
 
-export function CommandBuilder({ control }: { control: Control }) {
+export function CommandBuilder({
+  control,
+  busy,
+}: {
+  control: Control;
+  busy: boolean;
+}) {
   const [id, setId] = useState(recipes[0].id);
   const recipe = recipes.find((r) => r.id === id) ?? recipes[0];
   const [values, setValues] = useState<Record<string, string>>({});
@@ -66,7 +73,7 @@ export function CommandBuilder({ control }: { control: Control }) {
               <label htmlFor={inputId} className="text-sm font-medium">
                 {f.label}
               </label>
-              <input
+              <Input
                 id={inputId}
                 value={value(f.key, f.placeholder)}
                 onChange={(e) =>
@@ -78,7 +85,7 @@ export function CommandBuilder({ control }: { control: Control }) {
                 autoCorrect="off"
                 autoComplete="off"
                 spellCheck={false}
-                className="mt-1 w-full rounded-md border border-fd-border bg-fd-background px-3 py-2 font-mono text-[16px] outline-none focus-visible:ring-2 focus-visible:ring-fd-ring sm:text-sm"
+                className="mt-1 h-11 font-mono text-[16px] sm:h-9 sm:text-sm"
               />
               {wrong && (
                 <p
@@ -123,6 +130,7 @@ export function CommandBuilder({ control }: { control: Control }) {
           )}
           <button
             type="button"
+            disabled={busy}
             onClick={() =>
               control.current?.play(
                 recipe.play,
@@ -136,7 +144,7 @@ export function CommandBuilder({ control }: { control: Control }) {
             })}
           >
             <span aria-hidden className="icon-[ph--play] size-3.5" />
-            Play a run like it
+            {busy ? "Playing…" : "Play a run like it"}
           </button>
         </div>
       </section>
@@ -148,7 +156,13 @@ export function CommandBuilder({ control }: { control: Control }) {
   );
 }
 
-export function UseCases({ control }: { control: Control }) {
+export function UseCases({
+  control,
+  busy,
+}: {
+  control: Control;
+  busy: boolean;
+}) {
   return (
     <div className="grid gap-x-8 gap-y-10 md:grid-cols-2">
       {(["qq", "xo"] as const).map((tool) => (
@@ -184,6 +198,7 @@ export function UseCases({ control }: { control: Control }) {
                     <div className="mt-3 flex flex-wrap items-center gap-2">
                       <button
                         type="button"
+                        disabled={busy}
                         onClick={() =>
                           control.current?.play(u.ids, `use case: ${u.title}`)
                         }
@@ -197,7 +212,7 @@ export function UseCases({ control }: { control: Control }) {
                           aria-hidden
                           className="icon-[ph--play] size-3.5"
                         />
-                        Play it
+                        {busy ? "Playing…" : "Play it"}
                         <span className="sr-only">
                           {" "}
                           in the terminal: {u.title}

@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { CopyButton } from "@/components/copy-button";
 import {
   type Line,
@@ -75,8 +82,11 @@ export type TerminalControl = {
 
 export function HomeTerminal({
   control,
+  onBusy,
 }: {
   control?: React.RefObject<TerminalControl | null>;
+  /** told when a run starts and when it ends, so Play buttons can wait */
+  onBusy?: (busy: boolean) => void;
 }) {
   const reps = useMemo(allReplays, []);
   const accepts = useMemo(() => {
@@ -180,8 +190,11 @@ export function HomeTerminal({
       else if (r.code > 0) push({ kind: "note", text: `exit ${r.code}` });
       setPrompt(r.prompt);
       setLast(c);
-      busyRef.current = false;
-      setBusy(false);
+      // A chained command leaves the terminal busy for the next one.
+      if (!chained) {
+        busyRef.current = false;
+        setBusy(false);
+      }
       return !stop.current;
     },
     [reps, push],
@@ -204,8 +217,6 @@ export function HomeTerminal({
       for (const id of ids) {
         const done = await run(id, undefined, true, true);
         if (!done) break;
-        busyRef.current = true;
-        setBusy(true);
         await sleep(400);
         if (stop.current) break;
       }
@@ -214,7 +225,8 @@ export function HomeTerminal({
     },
     [run, push],
   );
-  if (control) control.current = { play };
+  useImperativeHandle(control, () => ({ play }), [play]);
+  useEffect(() => onBusy?.(busy), [busy, onBusy]);
 
   // Play one short command on arrival, so the terminal shows what it does.
   const runRef = useRef(run);

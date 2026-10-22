@@ -21,7 +21,11 @@ export function CopyButton({
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(text);
+      // A clipboard that never answers counts as refused after 3 s.
+      await Promise.race([
+        navigator.clipboard.writeText(text),
+        new Promise((_, no) => setTimeout(no, 3000)),
+      ]);
       setState("copied");
     } catch {
       setState("failed");

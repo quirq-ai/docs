@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { BrandIcon } from "@/components/brand-icon";
 import { CommandBuilder, UseCases } from "@/components/home-extras";
 import { HomeTerminal, type TerminalControl } from "@/components/home-terminal";
@@ -22,6 +22,7 @@ const CTA = "min-h-10 gap-2 rounded-lg px-4";
 // the qq film, and use cases that play in the terminal.
 export function DocsHome() {
   const control = useRef<TerminalControl | null>(null);
+  const [busy, setBusy] = useState(false);
   return (
     <main className="min-h-screen bg-fd-background text-fd-foreground">
       <header className="border-b border-fd-border">
@@ -105,7 +106,7 @@ export function DocsHome() {
             </div>
           </div>
           <div className="mt-10">
-            <HomeTerminal control={control} />
+            <HomeTerminal control={control} onBusy={setBusy} />
           </div>
         </div>
       </section>
@@ -122,7 +123,7 @@ export function DocsHome() {
             </p>
           </div>
           <div className="max-w-4xl">
-            <CommandBuilder control={control} />
+            <CommandBuilder control={control} busy={busy} />
           </div>
         </div>
       </section>
@@ -164,7 +165,7 @@ export function DocsHome() {
               another, and shows what each printed.
             </p>
           </div>
-          <UseCases control={control} />
+          <UseCases control={control} busy={busy} />
         </div>
       </section>
 
