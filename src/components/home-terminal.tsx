@@ -9,6 +9,7 @@ import {
   replays,
   Terminal,
 } from "@/components/journey";
+import { buttonVariants } from "@/components/ui/button";
 import {
   type Command,
   commands,
@@ -204,8 +205,21 @@ export function HomeTerminal() {
     .filter((c): c is Command => !!c);
   const active = tools.find((t) => t.id === tool) ?? tools[0];
 
+  // Left and Right move between the tool tabs (the WAI-ARIA tabs pattern).
+  const onTabKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    const i = tools.findIndex((t) => t.id === tool);
+    const to =
+      tools[
+        (i + (e.key === "ArrowRight" ? 1 : -1) + tools.length) % tools.length
+      ];
+    setTool(to.id);
+    document.getElementById(`tab-${to.id}`)?.focus();
+  };
+
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-6">
       <div className="min-w-0">
         <div ref={termRef} className="scroll-mt-4 scroll-mb-4">
           <Terminal
@@ -226,136 +240,159 @@ export function HomeTerminal() {
                 Nothing you type runs anywhere. <Legend />
               </>
             }
-            logClassName="h-[20rem] sm:h-[24rem] lg:h-[30rem]"
+            logClassName="h-[15rem] sm:h-[19rem] lg:h-[22rem]"
           >
-            <div className="flex flex-wrap items-center gap-2 border-t border-fd-border px-3 py-2.5">
-              <span className="text-xs text-[var(--term-dim)]">
-                {last ? "Try next" : "Start with"}
+            <div
+              aria-live="polite"
+              className="flex min-h-12 flex-col gap-1 border-t border-fd-border px-3 py-2.5 text-[0.8rem] leading-relaxed sm:flex-row sm:items-baseline sm:gap-2"
+            >
+              {last ? (
+                <>
+                  <SourceBadge src={last.src} />
+                  <p className="min-w-0 flex-1 text-[var(--term-dim)]">
+                    {last.what}{" "}
+                    <Link
+                      href={last.more.href}
+                      className="whitespace-nowrap font-medium text-[var(--term-fg)] underline underline-offset-4 decoration-[var(--term-dim)] hover:decoration-[var(--term-fg)]"
+                    >
+                      {last.more.label} →
+                    </Link>
+                  </p>
+                </>
+              ) : (
+                <p className="text-[var(--term-dim)]">
+                  After each command, this line says what happened and where to
+                  read more.
+                </p>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 border-t border-fd-border px-3 py-2">
+              <span className="me-1 text-xs text-[var(--term-dim)]">
+                {last ? "Next" : "Start with"}
               </span>
               {next.map((c) => (
-                <Chip key={c.id} c={c} disabled={busy} onRun={run} quiet />
+                <button
+                  key={c.id}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => run(c.id)}
+                  title={c.what}
+                  className={buttonVariants({
+                    variant: "outline",
+                    size: "sm",
+                    className:
+                      "min-h-11 max-w-full justify-start border-fd-border bg-[var(--term-bg)] font-mono font-normal text-[var(--term-fg)] sm:min-h-8",
+                  })}
+                >
+                  <span className="truncate">{c.cmd}</span>
+                  <SrSource src={c.src} />
+                </button>
               ))}
             </div>
           </Terminal>
         </div>
-        <div
-          aria-live="polite"
-          className="mt-3 flex min-h-16 flex-col gap-1.5 rounded-xl border border-fd-border bg-fd-card px-4 py-3 text-sm sm:flex-row sm:items-start sm:gap-3"
-        >
-          {last ? (
-            <>
-              <SourceBadge src={last.src} />
-              <p className="min-w-0 flex-1 text-fd-muted-foreground">
-                <span className="font-mono text-fd-foreground">{last.cmd}</span>
-                {": "}
-                {last.what}{" "}
-                <Link
-                  href={last.more.href}
-                  className="whitespace-nowrap font-medium text-fd-primary underline-offset-4 hover:underline"
-                >
-                  Read more: {last.more.label}
-                </Link>
-              </p>
-            </>
-          ) : (
-            <p className="text-fd-muted-foreground">
-              After each command, this line says what just happened and where to
-              read more.
-            </p>
-          )}
-        </div>
       </div>
 
-      <aside
-        aria-label="All commands"
-        className="min-w-0 rounded-xl border border-fd-border bg-fd-card lg:flex lg:max-h-[38rem] lg:flex-col"
-      >
-        <div
-          role="tablist"
-          aria-label="Tool"
-          className="flex gap-1 border-b border-fd-border p-1.5"
+      {/* On desktop the list takes the terminal's height and scrolls inside. */}
+      <div className="relative min-w-0">
+        <aside
+          aria-label="Commands in this replay"
+          className="flex flex-col overflow-hidden rounded-xl border border-fd-border bg-fd-card lg:absolute lg:inset-0"
         >
-          {tools.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              role="tab"
-              id={`tab-${t.id}`}
-              aria-selected={tool === t.id}
-              aria-controls="tool-panel"
-              onClick={() => setTool(t.id)}
-              className={`min-h-11 flex-1 rounded-lg px-3 font-mono text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fd-ring sm:min-h-9 ${
-                tool === t.id
-                  ? "bg-fd-primary text-fd-primary-foreground"
-                  : "text-fd-muted-foreground hover:bg-fd-accent hover:text-fd-foreground"
-              }`}
+          <div className="border-b border-fd-border p-2">
+            <div
+              role="tablist"
+              aria-label="Tool"
+              onKeyDown={onTabKey}
+              className="grid grid-cols-2 gap-1 rounded-lg bg-fd-muted p-1"
             >
-              {t.title}
-            </button>
-          ))}
-        </div>
-        <div
-          id="tool-panel"
-          role="tabpanel"
-          aria-labelledby={`tab-${active.id}`}
-          className="flex flex-col gap-4 p-4 lg:overflow-y-auto"
-        >
-          <p className="text-sm text-fd-muted-foreground">{active.blurb}</p>
-          {active.groups.map((g) => (
-            <section key={g.title}>
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-fd-muted-foreground">
-                {g.title}
-              </h3>
-              <div className="flex flex-wrap gap-1.5">
-                {g.ids.map((i) => {
-                  const c = byId.get(i);
-                  return c ? (
-                    <Chip key={i} c={c} disabled={busy} onRun={run} />
-                  ) : null;
-                })}
-              </div>
-            </section>
-          ))}
-        </div>
-      </aside>
+              {tools.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="tab"
+                  id={`tab-${t.id}`}
+                  aria-selected={tool === t.id}
+                  aria-controls="tool-panel"
+                  tabIndex={tool === t.id ? 0 : -1}
+                  onClick={() => setTool(t.id)}
+                  className={buttonVariants({
+                    variant: "ghost",
+                    className: `min-h-11 font-mono sm:min-h-8 sm:py-1 ${
+                      tool === t.id
+                        ? "bg-fd-background text-fd-foreground shadow-sm hover:bg-fd-background"
+                        : "text-fd-muted-foreground"
+                    }`,
+                  })}
+                >
+                  {t.title}
+                </button>
+              ))}
+            </div>
+            <p className="px-1 pt-2 text-xs text-fd-muted-foreground">
+              {active.blurb}
+            </p>
+          </div>
+          <div
+            id="tool-panel"
+            role="tabpanel"
+            aria-labelledby={`tab-${active.id}`}
+            className="flex flex-col gap-3 p-2 lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
+          >
+            {active.groups.map((g) => (
+              <section key={g.title}>
+                <h3 className="px-2 pb-1 text-xs font-medium text-fd-muted-foreground">
+                  {g.title}
+                </h3>
+                <ul>
+                  {g.ids.map((i) => {
+                    const c = byId.get(i);
+                    if (!c) return null;
+                    const current = last?.id === c.id;
+                    return (
+                      <li key={i}>
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => run(c.id)}
+                          title={c.cmd}
+                          aria-current={current ? "true" : undefined}
+                          className={buttonVariants({
+                            variant: "ghost",
+                            className: `min-h-11 w-full justify-start gap-2 text-left font-mono text-[0.8rem] font-normal sm:min-h-8 sm:py-1 ${
+                              current
+                                ? "bg-fd-accent text-fd-accent-foreground"
+                                : "text-fd-foreground"
+                            }`,
+                          })}
+                        >
+                          <span className="truncate">{c.cmd}</span>
+                          {c.src !== "recorded" && (
+                            <span
+                              aria-hidden
+                              className="ms-auto shrink-0 font-sans text-[0.68rem] text-fd-muted-foreground"
+                            >
+                              {SOURCE_LABEL[c.src].name.toLowerCase()}
+                            </span>
+                          )}
+                          <SrSource src={c.src} />
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            ))}
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }
 
-function Chip({
-  c,
-  disabled,
-  onRun,
-  quiet,
-}: {
-  c: Command;
-  disabled: boolean;
-  onRun: (id: string) => void;
-  quiet?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={() => onRun(c.id)}
-      title={c.what}
-      className={`inline-flex min-h-11 max-w-full items-center gap-1.5 rounded-lg border px-2.5 py-1 text-left font-mono text-[0.78rem] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fd-ring disabled:opacity-60 sm:min-h-8 ${
-        quiet
-          ? "border-fd-border bg-[var(--term-bar)] text-[var(--term-fg)] hover:border-[var(--term-prompt)]"
-          : "border-fd-border bg-fd-background text-fd-foreground hover:border-fd-primary hover:bg-fd-accent"
-      }`}
-    >
-      <span aria-hidden className="text-[var(--term-prompt)]">
-        $
-      </span>
-      <span className="[overflow-wrap:anywhere]">{c.cmd}</span>
-      {c.src !== "recorded" && (
-        <span className="sr-only">
-          {" "}
-          ({SOURCE_LABEL[c.src].name.toLowerCase()})
-        </span>
-      )}
-    </button>
+function SrSource({ src }: { src: Source }) {
+  return src === "recorded" ? null : (
+    <span className="sr-only"> ({SOURCE_LABEL[src].name.toLowerCase()})</span>
   );
 }
 
@@ -363,12 +400,16 @@ function SourceBadge({ src }: { src: Source }) {
   return (
     <span
       title={SOURCE_LABEL[src].tip}
-      className={`inline-flex h-6 w-fit shrink-0 items-center rounded-full border px-2 text-[0.7rem] font-semibold uppercase tracking-wide ${
-        src === "recorded"
-          ? "border-fd-primary/40 text-fd-primary"
-          : "border-fd-border text-fd-muted-foreground"
-      }`}
+      className="inline-flex w-fit shrink-0 items-center gap-1.5 text-[0.7rem] font-medium uppercase tracking-wide text-[var(--term-fg)]"
     >
+      <span
+        aria-hidden
+        className={`size-1.5 rounded-full ${
+          src === "recorded"
+            ? "bg-[var(--term-prompt)]"
+            : "bg-[var(--term-dim)]"
+        }`}
+      />
       {SOURCE_LABEL[src].name}
     </span>
   );
