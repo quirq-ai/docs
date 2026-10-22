@@ -106,7 +106,7 @@ export const examples: Record<string, Example> = {
       "xo: POST https://xo.quirq.dev/me/spaces/connect\n" +
       '{\n  "space": "demo",\n  "github": "sam/demo",\n  "hash": "sha256:c19e7deae08fdfae4244e7e67b7c37d3f0207da9838406620c897b1afe143093",\n  "index": "main",\n  "main": "f6362a8ffc1a05cea11d34a30fecfb3aefec923e",\n  "branches": {\n    "apps/site": "9d81289131abbaa9a14eec04dff05971bb96d40e",\n    "notes": "0269949c81b7fa4eb91372025091b3be40836d20"\n  },\n  "pushed": true\n}\n',
     code: 0,
-    from: "xo d027963 src/xo/cli.py _create_local_space and src/xo/spacerepo.py create(), run in a made-up ~ on ./demo (no .git yet; git repositories notes and apps/site, a plain folder scratch and a loose todo.txt, which are left out) with GitHub's ls-remote and the push stubbed: the listing and question, build() (its ./.git line), the github.com/new link and wait, push(), then POST /me/spaces/connect and the JSON; a made-up user sam",
+    from: "xo 097249f src/xo/cli.py _create_local_space and src/xo/spacerepo.py create(), run in a made-up ~ on ./demo (no .git yet; git repositories notes and apps/site, a plain folder scratch and a loose todo.txt, which are left out) with GitHub's ls-remote and the push stubbed: the listing and question, build() (its ./.git line), the github.com/new link and wait, push(), then POST /me/spaces/connect and the JSON; a made-up user sam",
   },
   "xo-sync": {
     prompt: "~",

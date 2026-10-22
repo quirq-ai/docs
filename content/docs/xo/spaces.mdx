@@ -64,7 +64,7 @@ xo spaces --space-id THE_ID
 | `xo create space N hermes …`, `… openclaw …`, `… xo-cowork …` | spaces with providers and chat channels; see `xo create space N openclaw --help` |
 | `xo create space N nebius-openclaw --token-factory-api-key -` | a Nebius OpenClaw space (behind a feature flag; HTTP 404 when it is off for you) |
 | `xo create space` | the folder you are in as a space on GitHub, nothing on XO Cloud ([below](#a-space-from-your-folders)) |
-| `xo create space N` | the same for the folder `./N` |
+| `xo create space N` | the same for the folder `./N`, made if it is not there |
 
 - With a kind, N is 1 to 32 letters, digits or hyphens, starts with a letter
   or digit, and can't be `new` or `create`. XO keeps names in lowercase, so
@@ -88,8 +88,11 @@ history. Nothing is made on XO Cloud.
 
 - With no NAME, the folder you are in is the space, named after the folder
   (or the name xo gave its space before).
-- With NAME, the folder `./NAME` is the space. It must already exist: xo
-  makes no folder.
+- With NAME, the folder `./NAME` is the space. When there is no `./NAME`,
+  xo makes it, and takes it away again if you say no or the run stops
+  before the space is built. The new space is empty until you put git
+  repositories in it and run `xo create space` again there. If it stops at
+  the GitHub step, run it again there to push it.
 
 ```sh
 cd ~/work
