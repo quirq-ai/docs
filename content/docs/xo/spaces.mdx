@@ -6,8 +6,10 @@ icon: Cloud
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-A space is where an agent works on XO Cloud. `xo create space NAME KIND`
-creates one and records it in your spaces as NAME.
+A space is a collection of GitHub repos, and where an agent works on them on
+XO Cloud. `xo create space NAME KIND` creates one on XO Cloud and records it in
+your spaces as NAME. To make a folder of repos a space on GitHub instead, see
+[A space from your folders](#a-space-from-your-folders).
 
 ## 1. See what a kind takes
 
@@ -94,9 +96,13 @@ history. Nothing is made on XO Cloud.
   repositories in it and run `xo create space` again there. If it stops at
   the GitHub step, run it again there to push it.
 
+For example, a space of two well-known Python repos:
+
 ```sh
-cd ~/work
-xo create space
+mkdir web && cd web
+git clone https://github.com/pallets/flask
+git clone https://github.com/psf/requests
+xo create space        # space web, on github.com/YOU/web: branches flask and requests
 ```
 
 <Callout type="warn">

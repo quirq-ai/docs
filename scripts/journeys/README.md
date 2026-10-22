@@ -38,11 +38,12 @@ The docs home (`src/components/home-terminal.tsx`) replays every qq and xo comma
   a fake XO core API on 127.0.0.1 with two made-up users, so no real account, Clerk, XO or
   xo.quirq.dev is touched. The spec's `replace` shows the stand-in's address as
   `https://xo.quirq.dev`, and the page says so. The invite IDs and the space ID are filled in when
-  it runs, so they match what the recording printed. Since xo ca83435, `xo create space NAME`
-  publishes a folder to GitHub, so it is an example below; the script makes sam's space `demo`
-  with `xo connect demo` before recording. The committed `home-xo.json` is still the xo 10937c6
-  recording with that step taken out by hand. Run again with xo ca83435, every output matches
-  apart from IDs and times, except that `xo me` then lists `demo`, since the script makes it first.
+  it runs, so they match what the recording printed. The projects are real public repos, cloned
+  from GitHub while it records: sam adds `pallets/flask` and connects it to the space `web`, and
+  alex shares a space `api` holding `expressjs/express`. Since xo ca83435, `xo create space NAME`
+  publishes a folder to GitHub, so it is an example below; the script makes sam's space `web`
+  with `xo connect web` before recording. The committed `home-xo.json` was recorded on 2026-10-22
+  with xo 097249f.
 
   ```sh
   ./record-home-xo.sh ~/.xo ../../src/journeys/home-xo.json   # ~/.xo: a venv with xo installed
@@ -51,6 +52,8 @@ The docs home (`src/components/home-terminal.tsx`) replays every qq and xo comma
 - **Example**: commands that need GitHub, a signed-in gh or ghcr.io (`qq fetch`, `sync`,
   `upload`, `try`, `status`, `land`, `xo update`, `xo sync`, `xo create space`). Their output is written in
   `home-commands.ts` from the source of the version named there, each with a `from` note saying
-  where every line comes from, and a made-up pull request, branch and commit.
+  where every line comes from, and a made-up pull request, branch and commit. `xo create space web` is
+  the real output of xo 097249f's `spacerepo.create()` on shallow clones of `pallets/flask` and
+  `psf/requests`, with only GitHub's ls-remote and the push stubbed.
 
 Check both recordings with the grep above before committing them.

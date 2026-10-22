@@ -18,8 +18,8 @@ export const useCases: UseCase[] = [
   {
     id: "run-a-repo",
     tool: "qq",
-    title: "Run any repo with one command",
-    text: "qq fetch clones a repo and downloads the toolchains it pins. Then qq test builds and tests it.",
+    title: "Run a qq repo with one command",
+    text: "qq fetch clones a repo that has a qq file (infra/repo.toml) and downloads the toolchains it pins. Then qq test builds and tests it.",
     ids: ["qq-fetch", "qq-test"],
     more: { href: "/docs/first-build", label: "Your first build" },
   },
@@ -48,20 +48,31 @@ export const useCases: UseCase[] = [
     more: { href: "/docs/commands", label: "Commands" },
   },
   {
-    id: "repo-to-xo",
+    id: "repos-to-space",
     tool: "xo",
-    title: "Bring a GitHub repo to XO",
-    text: "Log in with your XO key, add the repo as a project, and see it in your list.",
-    ids: ["xo-login", "xo-create-project-url", "xo-projects"],
+    title: "Make a space from famous repos",
+    text: "A space is a collection of GitHub repos. Clone Flask and Requests into ./web, and xo create space web publishes the folder as a space: one branch per repo.",
+    ids: ["xo-create-space"],
+    more: {
+      href: "/docs/xo/spaces#a-space-from-your-folders",
+      label: "Create a space",
+    },
+  },
+  {
+    id: "repo-to-space",
+    tool: "xo",
+    title: "Add any GitHub repo to a space",
+    text: "Log in, add Flask as a project straight from its GitHub URL, and connect it to the web space.",
+    ids: ["xo-login", "xo-create-project-url", "xo-connect"],
     more: { href: "/docs/xo/projects", label: "Projects" },
   },
   {
-    id: "folder-space",
+    id: "space-anywhere",
     tool: "xo",
-    title: "Put your repos in a space",
-    text: "Make a folder of repos a space on GitHub, add a project to it, and clone the space anywhere.",
-    ids: ["xo-create-space", "xo-connect", "xo-install"],
-    more: { href: "/docs/xo/spaces", label: "Create a space" },
+    title: "Get a whole space on another machine",
+    text: "See your projects and spaces, then clone every repo in the web space at its ref with one command.",
+    ids: ["xo-list", "xo-install"],
+    more: { href: "/docs/xo/projects", label: "Projects" },
   },
   {
     id: "claude-space",
@@ -75,7 +86,7 @@ export const useCases: UseCase[] = [
     id: "share-space",
     tool: "xo",
     title: "Share a space with a teammate",
-    text: "Invite alex to a copy of your space, then see the spaces shared with you and accept one.",
+    text: "Invite alex to a copy of web, then see what alex shared with you: their api space, with Express in it. Accept it as team-api.",
     ids: ["xo-share", "xo-list-shared", "xo-accept"],
     more: { href: "/docs/xo/share", label: "Share" },
   },
@@ -110,13 +121,13 @@ const repoOf = (url: string) =>
     .pop()
     ?.replace(/\.git$/, "") ?? "";
 
-const repoUrl: Field = {
+const repoUrl = (label: string, placeholder: string): Field => ({
   key: "url",
-  label: "GitHub repo",
-  placeholder: "https://github.com/quirq-ai/innernet",
+  label,
+  placeholder,
   rule: "a https://github.com/OWNER/REPO address",
   ok: (v) => GITHUB_URL.test(v) && !/\.\.|\.git$|\/\.$/.test(v),
-};
+});
 
 // xo's rules (src/xo/names.py): a new space on XO Cloud is 1 to 32 letters,
 // digits or hyphens; a space you already have is 1 to 64 letters, digits,
@@ -151,8 +162,13 @@ export const recipes: Recipe[] = [
   {
     id: "run-a-repo",
     tool: "qq",
-    title: "Run a repo",
-    fields: [repoUrl],
+    title: "Run a qq repo",
+    fields: [
+      repoUrl(
+        "GitHub repo with a qq file (infra/repo.toml)",
+        "https://github.com/quirq-ai/innernet",
+      ),
+    ],
     build: (v) => [`qq fetch ${v.url}`, `cd ${repoOf(v.url)}`, "qq test"],
     play: ["qq-fetch", "qq-test"],
   },
@@ -160,7 +176,10 @@ export const recipes: Recipe[] = [
     id: "repo-to-space",
     tool: "xo",
     title: "Add a repo to a space",
-    fields: [repoUrl, yourSpace("space", "Space", "demo")],
+    fields: [
+      repoUrl("Any GitHub repo", "https://github.com/pallets/flask"),
+      yourSpace("space", "Space", "web"),
+    ],
     build: (v) => [
       `xo create project ${v.url}`,
       `xo connect ${repoOf(v.url)} ${v.space}`,
@@ -192,7 +211,7 @@ export const recipes: Recipe[] = [
     tool: "xo",
     title: "Share a space",
     fields: [
-      yourSpace("space", "Space", "demo"),
+      yourSpace("space", "Space", "web"),
       {
         key: "user",
         label: "Their XO username",
