@@ -90,6 +90,18 @@ export function HomeTerminal() {
   const [busy, setBusy] = useState(false);
   const [last, setLast] = useState<Command | null>(null);
   const [tool, setTool] = useState<"qq" | "xo">("qq");
+  const [moreBelow, setMoreBelow] = useState(true);
+  const panel = useRef<HTMLDivElement>(null);
+  const checkMore = useCallback(() => {
+    const el = panel.current;
+    if (el) setMoreBelow(el.scrollTop + el.clientHeight < el.scrollHeight - 8);
+  }, []);
+  // A new tab starts at its top; the fade then shows whether it has more below.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runs when the tab changes
+  useEffect(() => {
+    if (panel.current) panel.current.scrollTop = 0;
+    checkMore();
+  }, [tool, checkMore]);
   const stop = useRef(false);
   const termRef = useRef<HTMLDivElement>(null);
 
@@ -250,7 +262,10 @@ export function HomeTerminal() {
                 <>
                   <SourceBadge src={last.src} />
                   <p className="min-w-0 flex-1 text-[var(--term-dim)]">
-                    {last.what}{" "}
+                    <code className="font-mono text-[var(--term-fg)] [overflow-wrap:anywhere]">
+                      {last.cmd}
+                    </code>
+                    : {last.what}{" "}
                     <Link
                       href={last.more.href}
                       className="whitespace-nowrap font-medium text-[var(--term-fg)] underline underline-offset-4 decoration-[var(--term-dim)] hover:decoration-[var(--term-fg)]"
@@ -281,10 +296,12 @@ export function HomeTerminal() {
                     variant: "outline",
                     size: "sm",
                     className:
-                      "min-h-11 max-w-full justify-start border-fd-border bg-[var(--term-bg)] font-mono font-normal text-[var(--term-fg)] sm:min-h-8",
+                      "min-h-11 max-w-full justify-start border-fd-border bg-[var(--term-bg)] text-left font-mono font-normal text-[var(--term-fg)] sm:min-h-8",
                   })}
                 >
-                  <span className="truncate">{c.cmd}</span>
+                  <span className="min-w-0 [overflow-wrap:anywhere]">
+                    {c.cmd}
+                  </span>
                   <SrSource src={c.src} />
                 </button>
               ))}
@@ -293,11 +310,12 @@ export function HomeTerminal() {
         </div>
       </div>
 
-      {/* On desktop the list takes the terminal's height and scrolls inside. */}
+      {/* On desktop the list takes the terminal's height; on a phone it is capped. Either way
+          it scrolls inside, with a fade while more is below. */}
       <div className="relative min-w-0">
         <aside
           aria-label="Commands in this replay"
-          className="flex flex-col overflow-hidden rounded-xl border border-fd-border bg-fd-card lg:absolute lg:inset-0"
+          className="relative flex flex-col overflow-hidden rounded-xl border border-fd-border bg-fd-card lg:absolute lg:inset-0"
         >
           <div className="border-b border-fd-border p-2">
             <div
@@ -337,7 +355,9 @@ export function HomeTerminal() {
             id="tool-panel"
             role="tabpanel"
             aria-labelledby={`tab-${active.id}`}
-            className="flex flex-col gap-3 p-2 lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
+            ref={panel}
+            onScroll={checkMore}
+            className="flex max-h-[24rem] flex-col gap-3 overflow-y-auto p-2 lg:max-h-none lg:min-h-0 lg:flex-1"
           >
             {active.groups.map((g) => (
               <section key={g.title}>
@@ -355,7 +375,6 @@ export function HomeTerminal() {
                           type="button"
                           disabled={busy}
                           onClick={() => run(c.id)}
-                          title={c.cmd}
                           aria-current={current ? "true" : undefined}
                           className={buttonVariants({
                             variant: "ghost",
@@ -366,13 +385,15 @@ export function HomeTerminal() {
                             }`,
                           })}
                         >
-                          <span className="truncate">{c.cmd}</span>
+                          <span className="min-w-0 [overflow-wrap:anywhere]">
+                            {c.cmd}
+                          </span>
                           {c.src !== "recorded" && (
                             <span
                               aria-hidden
                               className="ms-auto shrink-0 font-sans text-[0.68rem] text-fd-muted-foreground"
                             >
-                              {SOURCE_LABEL[c.src].name.toLowerCase()}
+                              {SOURCE_LABEL[c.src].name}
                             </span>
                           )}
                           <SrSource src={c.src} />
@@ -384,6 +405,12 @@ export function HomeTerminal() {
               </section>
             ))}
           </div>
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute inset-x-0 bottom-0 h-12 rounded-b-xl bg-gradient-to-t from-fd-card to-transparent transition-opacity ${
+              moreBelow ? "opacity-100" : "opacity-0"
+            }`}
+          />
         </aside>
       </div>
     </div>
@@ -400,7 +427,7 @@ function SourceBadge({ src }: { src: Source }) {
   return (
     <span
       title={SOURCE_LABEL[src].tip}
-      className="inline-flex w-fit shrink-0 items-center gap-1.5 text-[0.7rem] font-medium uppercase tracking-wide text-[var(--term-fg)]"
+      className="inline-flex w-fit shrink-0 items-center gap-1.5 text-[0.7rem] font-medium text-[var(--term-fg)]"
     >
       <span
         aria-hidden
