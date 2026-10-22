@@ -514,7 +514,8 @@ export const tools: Tool[] = [
   {
     id: "qq",
     title: "qq",
-    blurb: "Build, test and land code in any repo the same way.",
+    blurb:
+      "Build, test and land code the same way in every repo that has a qq file.",
     groups: [
       { title: "Start", ids: ["qq-version", "qq-help", "qq-fetch", "qq-sync"] },
       {
