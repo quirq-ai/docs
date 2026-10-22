@@ -1,7 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { CopyButton } from "@/components/copy-button";
 import {
   type Line,
   type Recording,
@@ -66,7 +74,20 @@ function allReplays(): Record<string, Replay> {
 
 const START = ["qq-version", "qq-test", "xo-login"];
 
-export function HomeTerminal() {
+/** What the rest of the page can ask the terminal to do. */
+export type TerminalControl = {
+  /** play these commands in order, after a note that says why */
+  play: (ids: string[], note: string) => void;
+};
+
+export function HomeTerminal({
+  control,
+  onBusy,
+}: {
+  control?: React.RefObject<TerminalControl | null>;
+  /** told when a run starts and when it ends, so Play buttons can wait */
+  onBusy?: (busy: boolean) => void;
+}) {
   const reps = useMemo(allReplays, []);
   const accepts = useMemo(() => {
     const m = new Map<string, string>();
@@ -103,15 +124,17 @@ export function HomeTerminal() {
     checkMore();
   }, [tool, checkMore]);
   const stop = useRef(false);
+  const busyRef = useRef(false);
   const termRef = useRef<HTMLDivElement>(null);
 
   const push = useCallback((l: Line) => setLines((ls) => [...ls, l]), []);
 
   const run = useCallback(
-    async (id: string, typed?: string, auto = false) => {
+    async (id: string, typed?: string, auto = false, chained = false) => {
       const c = byId.get(id);
       const r = reps[id];
-      if (!c || !r || busy) return;
+      if (!c || !r || (busyRef.current && !chained)) return false;
+      busyRef.current = true;
       setBusy(true);
       stop.current = false;
       setTool(id.startsWith("xo") ? "xo" : "qq");
@@ -167,10 +190,43 @@ export function HomeTerminal() {
       else if (r.code > 0) push({ kind: "note", text: `exit ${r.code}` });
       setPrompt(r.prompt);
       setLast(c);
+      // A chained command leaves the terminal busy for the next one.
+      if (!chained) {
+        busyRef.current = false;
+        setBusy(false);
+      }
+      return !stop.current;
+    },
+    [reps, push],
+  );
+
+  // A use case or a built command plays a few commands in a row; ^C stops the rest.
+  const play = useCallback(
+    async (ids: string[], note: string) => {
+      if (busyRef.current) return;
+      termRef.current?.scrollIntoView({
+        block: "start",
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "auto"
+          : "smooth",
+      });
+      busyRef.current = true;
+      setBusy(true);
+      stop.current = false;
+      push({ kind: "note", text: note });
+      for (const id of ids) {
+        const done = await run(id, undefined, true, true);
+        if (!done) break;
+        await sleep(400);
+        if (stop.current) break;
+      }
+      busyRef.current = false;
       setBusy(false);
     },
-    [reps, busy, push],
+    [run, push],
   );
+  useImperativeHandle(control, () => ({ play }), [play]);
+  useEffect(() => onBusy?.(busy), [busy, onBusy]);
 
   // Play one short command on arrival, so the terminal shows what it does.
   const runRef = useRef(run);
@@ -273,6 +329,11 @@ export function HomeTerminal() {
                       {last.more.label} →
                     </Link>
                   </p>
+                  <CopyButton
+                    text={last.cmd}
+                    label="Copy command"
+                    className="w-fit border-fd-border bg-[var(--term-bg)] text-[var(--term-fg)] sm:self-center"
+                  />
                 </>
               ) : (
                 <p className="text-[var(--term-dim)]">

@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRef, useState } from "react";
 import { BrandIcon } from "@/components/brand-icon";
-import { HomeTerminal } from "@/components/home-terminal";
+import { CommandBuilder, UseCases } from "@/components/home-extras";
+import { HomeTerminal, type TerminalControl } from "@/components/home-terminal";
 import { SectionTabs } from "@/components/section-tabs";
 import { buttonVariants } from "@/components/ui/button";
 import { Video } from "@/components/video";
@@ -11,13 +13,16 @@ import { socialLinks } from "@/lib/layout.shared";
 const GITHUB_REPO_URL = "https://github.com/quirq-ai/qq";
 
 // One container for every band, so the header, the terminal, the film and the
-// guides share a left edge.
+// use cases share a left edge.
 const CONTAINER = "mx-auto w-full max-w-6xl px-4 sm:px-8";
 
 const CTA = "min-h-10 gap-2 rounded-lg px-4";
 
-// The docs home: the terminal first, then the qq film, then the guides.
+// The docs home: the terminal first, then a builder for your own commands,
+// the qq film, and use cases that play in the terminal.
 export function DocsHome() {
+  const control = useRef<TerminalControl | null>(null);
+  const [busy, setBusy] = useState(false);
   return (
     <main className="min-h-screen bg-fd-background text-fd-foreground">
       <header className="border-b border-fd-border">
@@ -101,7 +106,24 @@ export function DocsHome() {
             </div>
           </div>
           <div className="mt-10">
-            <HomeTerminal />
+            <HomeTerminal control={control} onBusy={setBusy} />
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-fd-border py-16">
+        <div className={CONTAINER}>
+          <div className="mb-6 max-w-2xl">
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Make your own command
+            </h2>
+            <p className="mt-3 leading-7 text-fd-muted-foreground">
+              Pick a task and put in your own names. Copy the commands into your
+              shell, or play a recorded run like them.
+            </p>
+          </div>
+          <div className="max-w-4xl">
+            <CommandBuilder control={control} busy={busy} />
           </div>
         </div>
       </section>
@@ -136,39 +158,14 @@ export function DocsHome() {
 
       <section className="border-t border-fd-border py-16">
         <div className={CONTAINER}>
-          <h2 className="text-2xl font-semibold tracking-tight">Guides</h2>
-          <div className="mt-8 grid gap-x-12 gap-y-10 md:grid-cols-2">
-            {GUIDES.map((group) => (
-              <div key={group.title}>
-                <h3 className="font-mono text-sm text-fd-muted-foreground">
-                  {group.title}
-                </h3>
-                <ul className="mt-3 divide-y divide-fd-border border-y border-fd-border">
-                  {group.items.map((g) => (
-                    <li key={g.href}>
-                      <Link
-                        href={g.href}
-                        className="group flex items-center gap-4 py-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring"
-                      >
-                        <span className="min-w-0 flex-1">
-                          <span className="block font-medium">{g.title}</span>
-                          <span className="mt-0.5 block text-sm text-fd-muted-foreground">
-                            {g.text}
-                          </span>
-                        </span>
-                        <span
-                          aria-hidden="true"
-                          className="text-fd-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-fd-foreground"
-                        >
-                          →
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          <div className="mb-8 max-w-2xl">
+            <h2 className="text-2xl font-semibold tracking-tight">Use cases</h2>
+            <p className="mt-3 leading-7 text-fd-muted-foreground">
+              Press Play and the terminal above runs the commands, one after
+              another, and shows what each printed.
+            </p>
           </div>
+          <UseCases control={control} busy={busy} />
         </div>
       </section>
 
@@ -207,66 +204,3 @@ export function DocsHome() {
     </main>
   );
 }
-
-const GUIDES = [
-  {
-    title: "qq",
-    items: [
-      {
-        href: "/docs/try-first-build",
-        title: "Try it: your first build",
-        text: "Five steps beside a terminal.",
-      },
-      {
-        href: "/docs/first-build",
-        title: "Your first build",
-        text: "Build, test and run a real app.",
-      },
-      {
-        href: "/docs/send-a-change",
-        title: "Send a change",
-        text: "From your branch to main.",
-      },
-      {
-        href: "/docs/add-a-repo",
-        title: "Put a repo on qq",
-        text: "One file, infra/repo.toml.",
-      },
-      {
-        href: "/docs/infrastructure",
-        title: "How it fits together",
-        text: "The repos behind qq.",
-      },
-    ],
-  },
-  {
-    title: "xo",
-    items: [
-      {
-        href: "/docs/xo",
-        title: "What is xo",
-        text: "The command line for XO Cloud.",
-      },
-      {
-        href: "/docs/xo/login",
-        title: "Log in",
-        text: "In your browser, or with an API key.",
-      },
-      {
-        href: "/docs/xo/spaces",
-        title: "Create a space",
-        text: "Preview it with --dry-run, then create it.",
-      },
-      {
-        href: "/docs/xo/projects",
-        title: "Projects in a space",
-        text: "Add your repos and connect them to a space.",
-      },
-      {
-        href: "/docs/xo/share",
-        title: "Share",
-        text: "Invite another XO user to a copy.",
-      },
-    ],
-  },
-];
