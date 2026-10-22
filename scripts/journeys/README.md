@@ -29,7 +29,9 @@ The docs home (`src/components/home-terminal.tsx`) replays every qq and xo comma
 - **Recorded**: `home-qq.json`, recorded like a journey into `src/journeys/home-qq.json`, on
   2026-10-21 with qq b205b0e, qqsync 9821f74, qqinstall ca28825 and xo 10937c6 (`qq build` and
   `qq test` take `--toolchain node=~/toolchains/node`, since ghcr.io was out of reach). `xo --help`
-  was recorded again the same day with xo ca83435, whose no-KIND `xo create space` it describes.
+  was recorded again the same day with xo ca83435, whose no-KIND `xo create space` it describes;
+  on 2026-10-22 its one line on that form was changed to what xo 80681c1 prints (one branch per
+  git repo), the only line that differs at that width (`COLUMNS=96`).
 - **Stand-in**: `record-home-xo.sh` records `home-xo.json` into `src/journeys/home-xo.json`. It
   runs the real xo CLI against the real `xo serve`, which talks to `xo-standin.py`: a fake Clerk and
   a fake XO core API on 127.0.0.1 with two made-up users, so no real account, Clerk, XO or

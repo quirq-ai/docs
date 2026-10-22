@@ -1,6 +1,6 @@
 ---
 title: Create a space
-description: Preview a create with --dry-run, then create a Claude Code, Codex or other space on XO Cloud, or make a folder of your folders a space on GitHub.
+description: Preview a create with --dry-run, then create a Claude Code, Codex or other space on XO Cloud, or make a folder of your git repositories a space on GitHub.
 icon: Cloud
 ---
 
@@ -80,38 +80,52 @@ xo spaces --space-id THE_ID
 ## A space from your folders
 
 With no kind, `xo create space NAME` makes the folder you run it in a space,
-published on GitHub: each folder in it becomes its own branch of
-`github.com/YOU/NAME`, and `main` lists them. Nothing is made on XO Cloud.
+published on GitHub: each git repository in it becomes its own branch of
+`github.com/YOU/NAME`, named by its path (`api`, or `work/api` for one inside
+a plain folder `work`), and `main` lists them. A branch holds the
+repository's files as they are now, not its history. Nothing is made on XO
+Cloud. Run it in the folder that holds your repositories; it lists them,
+then asks:
 
 ```sh
-cd ~/work                 # the folder that holds the folders you mean
-xo create space demo      # lists each folder with its size, then asks
+cd ~/work
+xo create space demo
 ```
 
 <Callout type="warn">
   The repository is public: anyone can read it, and what is pushed stays
   public. xo never deletes a branch or the repository and never force-pushes,
-  so a file you take out later is still in the history, and a folder you
+  so a file you take out later is still in the history, and a repository you
   remove keeps its branch. xo leaves out `.env` files, keys and credential
   stores, and stops before pushing a file that looks like it holds a key,
   token or password, but it cannot find every secret (one in an archive,
-  say). Look through the folders before you say yes.
+  say). Look through the repositories before you say yes.
 </Callout>
 
-- xo lists each folder with its size and where it goes, and asks first.
+- xo lists each repository with its size and where it goes, and asks first.
   `--yes` answers that question for you, but it does not make the
   repository: without a terminal xo cannot wait for you, so when the
   repository is not there yet it stops before pushing (and still exits 0).
-  Run it again once the repository exists. Files directly in the folder,
-  hidden folders and links to folders are not included. Nothing in your
-  folders is changed: xo makes a bare `./.git` beside them.
+  Run it again once the repository exists. Nothing in your folders is
+  changed: xo makes a bare `./.git` beside them.
+- xo looks for repositories up to 6 folders down: a clone, or a worktree or
+  submodule whose `.git` is a file. Folders that are not repositories and hold
+  none, files outside the repositories, hidden folders, links to folders,
+  `node_modules`, `venv` and `__pycache__` are not part of the space. A
+  repository inside another one is not a branch of its own: it is left out of
+  the outer one's files.
 - This folder's `.gitignore` is followed, and can leave out whole folders (xo
-  lists them), and so is each folder's own. `.env` files, keys, credential
-  stores, `node_modules`, `.DS_Store` and Terraform state are always left
-  out, as are repositories nested deeper and `.github/workflows`. A clone
-  that is one of the folders goes up as its files only, not its history. A
-  file over 100 MB, a Git LFS pointer, a file git-crypt keeps encrypted or a
-  bare repository among the files stops it before anything is pushed.
+  lists them), and so is each repository's own `.gitignore` and
+  `.git/info/exclude`. `.env` files, keys, credential stores, `node_modules`,
+  `.DS_Store` and Terraform state are always left out, as is
+  `.github/workflows`. A file over 100 MB, a Git LFS pointer, a file
+  git-crypt keeps encrypted or a bare repository among the files stops it
+  before anything is pushed.
+- Each folder name on a repository's path is letters, digits, `_`, `.` or
+  `-`, starting with a letter or digit (not `HEAD`, no `..`, and not ending
+  in `.`, `.lock` or `_HEAD`), and the path can't start with a folder called
+  `main`. Two repositories whose paths differ only in case are
+  refused, since GitHub can't keep their branches apart.
 - The repository is `github.com/OWNER/NAME`, OWNER being your gh login or
   `--owner`; with neither, xo stops and says so. When the repository is not
   there, xo prints a link to make it (empty, with no README) and, at a
