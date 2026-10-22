@@ -93,20 +93,22 @@ export const examples: Record<string, Example> = {
   "xo-create-space": {
     prompt: "~",
     out:
-      "xo: xo create space demo makes /home/sam/demo a space on github.com/sam/demo: each git repository here becomes its own branch of a new ./.git, and main lists them. A branch holds the repository's files as they are now, not its history.\n" +
-      "  apps/site                          1.2 MB\n" +
-      "  notes                             15.8 KB\n" +
-      "  Folders that are not git repositories (and hold none), files outside the repositories, hidden folders, node_modules and venv, and repositories more than 6 folders down are not part of the space. Each repository's .gitignore (and this folder's) is followed; .env files, keys, credential stores, repositories inside a repository and .github/workflows are left out, and a file that looks like it holds a key, token or password stops it before anything is pushed. xo cannot find every secret (one in an archive, say), so look through these repositories first. Everything else is pushed to a new public repository github.com/sam/demo, which xo asks you to make. Anyone can read it, and what is pushed stays public. Nothing in these folders is changed.\n" +
+      "xo: xo create space web makes /home/sam/web a space on github.com/sam/web: each git repository here becomes its own branch of a new ./.git, and main lists them. A branch holds the repository's files as they are now, not its history.\n" +
+      "  flask                              1.7 MB\n" +
+      "  requests                           4.2 MB\n" +
+      "  Folders that are not git repositories (and hold none), files outside the repositories, hidden folders, node_modules and venv, and repositories more than 6 folders down are not part of the space. Each repository's .gitignore (and this folder's) is followed; .env files, keys, credential stores, repositories inside a repository and .github/workflows are left out, and a file that looks like it holds a key, token or password stops it before anything is pushed. xo cannot find every secret (one in an archive, say), so look through these repositories first. Everything else is pushed to a new public repository github.com/sam/web, which xo asks you to make. Anyone can read it, and what is pushed stays public. Nothing in these folders is changed.\n" +
       "xo: Make this folder the space? [y/N] y\n" +
-      "xo: ./.git: 2 branches and the index (main), sha256:c19e7deae08fdfae4244e7e67b7c37d3f0207da9838406620c897b1afe143093\n" +
-      "xo: github.com/sam/demo does not exist yet (or is private). Make it here, empty (no README, license or .gitignore):\n" +
-      "  https://github.com/new?name=demo&owner=sam&visibility=public\n" +
+      "xo: flask: left out .github/workflows (GitHub would run them on the space's repository)\n" +
+      "xo: requests: left out .github/workflows (GitHub would run them on the space's repository)\n" +
+      "xo: ./.git: 2 branches and the index (main), sha256:ee075cea0f2486c561a4969b3888fe5ad4f3e6ab2ac2bbc8e503cde5177341b0\n" +
+      "xo: github.com/sam/web does not exist yet (or is private). Make it here, empty (no README, license or .gitignore):\n" +
+      "  https://github.com/new?name=web&owner=sam&visibility=public\n" +
       "xo: Press Enter once it exists, or n to stop here \n" +
-      "xo: pushed main and 2 branches to https://github.com/sam/demo\n" +
+      "xo: pushed main and 2 branches to https://github.com/sam/web\n" +
       "xo: POST https://xo.quirq.dev/me/spaces/connect\n" +
-      '{\n  "space": "demo",\n  "github": "sam/demo",\n  "hash": "sha256:c19e7deae08fdfae4244e7e67b7c37d3f0207da9838406620c897b1afe143093",\n  "index": "main",\n  "main": "f6362a8ffc1a05cea11d34a30fecfb3aefec923e",\n  "branches": {\n    "apps/site": "9d81289131abbaa9a14eec04dff05971bb96d40e",\n    "notes": "0269949c81b7fa4eb91372025091b3be40836d20"\n  },\n  "pushed": true\n}\n',
+      '{\n  "space": "web",\n  "github": "sam/web",\n  "hash": "sha256:ee075cea0f2486c561a4969b3888fe5ad4f3e6ab2ac2bbc8e503cde5177341b0",\n  "index": "main",\n  "main": "a2e6046834ebdfbfc7353de48d8e09901c8cd704",\n  "branches": {\n    "flask": "b0298c713a5b1dd1c08bf8a6dbb2012499938d56",\n    "requests": "234908847255b612e57fe7c7dac69bd324f19dcc"\n  },\n  "pushed": true\n}\n',
     code: 0,
-    from: "xo 097249f src/xo/cli.py _create_local_space and src/xo/spacerepo.py create(), run in a made-up ~ on ./demo (no .git yet; git repositories notes and apps/site, a plain folder scratch and a loose todo.txt, which are left out) with GitHub's ls-remote and the push stubbed: the listing and question, build() (its ./.git line), the github.com/new link and wait, push(), then POST /me/spaces/connect and the JSON; a made-up user sam",
+    from: "xo 097249f src/xo/cli.py _create_local_space and src/xo/spacerepo.py create(), run in a made-up ~ on ./web holding shallow clones of pallets/flask (d086db8) and psf/requests (611c616), with GitHub's ls-remote and the push stubbed: the listing and question, build() (its workflow and ./.git lines), the github.com/new link and wait, push(), then POST /me/spaces/connect and the JSON; a made-up user sam",
   },
   "xo-sync": {
     prompt: "~",
@@ -359,10 +361,10 @@ export const commands: Command[] = [
   },
   {
     id: "xo-create-project-url",
-    cmd: "xo create project https://github.com/quirq-ai/innernet",
+    cmd: "xo create project https://github.com/pallets/flask",
     src: "stand-in",
     more: D.xoProjects,
-    what: "Adds a GitHub project, named after its repo, and clones it into ./innernet.",
+    what: "Adds any GitHub repo as a project, here Flask, named after its repo, and clones it into ./flask.",
     next: ["xo-projects-add", "xo-connect"],
   },
   {
@@ -384,21 +386,21 @@ export const commands: Command[] = [
   // xo: spaces
   {
     id: "xo-create-space",
-    cmd: "xo create space demo",
+    cmd: "xo create space web",
     src: "example",
     more: {
       href: "/docs/xo/spaces#a-space-from-your-folders",
       label: "Spaces",
     },
-    what: "The folder ./demo as space demo: one branch per git repository in it, pushed to a public GitHub repository after you say yes. Nothing on XO Cloud.",
+    what: "The folder ./web, holding clones of Flask and Requests, as space web: one branch per git repository in it, pushed to a public GitHub repository after you say yes. Nothing on XO Cloud.",
     next: ["xo-connect", "xo-create-kind-dry"],
   },
   {
     id: "xo-connect",
-    cmd: "xo connect innernet demo",
+    cmd: "xo connect flask web",
     src: "stand-in",
     more: D.xoProjects,
-    what: "Puts the innernet project in the demo space at main.",
+    what: "Puts the Flask project in the web space at main.",
     next: ["xo-list", "xo-install"],
   },
   {
@@ -411,10 +413,10 @@ export const commands: Command[] = [
   },
   {
     id: "xo-install",
-    cmd: "xo install space:demo",
+    cmd: "xo install space:web",
     src: "stand-in",
     more: D.xoProjects,
-    what: "Clones each of the space's projects into ./demo at its ref.",
+    what: "Clones each of the space's projects into ./web at its ref.",
     next: ["xo-update", "xo-create-kind-dry"],
   },
   {
@@ -468,7 +470,7 @@ export const commands: Command[] = [
   // xo: share
   {
     id: "xo-share",
-    cmd: "xo share space:demo alex",
+    cmd: "xo share space:web alex",
     src: "stand-in",
     more: D.xoShare,
     what: "Invites alex to a copy of the space: its name and its GitHub projects.",
@@ -484,10 +486,10 @@ export const commands: Command[] = [
   },
   {
     id: "xo-accept",
-    cmd: "xo accept ID --as team-notes --yes",
+    cmd: "xo accept ID --as team-api --yes",
     src: "stand-in",
     more: D.xoShare,
-    what: "Adds the shared space as your own, named team-notes, and its projects to yours. Without --yes it asks first.",
+    what: "Adds alex's shared space, with Express in it, as your own, named team-api, and its projects to yours. Without --yes it asks first.",
     next: ["xo-reject", "xo-logout"],
   },
   {

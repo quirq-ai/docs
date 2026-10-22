@@ -24,13 +24,13 @@
     { "id": "xo-create-project", "cmd": "xo create project hello" },
     {
       "id": "xo-create-project-url",
-      "cmd": "xo create project https://github.com/quirq-ai/innernet"
+      "cmd": "xo create project https://github.com/pallets/flask"
     },
     { "id": "xo-projects-add", "cmd": "xo projects add notes-app" },
     { "id": "xo-projects", "cmd": "xo projects" },
-    { "id": "xo-connect", "cmd": "xo connect innernet demo" },
+    { "id": "xo-connect", "cmd": "xo connect flask web" },
     { "id": "xo-list", "cmd": "xo list" },
-    { "id": "xo-install", "cmd": "xo install space:demo" },
+    { "id": "xo-install", "cmd": "xo install space:web" },
     {
       "id": "xo-create-kind-dry",
       "cmd": "xo create space lab claude-code --volume-size 20 --dry-run"
@@ -41,11 +41,11 @@
     },
     { "id": "xo-spaces", "cmd": "xo spaces" },
     { "id": "xo-space-id", "cmd": "xo spaces --space-id {LAB_ID}" },
-    { "id": "xo-share", "cmd": "xo share space:demo alex" },
+    { "id": "xo-share", "cmd": "xo share space:web alex" },
     { "id": "xo-list-shared", "cmd": "xo list shared" },
     {
       "id": "xo-accept",
-      "cmd": "xo accept {SPACE_INVITE} --as team-notes --yes"
+      "cmd": "xo accept {SPACE_INVITE} --as team-api --yes"
     },
     { "id": "xo-reject", "cmd": "xo reject {PROJECT_INVITE}" },
     { "id": "xo-logout", "cmd": "xo logout" }

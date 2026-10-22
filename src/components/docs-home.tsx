@@ -80,9 +80,11 @@ export function DocsHome() {
               qq and xo, one command at a time
             </h1>
             <p className="mt-3 text-pretty leading-7 text-fd-muted-foreground">
-              qq builds, tests and lands code in any repo the same way. xo runs
-              your XO Cloud spaces and projects. Pick a command, or type one,
-              and the terminal plays back what it printed.
+              qq builds, tests and lands code the same way in every repo that
+              has a qq file. With xo, a space is a collection of GitHub repos,
+              from Flask and Requests to your own: create one, work in it
+              together, and share it. Pick a command, or type one, and the
+              terminal plays back what it printed.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               <Link
