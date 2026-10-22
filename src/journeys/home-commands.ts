@@ -93,20 +93,20 @@ export const examples: Record<string, Example> = {
   "xo-create-space": {
     prompt: "~/work",
     out:
-      "xo: xo create space demo makes /home/sam/work a space: each folder here becomes its own branch of github.com/sam/demo, and main lists them.\n" +
-      "  notes                             12.4 KB\n" +
-      "  site                               1.3 MB  (a git clone: its files only, not its history)\n" +
-      "  Files directly in this folder and hidden folders are not included. Each folder's .gitignore (and this folder's) is followed; .env files, keys, credential stores, nested repositories and .github/workflows are left out, and a file that looks like it holds a key, token or password stops it before anything is pushed. xo cannot find every secret (one in an archive, say), so look through these folders first. Everything else is pushed to a new public repository github.com/sam/demo, which xo asks you to make. Anyone can read it, and what is pushed stays public. Nothing in these folders is changed.\n" +
+      "xo: xo create space demo makes /home/sam/work a space: each git repository here becomes its own branch of github.com/sam/demo (its files as they are now, not its history), and main lists them.\n" +
+      "  apps/site                          1.2 MB\n" +
+      "  notes                             15.8 KB\n" +
+      "  Folders that are not git repositories (and hold none), files outside the repositories, hidden folders, node_modules and venv, and repositories more than 6 folders down are not part of the space. Each repository's .gitignore (and this folder's) is followed; .env files, keys, credential stores, repositories inside a repository and .github/workflows are left out, and a file that looks like it holds a key, token or password stops it before anything is pushed. xo cannot find every secret (one in an archive, say), so look through these repositories first. Everything else is pushed to a new public repository github.com/sam/demo, which xo asks you to make. Anyone can read it, and what is pushed stays public. Nothing in these folders is changed.\n" +
       "xo: Make this folder the space? [y/N] y\n" +
-      "xo: ./.git: 2 branches and main, sha256:226b2d0bcd2477b35a7cc37af38a3b9bc7a7a00408f7f95e50d2cde287332ccc\n" +
+      "xo: ./.git: 2 branches and main, sha256:3842f792e3d81a91e6f6d876281471a5004bde7eb14614aa2586f323716452dd\n" +
       "xo: github.com/sam/demo does not exist yet (or is private). Make it here, empty (no README, license or .gitignore):\n" +
       "  https://github.com/new?name=demo&owner=sam&visibility=public\n" +
       "xo: Press Enter once it exists, or n to stop here \n" +
       "xo: pushed main and 2 branches to https://github.com/sam/demo\n" +
       "xo: POST https://xo.quirq.dev/me/spaces/connect\n" +
-      '{\n  "space": "demo",\n  "github": "sam/demo",\n  "hash": "sha256:226b2d0bcd2477b35a7cc37af38a3b9bc7a7a00408f7f95e50d2cde287332ccc",\n  "main": "b28b7af69320201d1cf206ebf28373980add1451",\n  "branches": {\n    "notes": "3add7b9612102f2a7dbe4ed4fe886e07e847c24d",\n    "site": "c099a42a5555825cdb50df0c04932bcd29613457"\n  },\n  "pushed": true\n}\n',
+      '{\n  "space": "demo",\n  "github": "sam/demo",\n  "hash": "sha256:3842f792e3d81a91e6f6d876281471a5004bde7eb14614aa2586f323716452dd",\n  "main": "65f895818ca9b76a81256c698a7671b631240512",\n  "branches": {\n    "apps/site": "7ec7ac2a19d53aeac18a5a7701f20537e7adaad0",\n    "notes": "61fe44a77ae45fd385a7aaadaa0884fa8cf2375f"\n  },\n  "pushed": true\n}\n',
     code: 0,
-    from: "xo ca83435 src/xo/cli.py _create_local_space and src/xo/spacerepo.py create(): the listing and question, build() (its ./.git line), the github.com/new link and wait, push(), then POST /me/spaces/connect and the JSON; a made-up user sam, folders, hash and commits",
+    from: "xo 80681c1 src/xo/cli.py _create_local_space and src/xo/spacerepo.py create(), run on a made-up ~/work (git repositories notes and apps/site, a plain folder scratch and a loose todo.txt, which are left out) with GitHub's ls-remote and the push stubbed: the listing and question, build() (its ./.git line), the github.com/new link and wait, push(), then POST /me/spaces/connect and the JSON; a made-up user sam",
   },
   "xo-sync": {
     prompt: "~",
@@ -390,7 +390,7 @@ export const commands: Command[] = [
       href: "/docs/xo/spaces#a-space-from-your-folders",
       label: "Spaces",
     },
-    what: "This folder as space demo: one branch per folder, pushed to a public GitHub repository after you say yes. Nothing on XO Cloud.",
+    what: "This folder as space demo: one branch per git repository in it, pushed to a public GitHub repository after you say yes. Nothing on XO Cloud.",
     next: ["xo-connect", "xo-create-kind-dry"],
   },
   {
