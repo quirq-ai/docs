@@ -35,16 +35,16 @@ export function DocsHome() {
             <SectionTabs />
           </div>
           <nav aria-label="Primary" className="flex items-center gap-1">
-            <div className="hidden items-center gap-1 sm:flex">
-              <Link
-                href="/docs/install"
-                className={buttonVariants({
-                  variant: "ghost",
-                  className: "px-3",
-                })}
-              >
-                Install
-              </Link>
+            <Link
+              href="/docs/install"
+              className={buttonVariants({
+                variant: "ghost",
+                className: "px-3",
+              })}
+            >
+              Install
+            </Link>
+            <span className="hidden sm:flex">
               <Link
                 href="/docs/commands"
                 className={buttonVariants({
@@ -54,7 +54,7 @@ export function DocsHome() {
               >
                 Commands
               </Link>
-            </div>
+            </span>
             <a
               href={GITHUB_REPO_URL}
               target="_blank"
@@ -107,30 +107,30 @@ export function DocsHome() {
       </section>
 
       <section className="border-t border-fd-border py-16">
-        <div
-          className={`${CONTAINER} grid gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-center`}
-        >
-          <div>
+        <div className={CONTAINER}>
+          <div className="mb-8 max-w-2xl">
             <h2 className="text-2xl font-semibold tracking-tight">
               What is qq
             </h2>
-            <p className="mt-3 max-w-md leading-7 text-fd-muted-foreground">
+            <p className="mt-3 leading-7 text-fd-muted-foreground">
               A three-minute film on how qq builds, tests, lands and ships code,
               with sound and captions. qq runs on Linux x86_64 first; xo runs on
               Linux, macOS and Windows.
             </p>
           </div>
-          <Video
-            src="/videos/explainer.mp4"
-            poster="/videos/explainer.jpg"
-            phoneSrc="/videos/explainer-phone.mp4"
-            phonePoster="/videos/explainer.jpg"
-            phoneWidth={854}
-            phoneHeight={480}
-            title="What is qq: the quirq infra field guide"
-            width={1280}
-            height={720}
-          />
+          <div className="max-w-4xl">
+            <Video
+              src="/videos/explainer.mp4"
+              poster="/videos/explainer.jpg"
+              phoneSrc="/videos/explainer-phone.mp4"
+              phonePoster="/videos/explainer.jpg"
+              phoneWidth={854}
+              phoneHeight={480}
+              title="What is qq: the quirq infra field guide"
+              width={1280}
+              height={720}
+            />
+          </div>
         </div>
       </section>
 
