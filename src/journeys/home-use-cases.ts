@@ -117,6 +117,7 @@ export type Recipe = {
 // A repo name never starts with "-" (xo's _REPO rule) and is never "." or "..".
 const GITHUB_URL =
   /^https:\/\/github\.com\/[A-Za-z0-9][A-Za-z0-9-]{0,38}\/[A-Za-z0-9_.][A-Za-z0-9._-]{0,99}$/;
+// The last path part; the field rule already refuses a trailing "/" or ".git".
 const repoOf = (url: string) =>
   url
     .split("/")
