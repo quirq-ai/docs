@@ -158,6 +158,19 @@ const yourSpace = (key: string, label: string, placeholder: string): Field => ({
   ok: (v) => /^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$/.test(v),
 });
 
+// A space made from a folder: xo's _SPACE rule (src/xo/names.py), lowercased,
+// and not a kind, new or create, or ending in .git.
+const folderSpace: Field = {
+  key: "folder",
+  label: "Space name",
+  placeholder: "web",
+  rule: "1 to 64 letters, digits, _ . or -, starting with a letter or digit",
+  ok: (v) =>
+    /^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$/.test(v) &&
+    !v.toLowerCase().endsWith(".git") &&
+    !["new", "create", ...KINDS].includes(v.toLowerCase()),
+};
+
 export const recipes: Recipe[] = [
   {
     id: "run-a-repo",
@@ -171,6 +184,29 @@ export const recipes: Recipe[] = [
     ],
     build: (v) => [`qq fetch ${v.url}`, `cd ${repoOf(v.url)}`, "qq test"],
     play: ["qq-fetch", "qq-test"],
+  },
+  {
+    id: "repos-to-space",
+    tool: "xo",
+    title: "Make a space from GitHub repos",
+    fields: [
+      folderSpace,
+      {
+        ...repoUrl("First GitHub repo", "https://github.com/pallets/flask"),
+        key: "url1",
+      },
+      {
+        ...repoUrl("Second GitHub repo", "https://github.com/psf/requests"),
+        key: "url2",
+      },
+    ],
+    build: (v) => [
+      `mkdir ${v.folder} && cd ${v.folder}`,
+      `git clone ${v.url1}`,
+      `git clone ${v.url2}`,
+      "xo create space",
+    ],
+    play: ["xo-create-space"],
   },
   {
     id: "repo-to-space",

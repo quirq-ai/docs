@@ -18,7 +18,7 @@ for _ in $(seq 50); do curl -sf --noproxy '*' http://127.0.0.1:8790/healthz >/de
 # alex shares a space and a project with sam before the recording starts.
 (cd /tmp/xo-alex && export HOME=/tmp/xo-alex
  printf '%s\n' "ak_demo_alex" | xo login me --key --url http://127.0.0.1:8790
- xo connect api && xo connect expressjs/express api
+ xo connect api && xo connect expressjs/express api --ref master
  xo share space:api sam && xo share project:express sam) > /dev/null 2>&1
 # sam's space web, as an entry only: since xo ca83435, xo create space NAME with no KIND publishes
 # a folder to GitHub, so the home page shows that command as an example instead.

@@ -6,20 +6,21 @@ icon: GitFork
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-A project is one of your repos. A space holds projects, each at a ref (a
-branch, tag or commit), so anyone who installs the space gets the same
-checkouts. xo keeps both lists in your XO account; the clones are on your
+A project is a GitHub repo: one of yours, or any public one, such as Flask or
+Express. A space holds projects, each at a ref (a branch, tag or commit), so
+anyone who installs the space gets the same checkouts. xo keeps both lists in your XO account; the clones are on your
 machine.
 
 ## Add a project
 
 ```sh
-xo create project https://github.com/juanfont/headscale   # cloned into ./headscale
-xo create project notes                                    # no GitHub remote: ./notes, git init
-xo projects                                                # your projects
+xo create project https://github.com/pallets/flask       # cloned into ./flask
+xo create project https://github.com/expressjs/express   # cloned into ./express
+xo create project notes                                  # no GitHub remote: ./notes, git init
+xo projects                                              # your projects
 ```
 
-A GitHub project is called by its repo's name, `headscale`, in every command.
+A GitHub project is called by its repo's name, `flask`, in every command.
 When two of your projects share that name, such as a fork and its upstream,
 call it by `OWNER/REPO`; its folder is then `./OWNER/REPO`.
 
@@ -35,22 +36,23 @@ none and moves to `./REPO`.
 ## Put it in a space
 
 ```sh
-xo connect headscale my-cc --ref main   # the project headscale in the space my-cc, at main
-xo connect dev                          # a new space entry, with no XO Cloud space
+xo connect web                          # a new space entry, web, with no XO Cloud space
+xo connect flask web --ref main         # Flask in the space web, at main
+xo connect express web --ref v5.1.0     # Express in it too, at its tag v5.1.0
 xo connect old --id THE_ID              # an entry for an XO Cloud space you already have
 xo spaces                               # your spaces, with their projects and refs
 xo list                                 # your projects and your spaces together
 ```
 
 xo works out which name is the project and which the space, so
-`xo connect my-cc headscale` works too. For a space named like one of your
+`xo connect web flask` works too. For a space named like one of your
 projects, say `space:NAME`; `project:` and `space:` work in front of any name.
 
 ### A project you have not added yet
 
 ```sh
-xo connect https://github.com/OWNER/REPO my-cc   # adds the project, then puts it in my-cc
-xo install space:my-cc                           # clones it into ./my-cc/REPO
+xo connect https://github.com/psf/requests web   # adds Requests, then puts it in web
+xo install space:web                             # clones each project into ./web/REPO
 ```
 
 `xo connect PROJECT SPACE` adds a project that is not in your projects yet,
@@ -64,9 +66,9 @@ the space, and says so.
 - A plain name close to one of your projects, most likely a typo, is refused
   with the name it is close to, since xo cannot delete a project. To add it
   anyway, say `project:NAME`.
-- Put a new plain name first. `xo connect my-cc notes` is refused when `my-cc`
+- Put a new plain name first. `xo connect web notes` is refused when `web`
   is one of your spaces, since `notes` could be a space you have not made yet:
-  say `xo connect project:notes space:my-cc`, which adds `notes` as you typed
+  say `xo connect project:notes space:web`, which adds `notes` as you typed
   it. `OWNER/REPO` and a URL work in either order.
 
 <Callout type="info">
@@ -77,15 +79,18 @@ the space, and says so.
 ## Install, update and sync
 
 ```sh
-xo install space:dev    # ./dev/REPO for each project, at its ref
-xo update space:dev     # push each branch under ./dev, then record the refs
-xo sync space:dev       # rebase and push each branch, merge the space's refs, record
+xo install space:web    # ./web/REPO for each project, at its ref
+xo update space:web     # push each branch under ./web, then record the refs
+xo sync space:web       # rebase and push each branch, merge the space's refs, record
 ```
 
-The same three work on one project: `xo install project:headscale` clones it
-here (or fetches and fast-forwards it), `xo update project:headscale` pushes
-its branch, and `xo sync project:headscale` runs `git pull --rebase`, then
-pushes.
+The same three work on one project: `xo install project:flask` clones it
+here (or fetches and fast-forwards it), `xo update project:flask` pushes its
+branch, and `xo sync project:flask` runs `git pull --rebase`, then pushes.
+
+- `update` and `sync` push, so they need push access to the repo. For a repo
+  you can't push to, such as Flask, put your fork in the space instead
+  (`xo connect YOU/flask web`) and push to that.
 
 - They use your own git and its login, over https, without submodules.
   `./SPACE/.xo/state.json` remembers what was installed.
