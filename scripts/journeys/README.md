@@ -40,9 +40,9 @@ The docs home (`src/components/home-terminal.tsx`) replays every qq and xo comma
   `https://xo.quirq.dev`, and the page says so. The invite IDs and the space ID are filled in when
   it runs, so they match what the recording printed. The projects are real public repos, cloned
   from GitHub while it records: sam adds `pallets/flask` and connects it to the space `web`, and
-  alex shares a space `api` holding `expressjs/express`. Since xo ca83435, `xo create space NAME`
+  alex shares a space `api` holding `expressjs/express` at its default branch, `master`. Since xo ca83435, `xo create space NAME`
   publishes a folder to GitHub, so it is an example below; the script makes sam's space `web`
-  with `xo connect web` before recording. The committed `home-xo.json` was recorded on 2026-10-22
+  with `xo connect web` before recording. The committed `home-xo.json` was recorded on 2026-10-23
   with xo 097249f.
 
   ```sh
