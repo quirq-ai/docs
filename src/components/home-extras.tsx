@@ -36,7 +36,8 @@ export function CommandBuilder({
     recipe.fields.map((f) => [f.key, value(f.key, f.placeholder).trim()]),
   );
   const bad = recipe.fields.filter((f) => !f.ok(filled[f.key]));
-  const out = bad.length ? [] : recipe.build(filled);
+  const clash = bad.length ? null : (recipe.clash?.(filled) ?? null);
+  const out = bad.length || clash ? [] : recipe.build(filled);
 
   return (
     <div className="rounded-xl border border-fd-border bg-fd-card p-4 sm:p-5">
@@ -116,7 +117,7 @@ export function CommandBuilder({
             ))
           ) : (
             <span className="text-[var(--term-dim)]">
-              # fix the field above to see the commands
+              # {clash ?? "fix the field above to see the commands"}
             </span>
           )}
         </pre>

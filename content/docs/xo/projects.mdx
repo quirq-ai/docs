@@ -8,8 +8,8 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 A project is a GitHub repo: one of yours, or any public one, such as Flask or
 Express. A space holds projects, each at a ref (a branch, tag or commit), so
-anyone who installs the space gets the same checkouts. xo keeps both lists in your XO account; the clones are on your
-machine.
+anyone who installs the space gets the same checkouts. xo keeps both lists in
+your XO account; the clones are on your machine.
 
 ## Add a project
 
@@ -89,8 +89,10 @@ here (or fetches and fast-forwards it), `xo update project:flask` pushes its
 branch, and `xo sync project:flask` runs `git pull --rebase`, then pushes.
 
 - `update` and `sync` push, so they need push access to the repo. For a repo
-  you can't push to, such as Flask, put your fork in the space instead
-  (`xo connect YOU/flask web`) and push to that.
+  you can't push to, such as Flask, put your fork in the space in place of
+  Flask (`xo connect YOU/flask web`) and push to that. Kept beside Flask, the
+  two are called `pallets/flask` and `YOU/flask`, in `./pallets/flask` and
+  `./YOU/flask`.
 
 - They use your own git and its login, over https, without submodules.
   `./SPACE/.xo/state.json` remembers what was installed.
