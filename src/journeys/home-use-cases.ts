@@ -110,6 +110,8 @@ export type Recipe = {
   build: (v: Record<string, string>) => string[];
   /** the replayed commands closest to it, played with their own names */
   play: string[];
+  /** a rule across fields, said when the values break it */
+  clash?: (v: Record<string, string>) => string | null;
 };
 
 // A repo name never starts with "-" (xo's _REPO rule) and is never "." or "..".
@@ -207,6 +209,10 @@ export const recipes: Recipe[] = [
       "xo create space",
     ],
     play: ["xo-create-space"],
+    clash: (v) =>
+      repoOf(v.url1).toLowerCase() === repoOf(v.url2).toLowerCase()
+        ? "Pick two repos with different names: both would be cloned into the same folder."
+        : null,
   },
   {
     id: "repo-to-space",
