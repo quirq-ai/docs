@@ -378,7 +378,7 @@ export const commands: Command[] = [
       href: "/docs/xo/spaces#a-space-from-your-folders",
       label: "Spaces",
     },
-    what: "The folder ./web, holding clones of Flask and Requests, as space web: one branch per git repository in it, pushed to the quirq hub after you say yes (--github puts it on GitHub instead). Nothing on XO Cloud.",
+    what: "The folder ./web, holding clones of Flask and Requests, as space web: one branch per git repository in it, pushed to the quirq hub after you say yes, when the xo server keeps one (--github puts it on GitHub instead). Nothing on XO Cloud.",
     next: ["xo-connect", "xo-create-kind-dry"],
   },
   {
