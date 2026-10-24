@@ -26,7 +26,8 @@ xo share space:web alex                              # invites alex to a copy
 With xo you:
 
 - **create spaces** on XO Cloud, such as a Claude Code, Codex or OpenClaw
-  space, or a space on GitHub made from a folder of your repos;
+  space, or a space on the quirq hub (or GitHub) made from a folder of your
+  repos;
 - **keep projects in a space**: your GitHub repos, each at a branch, tag or
   commit, cloned and pushed with your own git;
 - **share a space or a project** with another XO user, who accepts it into
@@ -39,9 +40,14 @@ whether you are logged in.
 
 | Service | Address | What it does | You log in with |
 |---|---|---|---|
-| `me` | `https://xo.quirq.dev` | the xo server: answers `xo me`, records your projects and spaces in your XO account, passes creates on to XO Cloud | your XO API key, which `xo login` gets when you sign in to XO in your browser |
+| `me` | `https://xo.quirq.dev` | the xo server: answers `xo me`, records your projects and spaces (in your XO account, or on the quirq hub when it keeps one), passes creates on to XO Cloud | your XO API key, which `xo login` gets when you sign in to XO in your browser |
 | `xo` | `https://dev.xo.builders` | XO Cloud: creates the spaces | the same key, through the xo server |
 | `github` | `https://github.com` | your GitHub account, through the GitHub CLI (`gh`) | gh's own login, in your browser |
+
+When the xo server keeps a quirq hub, `xo login` also links the hub's
+client, `spacehub`, and `xo status` adds a `hub` line. The hub is where a
+folder space goes, and where a space's `xo update` and `xo sync` push, while
+GitHub stays where the work ends up.
 
 xo keeps your keys only on your machine, and the xo server stores none. Your
 XO key is still sent to the xo server and to XO Cloud on every call, and a

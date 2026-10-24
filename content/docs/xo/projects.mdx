@@ -80,7 +80,7 @@ the space, and says so.
 
 ```sh
 xo install space:web    # ./web/REPO for each project, at its ref
-xo update space:web     # push each branch under ./web, then record the refs
+xo update space:web     # push each branch with new commits under ./web, then record the refs
 xo sync space:web       # rebase and push each branch, merge the space's refs, record
 ```
 
@@ -88,11 +88,14 @@ The same three work on one project: `xo install project:flask` clones it
 here (or fetches and fast-forwards it), `xo update project:flask` pushes its
 branch, and `xo sync project:flask` runs `git pull --rebase`, then pushes.
 
-- `update` and `sync` push, so they need push access to the repo. For a repo
-  you can't push to, such as Flask, put your fork in the space in place of
-  Flask (`xo connect YOU/flask web`) and push to that. Kept beside Flask, the
-  two are called `pallets/flask` and `YOU/flask`, and the space installs them
-  in `./web/pallets/flask` and `./web/YOU/flask`.
+- `update` and `sync` push only branches with new commits, so a repo you
+  can't push to is no problem until you commit to it. Without the quirq hub
+  ([below](#through-the-quirq-hub)) they push to GitHub, so they need push
+  access there. For a repo you can't push to, such as Flask, put your fork
+  in the space in place of Flask (`xo connect YOU/flask web`) and push to
+  that. Kept beside Flask, the two are called `pallets/flask` and
+  `YOU/flask`, and the space installs them in `./web/pallets/flask` and
+  `./web/YOU/flask`.
 
 - They use your own git and its login, over https, without submodules.
   `./SPACE/.xo/state.json` remembers what was installed.
@@ -108,5 +111,28 @@ branch, and `xo sync project:flask` runs `git pull --rebase`, then pushes.
   and refuses a folder whose origin is another repository or carries a login
   (`https://USER@github.com/...`).
 </Callout>
+
+### Through the quirq hub
+
+Once [`xo login`](/docs/xo/login) found the quirq hub, a space's GitHub
+projects work through it: the hub is a relay for you and your agents while
+the work is under way, and GitHub stays where the work ends up.
+
+- Each checkout gets a second remote, `quirq`,
+  `quirq://hub.quirq.dev/AGENT/OWNER--REPO`. `origin` and everything GitHub
+  sees stay as they are, so `git push` and pull requests work as before.
+- `install` also fetches the hub, and takes a branch from there when the hub
+  has it.
+- `update` pushes each branch with new commits to the hub, never to GitHub,
+  so Flask needs no fork here. `sync` rebases on the hub's branch first.
+  Push to GitHub yourself (`git push`, a pull request) when the work is done.
+- Anyone can read the hub in this version, so a project GitHub does not show
+  to everyone is refused before anything is sent.
+- `sync` never rewrites a commit GitHub already has: when your branch and
+  the hub's have both moved on and yours holds commits on GitHub, it stops
+  and asks you to merge the hub's in by hand.
+- `project:P` commands stay on GitHub. If the hub's client goes missing
+  after `xo login`, a space's `update` and `sync` stop and say how to
+  install it.
 
 Next: [share a space or a project](/docs/xo/share).

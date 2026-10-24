@@ -88,33 +88,19 @@ export const examples: Record<string, Example> = {
     prompt: "~",
     out: 'xo: ./innernet: pushed\n{\n  "project": "quirq-ai/innernet"\n}\n',
     code: 0,
-    from: "xo 10937c6 src/xo/workspace.py update() (project) and _say; JSON as xo prints it, with the name resolve() returns (OWNER/REPO for a GitHub project)",
+    from: "xo 10937c6 (the same at 38361fb) src/xo/workspace.py update() (project) and _say; JSON as xo prints it, with the name resolve() returns (OWNER/REPO for a GitHub project)",
   },
   "xo-create-space": {
     prompt: "~",
-    out:
-      "xo: xo create space web makes /home/sam/web a space on github.com/sam/web: each git repository here becomes its own branch of a new ./.git, and main lists them. A branch holds the repository's files as they are now, not its history.\n" +
-      "  flask                              1.7 MB\n" +
-      "  requests                           4.2 MB\n" +
-      "  Folders that are not git repositories (and hold none), files outside the repositories, hidden folders, node_modules and venv, and repositories more than 6 folders down are not part of the space. Each repository's .gitignore (and this folder's) is followed; .env files, keys, credential stores, repositories inside a repository and .github/workflows are left out, and a file that looks like it holds a key, token or password stops it before anything is pushed. xo cannot find every secret (one in an archive, say), so look through these repositories first. Everything else is pushed to a new public repository github.com/sam/web, which xo asks you to make. Anyone can read it, and what is pushed stays public. Nothing in these folders is changed.\n" +
-      "xo: Make this folder the space? [y/N] y\n" +
-      "xo: flask: left out .github/workflows (GitHub would run them on the space's repository)\n" +
-      "xo: requests: left out .github/workflows (GitHub would run them on the space's repository)\n" +
-      "xo: ./.git: 2 branches and the index (main), sha256:ee075cea0f2486c561a4969b3888fe5ad4f3e6ab2ac2bbc8e503cde5177341b0\n" +
-      "xo: github.com/sam/web does not exist yet (or is private). Make it here, empty (no README, license or .gitignore):\n" +
-      "  https://github.com/new?name=web&owner=sam&visibility=public\n" +
-      "xo: Press Enter once it exists, or n to stop here \n" +
-      "xo: pushed main and 2 branches to https://github.com/sam/web\n" +
-      "xo: POST https://xo.quirq.dev/me/spaces/connect\n" +
-      '{\n  "space": "web",\n  "github": "sam/web",\n  "hash": "sha256:ee075cea0f2486c561a4969b3888fe5ad4f3e6ab2ac2bbc8e503cde5177341b0",\n  "index": "main",\n  "main": "a2e6046834ebdfbfc7353de48d8e09901c8cd704",\n  "branches": {\n    "flask": "b0298c713a5b1dd1c08bf8a6dbb2012499938d56",\n    "requests": "234908847255b612e57fe7c7dac69bd324f19dcc"\n  },\n  "pushed": true\n}\n',
+    out: 'xo: xo create space web makes /home/sam/web a space on the quirq hub\'s space sam/web (quirq://hub.quirq.dev/sam/web): each git repository here becomes its own branch of a new ./.git, and main lists them. A branch holds the repository\'s files as they are now, not its history.\n  flask                              1.7 MB\n  requests                           4.2 MB\n  Folders that are not git repositories (and hold none), files outside the repositories, hidden folders, node_modules and venv, and repositories more than 6 folders down are not part of the space. Each repository\'s .gitignore (and this folder\'s) is followed; .env files, keys, credential stores, repositories inside a repository and .github/workflows are left out, and a file that looks like it holds a key, token or password stops it before anything is pushed. xo cannot find every secret (one in an archive, say), so look through these repositories first. Everything else is pushed to the quirq hub\'s space sam/web (quirq://hub.quirq.dev/sam/web), which xo makes, not to GitHub. Anyone can read what is pushed to the hub, so only repositories whose origin is public on GitHub and that hold nothing GitHub lacks go there without asking (xo create space --github puts the space on GitHub instead). Nothing in these folders is changed.\nxo: Make this folder the space? [y/N] y\nxo: flask: left out .github/workflows (GitHub would run them on the space\'s repository)\nxo: requests: left out .github/workflows (GitHub would run them on the space\'s repository)\nxo: ./.git: 2 branches and the index (main), sha256:ee075cea0f2486c561a4969b3888fe5ad4f3e6ab2ac2bbc8e503cde5177341b0\nxo: pushed main and 2 branches to quirq://hub.quirq.dev/sam/web\nxo: POST https://xo.quirq.dev/me/spaces/connect\n{\n  "space": "web",\n  "hub": "quirq://hub.quirq.dev/sam/web",\n  "hash": "sha256:ee075cea0f2486c561a4969b3888fe5ad4f3e6ab2ac2bbc8e503cde5177341b0",\n  "index": "main",\n  "main": "41d1d8b3b1cb5b20119aa485b43c6849e22a9534",\n  "branches": {\n    "flask": "61cfda5089dcae69fcdcf53af6b1f064fa7dea20",\n    "requests": "000b477cb30e638eece9f8f4200d4d0d088db4da"\n  },\n  "pushed": true\n}\n',
     code: 0,
-    from: "xo 097249f src/xo/cli.py _create_local_space and src/xo/spacerepo.py create(), run in a made-up ~ on ./web holding shallow clones of pallets/flask (d086db8) and psf/requests (611c616), with GitHub's ls-remote and the push stubbed: the listing and question, build() (its workflow and ./.git lines), the github.com/new link and wait, push(), then POST /me/spaces/connect and the JSON; a made-up user sam",
+    from: "xo 38361fb src/xo/cli.py _create_local_space and src/xo/spacerepo.py create() with a quirq hub saved by xo login, run in a made-up ~ on ./web holding shallow clones of pallets/flask (d086db8) and psf/requests (611c616), GitHub asked for real with no login, and the hub stubbed (no space web there yet; the space's creation and the push): the listing and question, build() (its workflow and ./.git lines), the push line, then POST /me/spaces/connect and the JSON; a made-up user sam",
   },
   "xo-sync": {
     prompt: "~",
     out: 'xo: ./innernet: rebased on its upstream and pushed\n{\n  "project": "quirq-ai/innernet"\n}\n',
     code: 0,
-    from: "xo 10937c6 src/xo/workspace.py sync() (project) and _say; JSON as xo prints it, with the name resolve() returns (OWNER/REPO for a GitHub project)",
+    from: "xo 10937c6 (the same at 38361fb) src/xo/workspace.py sync() (project) and _say; JSON as xo prints it, with the name resolve() returns (OWNER/REPO for a GitHub project)",
   },
 };
 
@@ -392,7 +378,7 @@ export const commands: Command[] = [
       href: "/docs/xo/spaces#a-space-from-your-folders",
       label: "Spaces",
     },
-    what: "The folder ./web, holding clones of Flask and Requests, as space web: one branch per git repository in it, pushed to a public GitHub repository after you say yes. Nothing on XO Cloud.",
+    what: "The folder ./web, holding clones of Flask and Requests, as space web: one branch per git repository in it, pushed to the quirq hub after you say yes (--github puts it on GitHub instead). Nothing on XO Cloud.",
     next: ["xo-connect", "xo-create-kind-dry"],
   },
   {

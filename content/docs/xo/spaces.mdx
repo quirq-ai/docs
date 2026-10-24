@@ -1,6 +1,6 @@
 ---
 title: Create a space
-description: Preview a create with --dry-run, then create a Claude Code, Codex or other space on XO Cloud, or make a folder of your git repositories a space on GitHub.
+description: Preview a create with --dry-run, then create a Claude Code, Codex or other space on XO Cloud, or make a folder of your git repositories a space on the quirq hub or GitHub.
 icon: Cloud
 ---
 
@@ -8,8 +8,8 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 A space is a collection of GitHub repos, and where an agent works on them on
 XO Cloud. `xo create space NAME KIND` creates one on XO Cloud and records it in
-your spaces as NAME. To make a folder of repos a space on GitHub instead, see
-[A space from your folders](#a-space-from-your-folders).
+your spaces as NAME. To make a folder of repos a space on the quirq hub (or
+GitHub) instead, see [A space from your folders](#a-space-from-your-folders).
 
 ## 1. See what a kind takes
 
@@ -65,8 +65,9 @@ xo spaces --space-id THE_ID
 | `xo create space N claude-code --volume-size 20 --providers-anthropic-api-key -` | a Claude Code space (`-` asks for the key) |
 | `xo create space N hermes …`, `… openclaw …`, `… xo-cowork …` | spaces with providers and chat channels; see `xo create space N openclaw --help` |
 | `xo create space N nebius-openclaw --token-factory-api-key -` | a Nebius OpenClaw space (behind a feature flag; HTTP 404 when it is off for you) |
-| `xo create space` | the folder you are in as a space on GitHub, nothing on XO Cloud ([below](#a-space-from-your-folders)) |
+| `xo create space` | the folder you are in as a space on the quirq hub, nothing on XO Cloud ([below](#a-space-from-your-folders)) |
 | `xo create space N` | the same for the folder `./N`, made if it is not there |
+| `xo create space N --github` | the folder `./N` as a space on GitHub instead (`--gh` too) |
 
 - With a kind, N is 1 to 32 letters, digits or hyphens, starts with a letter
   or digit, and can't be `new` or `create`. XO keeps names in lowercase, so
@@ -82,19 +83,19 @@ xo spaces --space-id THE_ID
 
 ## A space from your folders
 
-With no kind, `xo create space` makes a folder a space, published on GitHub:
-each git repository in it becomes its own branch, named by its path (`api`,
-or `work/api` for one inside a plain folder `work`), and an index branch
-lists them. A branch holds the repository's files as they are now, not its
-history. Nothing is made on XO Cloud.
+With no kind, `xo create space` makes a folder a space, published on the
+quirq hub: each git repository in it becomes its own branch, named by its
+path (`api`, or `work/api` for one inside a plain folder `work`), and an
+index branch lists them. A branch holds the repository's files as they are
+now, not its history. Nothing is made on XO Cloud. With `--github` (or
+`--gh`) it goes to GitHub instead ([below](#on-github-instead)).
 
 - With no NAME, the folder you are in is the space, named after the folder
   (or the name xo gave its space before).
 - With NAME, the folder `./NAME` is the space. When there is no `./NAME`,
   xo makes it, and takes it away again if you say no or the run stops
   before the space is built. The new space is empty until you put git
-  repositories in it and run `xo create space` again there. If it stops at
-  the GitHub step, run it again there to push it.
+  repositories in it and run `xo create space` again there.
 
 For example, a space of two well-known Python repos:
 
@@ -102,24 +103,22 @@ For example, a space of two well-known Python repos:
 mkdir web && cd web
 git clone https://github.com/pallets/flask
 git clone https://github.com/psf/requests
-xo create space        # space web, on github.com/YOU/web: branches flask and requests
+xo create space        # space web, on the quirq hub: branches flask and requests
 ```
 
 <Callout type="warn">
-  The repository is public: anyone can read it, and what is pushed stays
-  public. xo never deletes a branch or the repository on GitHub and never
-  force-pushes, so a file you take out later is still in the history, and a
-  repository you remove keeps its branch. xo leaves out `.env` files, keys
-  and credential stores, and stops before pushing a file that looks like it
-  holds a key, token or password, but it cannot find every secret (one in an
-  archive, say). Look through the repositories before you say yes.
+  Anyone can read the hub in this version, and what is pushed stays there.
+  xo never deletes a branch and never force-pushes, so a file you take out
+  later is still in the history, and a repository you remove keeps its
+  branch. xo leaves out `.env` files, keys and credential stores, and stops
+  before pushing a file that looks like it holds a key, token or password,
+  but it cannot find every secret (one in an archive, say). Look through the
+  repositories before you say yes.
 </Callout>
 
 - xo lists each repository with its size and where it goes, and asks first.
-  `--yes` answers that question for you, but it does not make the
-  repository: without a terminal xo cannot wait for you, so when the
-  repository is not there yet it stops before pushing (and still exits 0).
-  Run it again once the repository exists.
+  `--yes` answers that question for you (but not the hub's typed name or
+  GitHub's link, below).
 - When the folder has no `.git`, xo makes a bare `./.git` beside your
   folders, so nothing in them changes, and `main` is the index.
 - When the folder is already a git repository, xo adds the space to it:
@@ -150,17 +149,8 @@ xo create space        # space web, on github.com/YOU/web: branches flask and re
   in `.`, `.lock` or `_HEAD`), and the path can't start with a folder called
   `main` or `xo-space`. Two repositories whose paths differ only in case are
   refused, since GitHub can't keep their branches apart.
-- The repository is `github.com/OWNER/NAME`, OWNER being your gh login or
-  `--owner`; with neither, xo stops and says so. In a folder that was
-  already a git repository with an origin, it is the GitHub repository that
-  origin is, and `--owner` must agree; an origin that is not on GitHub, or
-  has a login in it, is refused. xo checks the repository with no login, so
-  a private origin looks missing to it: what is pushed there is as private
-  as that repository, and a later run cannot update it. When the repository is not there, xo prints a link to
-  make it (empty, with no README, public) and, at a terminal, waits for
-  Enter, then pushes with your own git. The space goes in your spaces once
-  it is pushed.
-- Run `xo create space` again in the space's folder to push what changed.
+- Run `xo create space` again in the space's folder to push what changed
+  (with `--github` for a space on GitHub).
 - It refuses your home folder and the folders above it (`/` too), a hidden
   folder of your home or anything in one (such as `~/.config`), `~/Library`
   and `~/AppData` and anything in them, a folder holding `.ssh`, `.aws`,
@@ -172,5 +162,51 @@ xo create space        # space web, on github.com/YOU/web: branches flask and re
   a letter or digit, doesn't end in `.git`, and can't be a kind's name,
   `new` or `create`; with no NAME, the folder's name must fit too. It is
   lowercased, as on XO and GitHub. This form takes no `--dry-run`.
+
+### On the quirq hub
+
+- It needs the hub's client, `spacehub`, and an `xo login` that found the
+  hub ([install it](/docs/xo/install#the-quirq-hubs-client)). Without them
+  xo stops before making anything and says so; `--github` still works.
+- The space is your hub agent's space NAME,
+  `quirq://hub.quirq.dev/AGENT/NAME`, made there when it is missing. The
+  `./.git` xo makes gets a `quirq` remote; in a folder that was already a git
+  repository, xo pushes by URL and leaves its remotes alone. Nothing goes to
+  GitHub.
+- Since anyone can read the hub, xo refuses the folder, or a git repository
+  in it, whose `origin` is not a GitHub repository anyone can read. Flask and
+  Requests above are fine.
+- A repository with no `origin`, or whose branch holds a file that is not in
+  its last commit, or whose last commit is on no branch GitHub has, goes
+  there only when you type the space's name at the terminal. `--yes` does not answer
+  that, so without a terminal nothing is pushed.
+- A name with `--` in it is refused: the hub keeps those for copies of
+  GitHub projects (`OWNER--REPO`). A space already on GitHub stays there:
+  update it with `--github`.
+
+### On GitHub instead
+
+`--github` (or `--gh`) puts the space on GitHub, under your gh login;
+`--owner OWNER` picks another owner and implies `--github`. The repository is
+public: anyone can read it, and what is pushed stays public.
+
+```sh
+xo create space --github    # in ./web: space web, on github.com/YOU/web
+```
+
+- The repository is `github.com/OWNER/NAME`, OWNER being your gh login or
+  `--owner`; with neither, xo stops and says so. In a folder that was
+  already a git repository with an origin, it is the GitHub repository that
+  origin is, and `--owner` must agree; an origin that is not on GitHub, or
+  has a login in it, is refused. xo checks the repository with no login, so
+  a private origin looks missing to it: what is pushed there is as private
+  as that repository, and a later run cannot update it. When the repository is not there, xo prints a link to
+  make it (empty, with no README, public) and, at a terminal, waits for
+  Enter, then pushes with your own git. The space goes in your spaces once
+  it is pushed.
+- `--yes` does not make the repository: without a terminal xo cannot wait
+  for you, so when the repository is not there yet it stops before pushing
+  (and still exits 0). Run it again once the repository exists. If it stops
+  at the GitHub step, run it again in the folder to push it.
 
 Next: [put your projects in a space](/docs/xo/projects).

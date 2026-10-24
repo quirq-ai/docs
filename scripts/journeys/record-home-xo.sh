@@ -21,7 +21,7 @@ for _ in $(seq 50); do curl -sf --noproxy '*' http://127.0.0.1:8790/healthz >/de
  xo connect api && xo connect expressjs/express api --ref master
  xo share space:api sam && xo share project:express sam) > /dev/null 2>&1
 # sam's space web, as an entry only: since xo ca83435, xo create space NAME with no KIND publishes
-# a folder to GitHub, so the home page shows that command as an example instead.
+# a folder (to the quirq hub since 9bbb460), so the home page shows that command as an example instead.
 (cd /tmp && HOME="$home" XO_API_KEY=ak_demo_sam xo connect web --url http://127.0.0.1:8790) > /dev/null 2>&1
 shared=$(cd /tmp/xo-alex && HOME=/tmp/xo-alex XO_API_KEY=ak_demo_sam xo list shared --url http://127.0.0.1:8790 2>/dev/null)
 pick() { python3 -c 'import json,sys; d=json.loads(sys.argv[1]); print([i["id"] for i in d if i["item"].startswith(sys.argv[2])][0])' "$shared" "$1"; }

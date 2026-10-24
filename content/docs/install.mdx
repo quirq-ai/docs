@@ -108,6 +108,25 @@ next `qq` you run picks up the new version.
   checkout in `~/qq-tools/depot`. To update it, run step 1 again.
 </Callout>
 
+### Auto-update
+
+[qq-setup](#let-qq-setup-install-it-for-you) can keep qq and qqsync up to
+date for you. It is off until you turn it on: tick the **Auto-update** box on
+**This machine**, or in a terminal add `install --auto-update` to the end of
+its command (`--no-auto-update` turns it off). It then writes `~/qq-tools/auto-update`, naming the commits
+it installed.
+
+- At most once a day, in the background, qq reads the commits qq-setup has
+  reviewed (`pins.json` on its `main`), so no command waits on the network.
+- When they are newer, the next `qq` first moves `~/qq-tools/depot` to them,
+  reinstalls qqsync if it is still the one qq-setup installed, then runs
+  your command.
+- A checkout with changes of yours or at another commit, and a qqsync you
+  installed another way, are left alone. Nothing runs when `CI` or
+  `QQ_PINNED` is set.
+- What it did is in `~/qq-tools/auto-update.log`. Inside a repo, the repo's
+  pin still decides which qq runs.
+
 ## On a Mac
 
 qq and qqsync install the same way, once `QQ_PYTHON` points at a new enough
