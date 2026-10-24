@@ -24,7 +24,16 @@ Then:
    without browser login, or a key piped in, gets the key prompt below
    instead. If the sign-in fails or does not come back within 5 minutes, xo
    saves nothing and exits 1.
-2. **GitHub, through gh.** If the [GitHub CLI](https://cli.github.com) (`gh`)
+2. **The quirq hub.** When the xo server keeps a quirq hub, xo asks it for
+   your hub agent, named after your XO username, and hands the agent's token
+   to the hub's client, `spacehub`, which keeps it
+   ([install it](/docs/xo/install#the-quirq-hubs-client) first). xo saves
+   only the hub's address and the agent's name, in `~/.config/xo/hub`, and
+   says `xo: hub: agent NAME on https://hub.quirq.dev; ...`. Without
+   `spacehub` it says `skipped` and how to install it: spaces then work with
+   GitHub alone, and `xo create space` needs `--github`. A server with no hub
+   says nothing here.
+3. **GitHub, through gh.** If the [GitHub CLI](https://cli.github.com) (`gh`)
    is installed, xo checks that it is connected to github.com, and runs
    `gh auth login` in your browser if it isn't. xo never sees or saves the
    GitHub token: gh keeps it. Without gh, this step says `skipped`.
@@ -80,8 +89,12 @@ any terminal, uses that key and sends it only to that address. A key in
 ```sh
 xo login xo       # only the XO key
 xo login github   # only GitHub
-xo logout         # deletes your XO key; asks before logging gh out
+xo logout         # deletes your XO key and the hub's address; asks before logging gh out
 ```
+
+`xo logout` leaves `spacehub`'s own login; `spacehub auth logout` ends it.
+Once xo saved a hub, `xo status` shows a fourth line, `hub`, with its
+address and your agent.
 
 If `GH_TOKEN` or `GITHUB_TOKEN` is set in your terminal, gh uses that token
 instead of its own login, and xo says so.

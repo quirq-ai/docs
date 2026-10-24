@@ -7,9 +7,11 @@ icon: Download
 import { Callout } from "fumadocs-ui/components/callout";
 
 xo needs Python 3.11 or newer and git. The installs below pin xo to the
-commit its [quickstart](https://github.com/quirq-ai/xo/blob/37a14d851a0c50462bc42dc965e44eda7c84ad97/docs/quickstart.md)
-installs, `097249f`. For GitHub, also install the
+commit its [quickstart](https://github.com/quirq-ai/xo/blob/593cda7523d13cffb68fb34cfd75cc5448d920c9/docs/quickstart.md)
+installs, `38361fb`. For GitHub, also install the
 [GitHub CLI](https://cli.github.com) (`gh`): xo logs in to GitHub through it.
+For spaces on the quirq hub, also install the hub's client
+([below](#the-quirq-hubs-client)).
 
 ## With qq-setup (one command)
 
@@ -51,13 +53,14 @@ or Ubuntu `sudo apt install python3-venv`. Using bash? Change `~/.zshrc`
 
 ```sh
 python3 -m venv ~/.xo \
-  && ~/.xo/bin/pip install "quirq-xo @ git+https://github.com/quirq-ai/xo@097249f1020740e4a0ab02e25d36f0f87b9007d4" \
+  && ~/.xo/bin/pip install "quirq-xo @ git+https://github.com/quirq-ai/xo@38361fb016d1d589ee0aa659ef383d166fa536a4" \
   && { grep -qxF 'export PATH="$HOME/.xo/bin:$PATH"' ~/.zshrc 2>/dev/null || echo 'export PATH="$HOME/.xo/bin:$PATH"' >> ~/.zshrc; } \
   && export PATH="$HOME/.xo/bin:$PATH" \
   && xo --version
 ```
 
-The last line prints `xo 0.1.0`. If a step fails, the ones after it don't run.
+The last line prints `xo 0.1.0 (38361fb)`: the version, then the commit it
+was installed from. If a step fails, the ones after it don't run.
 
 <Callout type="warn">
   The package is `quirq-xo`, not `xo`. PyPI's `xo` is an unrelated game, and
@@ -75,10 +78,30 @@ To update by hand, replace `NEW_SHA` with the commit you were given:
 ~/.xo/bin/pip install --force-reinstall --no-deps "quirq-xo @ git+https://github.com/quirq-ai/xo@NEW_SHA"
 ```
 
-`~/.xo/bin/pip freeze | grep quirq-xo` shows which commit you have. qq-setup
+`xo --version` shows which commit you have. qq-setup
 reports an xo at another commit instead of calling it out of date, since the
 XO team may have given you a newer one: its **Update** would move it back to
-the pin, `097249f`.
+the pin, `38361fb`.
+
+### Auto-update
+
+qq-setup can keep xo up to date for you. It is off until you turn it on: tick
+the **Auto-update** box on **This machine**, or in a terminal add
+`install --auto-update` to the end of its command (`--no-auto-update` turns it
+off). It then writes `auto-update` next to xo's key (in `~/.config/xo`),
+naming the commit it installed.
+
+- At most once a day, in the background, xo reads the commit qq-setup has
+  reviewed (`pins.json` on its `main`), so no command waits on the network.
+- When it is newer, the next command updates xo first, then runs on the new
+  xo. If the update fails, the command runs on the xo you have. On Windows,
+  where a running `xo.exe` cannot be replaced, xo updates right after the
+  command instead.
+- An xo you installed another way, or at another commit, is left alone until
+  qq-setup's **Update** puts it back. Nothing runs when `CI` is set.
+- What it did is in `auto-update.log`, next to the key.
+
+### Remove
 
 To remove xo, log out first, so the saved key goes too, then delete its folder
 and the `PATH` line from your startup file:
@@ -92,5 +115,21 @@ unset XO_API_KEY
 qq-setup's **Remove** does the same: `xo logout`, then `~/.xo` (or
 `%USERPROFILE%\.xo` on Windows) and its `PATH` entry. Run from the page, `xo
 logout` keeps your gh login; to log gh out too, run `gh auth logout`.
+
+## The quirq hub's client
+
+`xo create space` puts a folder of repos on the quirq hub, and a space's
+`xo update` and `xo sync` push there. xo reaches the hub through its client,
+`spacehub`, which brings git's `git-remote-quirq`. It needs Node 22 or newer
+and git:
+
+```sh
+git clone https://github.com/quirq-ai/space-hub
+space-hub/scripts/install-cli.sh
+```
+
+Then run `xo login` (again): it hands your hub login to `spacehub`. Without
+the client, spaces keep working with GitHub alone, and `xo create space`
+needs `--github`.
 
 Next: [log in](/docs/xo/login).
