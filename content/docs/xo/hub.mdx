@@ -1,0 +1,89 @@
+---
+title: The quirq hub
+description: The quirq hub keeps a space's work in step while people and agents work on it. xo sh runs the hub's client there, and xo gh runs GitHub's gh.
+icon: Network
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+The quirq hub (`hub.quirq.dev`) is git hosting laid out like GitHub. It is a
+relay while the work is under way: GitHub stays where the work ends up.
+
+| GitHub | The hub |
+|---|---|
+| user | **builder**: a person's login, with a personal space of the same name |
+| organization | **org**: projects with owners and members |
+| repository | **project**, at `<space>/<project>` |
+
+When the xo server keeps a hub, [`xo login`](/docs/xo/login)
+gets you a login there named after your XO username (xo's messages call it
+your hub agent), and hands it to the hub's client, `spacehub`
+([install it](/docs/xo/install#the-quirq-hubs-client) first). What xo
+pushes to the hub lands under that name:
+
+- a folder space from [`xo create space`](/docs/xo/spaces#a-space-from-your-folders)
+  is the project `NAME/web`, with one branch per repository;
+- a space's GitHub project is its copy `NAME/OWNER--REPO`, such as
+  `NAME/pallets--flask` ([how](/docs/xo/projects#through-the-quirq-hub)).
+
+<Callout type="warn">
+  Anyone who can reach the hub can read every project on it in this version.
+</Callout>
+
+## xo sh: the hub's client
+
+`xo sh ARGS` runs `spacehub ARGS` on the hub `xo login` found. Without a hub
+it stops and says to run `xo login`. `sh` is a word inside xo only: the
+client is installed as `spacehub`, never as `sh`, the system shell.
+
+```sh
+xo sh auth status                # the hub, and who you are on it
+xo sh project list NAME          # your projects, newest push first, with their sizes
+xo sh project view web           # one of them: default branch, size and refs
+xo sh project clone NAME/web     # git clone it, with the hub as the remote "quirq"
+```
+
+A project name without a space is one in your own space. `xo sh --help`
+lists every `spacehub` command.
+
+### Work on a project together
+
+Inside a clone, `project sync --auto` keeps your copy and everyone else's in
+step: every few seconds it commits your changes, rebases onto every push to
+the branch, and pushes. It stops on a conflict (exit 2) for you to fix.
+
+```sh
+xo sh project clone NAME/web
+cd web
+xo sh project sync --auto        # edit together until a conflict
+```
+
+In the same clone:
+
+```sh
+xo sh project who                # who is connected to it right now
+xo sh project watch              # each push, live
+xo sh project member add bob     # let the builder bob push to it too
+```
+
+`xo sh space clone NAME` clones every project in a space into one folder,
+and `xo sh space sync --watch --auto`, run there, keeps them all current.
+Autosync commits often, with generated messages, and skips commit hooks:
+squash before you take the work to GitHub.
+
+## xo gh: GitHub's gh
+
+`xo gh ARGS` runs [`gh`](https://cli.github.com) with these arguments, such as
+`xo gh pr list` or `xo gh repo view`. It is the same gh that
+[`xo login`](/docs/xo/login) connects to GitHub.
+
+## What both pass on
+
+- The arguments go to the tool as they are, and its input, output and exit
+  code are its own.
+- Neither tool gets your XO key. `spacehub` gets no GitHub token either, and
+  gh never gets `GH_HOST`, so it always talks to github.com.
+- Put the word first: `xo gh pr list`, not `xo --json gh pr list`. xo's own
+  options do not apply to it.
+
+Next: [every command](/docs/xo/commands).

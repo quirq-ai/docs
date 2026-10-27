@@ -21,6 +21,7 @@
     },
     { "id": "xo-status", "cmd": "xo status" },
     { "id": "xo-me", "cmd": "xo me" },
+    { "id": "xo-gh", "cmd": "xo gh --version" },
     { "id": "xo-create-project", "cmd": "xo create project hello" },
     {
       "id": "xo-create-project-url",

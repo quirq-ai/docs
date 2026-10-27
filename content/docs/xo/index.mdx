@@ -47,7 +47,8 @@ whether you are logged in.
 When the xo server keeps a quirq hub, `xo login` also links the hub's
 client, `spacehub`, and `xo status` adds a `hub` line. The hub is where a
 folder space goes, and where a space's `xo update` and `xo sync` push, while
-GitHub stays where the work ends up.
+GitHub stays where the work ends up. `xo sh` runs `spacehub` there, and `xo gh`
+runs gh ([the hub](/docs/xo/hub)).
 
 xo keeps your keys only on your machine, and the xo server stores none. Your
 XO key is still sent to the xo server and to XO Cloud on every call, and a
@@ -58,6 +59,7 @@ create copies it into the new space.
   <Card title="Log in" href="/docs/xo/login" description="Sign in to XO in your browser, and connect GitHub." />
   <Card title="Create a space" href="/docs/xo/spaces" description="Preview it first, then create it on XO Cloud." />
   <Card title="Projects in a space" href="/docs/xo/projects" description="Add repos, put them in a space, install, update and sync." />
+  <Card title="The quirq hub" href="/docs/xo/hub" description="Work on a project together through the hub, with xo sh." />
 </Cards>
 
 <Callout type="info">

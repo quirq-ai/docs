@@ -8,9 +8,10 @@
 //   scripts/journeys/record-home-xo.sh into home-xo.json, against
 //   scripts/journeys/xo-standin.py: made-up users and data on 127.0.0.1, its
 //   address shown as https://xo.quirq.dev.
-// - "example": not a run. These need GitHub, a signed-in gh or ghcr.io, so
-//   the output below is written from the source of the version named, line
-//   for line, with a made-up pull request, branch and commit.
+// - "example": not a run. These need GitHub, a signed-in gh, ghcr.io or the
+//   quirq hub, so the output below is written from the source of the version
+//   named, line for line, with a made-up pull request, branch and commit (or
+//   made-up hub projects).
 
 export type Source = "recorded" | "stand-in" | "example";
 
@@ -88,19 +89,25 @@ export const examples: Record<string, Example> = {
     prompt: "~",
     out: 'xo: ./innernet: pushed\n{\n  "project": "quirq-ai/innernet"\n}\n',
     code: 0,
-    from: "xo 10937c6 (the same at 38361fb) src/xo/workspace.py update() (project) and _say; JSON as xo prints it, with the name resolve() returns (OWNER/REPO for a GitHub project)",
+    from: "xo 10937c6 (the same at 82dac60) src/xo/workspace.py update() (project) and _say; JSON as xo prints it, with the name resolve() returns (OWNER/REPO for a GitHub project)",
   },
   "xo-create-space": {
     prompt: "~",
     out: 'xo: xo create space web makes /home/sam/web a space on the quirq hub\'s space sam/web (quirq://hub.quirq.dev/sam/web): each git repository here becomes its own branch of a new ./.git, and main lists them. A branch holds the repository\'s files as they are now, not its history.\n  flask                              1.7 MB\n  requests                           4.2 MB\n  Folders that are not git repositories (and hold none), files outside the repositories, hidden folders, node_modules and venv, and repositories more than 6 folders down are not part of the space. Each repository\'s .gitignore (and this folder\'s) is followed; .env files, keys, credential stores, repositories inside a repository and .github/workflows are left out, and a file that looks like it holds a key, token or password stops it before anything is pushed. xo cannot find every secret (one in an archive, say), so look through these repositories first. Everything else is pushed to the quirq hub\'s space sam/web (quirq://hub.quirq.dev/sam/web), which xo makes, not to GitHub. Anyone can read what is pushed to the hub, so only repositories whose origin is public on GitHub and that hold nothing GitHub lacks go there without asking (xo create space --github puts the space on GitHub instead). Nothing in these folders is changed.\nxo: Make this folder the space? [y/N] y\nxo: flask: left out .github/workflows (GitHub would run them on the space\'s repository)\nxo: requests: left out .github/workflows (GitHub would run them on the space\'s repository)\nxo: ./.git: 2 branches and the index (main), sha256:ee075cea0f2486c561a4969b3888fe5ad4f3e6ab2ac2bbc8e503cde5177341b0\nxo: pushed main and 2 branches to quirq://hub.quirq.dev/sam/web\nxo: POST https://xo.quirq.dev/me/spaces/connect\n{\n  "space": "web",\n  "hub": "quirq://hub.quirq.dev/sam/web",\n  "hash": "sha256:ee075cea0f2486c561a4969b3888fe5ad4f3e6ab2ac2bbc8e503cde5177341b0",\n  "index": "main",\n  "main": "41d1d8b3b1cb5b20119aa485b43c6849e22a9534",\n  "branches": {\n    "flask": "61cfda5089dcae69fcdcf53af6b1f064fa7dea20",\n    "requests": "000b477cb30e638eece9f8f4200d4d0d088db4da"\n  },\n  "pushed": true\n}\n',
     code: 0,
-    from: "xo 38361fb src/xo/cli.py _create_local_space and src/xo/spacerepo.py create() with a quirq hub saved by xo login, run in a made-up ~ on ./web holding shallow clones of pallets/flask (d086db8) and psf/requests (611c616), GitHub asked for real with no login, and the hub stubbed (no space web there yet; the space's creation and the push): the listing and question, build() (its workflow and ./.git lines), the push line, then POST /me/spaces/connect and the JSON; a made-up user sam",
+    from: "xo 38361fb (the same lines at 82dac60) src/xo/cli.py _create_local_space and src/xo/spacerepo.py create() with a quirq hub saved by xo login, run in a made-up ~ on ./web holding shallow clones of pallets/flask (d086db8) and psf/requests (611c616), GitHub asked for real with no login, and the hub stubbed (no space web there yet; the space's creation and the push): the listing and question, build() (its workflow and ./.git lines), the push line, then POST /me/spaces/connect and the JSON; a made-up user sam",
   },
   "xo-sync": {
     prompt: "~",
     out: 'xo: ./innernet: rebased on its upstream and pushed\n{\n  "project": "quirq-ai/innernet"\n}\n',
     code: 0,
-    from: "xo 10937c6 (the same at 38361fb) src/xo/workspace.py sync() (project) and _say; JSON as xo prints it, with the name resolve() returns (OWNER/REPO for a GitHub project)",
+    from: "xo 10937c6 (the same at 82dac60) src/xo/workspace.py sync() (project) and _say; JSON as xo prints it, with the name resolve() returns (OWNER/REPO for a GitHub project)",
+  },
+  "xo-sh": {
+    prompt: "~",
+    out: "sam/site      1.2 MB  2026-10-27 09:12  My website\nsam/notes   348.0 KB  2026-10-26 17:40  Notes app\n",
+    code: 0,
+    from: "xo 82dac60 src/xo/attach.py (runs spacehub with these arguments, its output as it is), then space-hub 2c7bdf5 cli/src/cli.ts projectList: one line per project, newest push first, the name padded to the longest, the size (formatBytes) right-aligned in 9, the push time (when) and the description; made-up projects, sizes and times for a made-up user sam",
   },
 };
 
@@ -122,6 +129,7 @@ const D = {
   xoProjects: { href: "/docs/xo/projects", label: "Projects" },
   xoSpaces: { href: "/docs/xo/spaces", label: "Spaces" },
   xoShare: { href: "/docs/xo/share", label: "Share" },
+  xoHub: { href: "/docs/xo/hub", label: "The quirq hub" },
 };
 
 export const commands: Command[] = [
@@ -335,6 +343,22 @@ export const commands: Command[] = [
     more: D.xoCmds,
     what: "Your profile from the xo server. Here it already holds two invites from alex.",
     next: ["xo-create-space", "xo-create-project"],
+  },
+  {
+    id: "xo-gh",
+    cmd: "xo gh --version",
+    src: "stand-in",
+    more: D.xoHub,
+    what: "Runs GitHub's gh with these arguments, here the gh on the recording machine. gh gets no XO key.",
+    next: ["xo-sh", "xo-create-project-url"],
+  },
+  {
+    id: "xo-sh",
+    cmd: "xo sh project list sam",
+    src: "example",
+    more: D.xoHub,
+    what: "Runs the quirq hub's client, spacehub, on the hub xo login found: sam's projects there, newest push first, with their sizes.",
+    next: ["xo-gh", "xo-create-space"],
   },
   // xo: projects
   {
@@ -565,6 +589,10 @@ export const tools: Tool[] = [
       {
         title: "Share",
         ids: ["xo-share", "xo-list-shared", "xo-accept", "xo-reject"],
+      },
+      {
+        title: "Other tools",
+        ids: ["xo-gh", "xo-sh"],
       },
     ],
   },

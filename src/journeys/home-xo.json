@@ -15,22 +15,27 @@
     },
     {
       "k": "out",
-      "dt": 0.146,
-      "text": "xo: services from the xo server at https://xo.quirq.dev:\nxo:   me     https://xo.quirq.dev (the xo server; your XO key is only sent here)\nxo:   xo     https://dev.xo.builders (creates and xo spaces --space-id; your key reaches it through the xo server)\nxo:   github https://github.com (gh's own login; xo never sees the token)\nxo: the server's list gives no address for xo; showing xo's own, which may not be where it sends creates\nxo: logging in to https://xo.quirq.dev; the key will only ever be sent there\n"
+      "dt": 0.168,
+      "text": "xo: services from the xo server at https://xo.quirq.dev:\nxo:   me     https://xo.quirq.dev (the xo server; your XO key is only sent here)\nxo:   xo     https://dev.xo.builders (creates and xo spaces --space-id; your key reaches it through the xo server)\nxo:   github https://github.com (gh's own login; xo never sees the token)\nxo: the server's list gives no address for xo; showing xo's own, which may not be where it sends creates\n"
     },
     {
       "k": "out",
-      "dt": 0.024,
+      "dt": 0.0,
+      "text": "xo: logging in to https://xo.quirq.dev; the key will only ever be sent there\n"
+    },
+    {
+      "k": "out",
+      "dt": 0.018,
       "text": "xo: checking the key with XO through https://xo.quirq.dev ...\n"
     },
     {
       "k": "out",
-      "dt": 0.023,
+      "dt": 0.009,
       "text": "xo: me: logged in as sam (user_sam); key and URL saved to ~/.config/xo/credentials (only you can read it); xo logout deletes them\n"
     },
     {
       "k": "end",
-      "dt": 0.028,
+      "dt": 0.021,
       "code": 0
     },
     {
@@ -41,12 +46,12 @@
     },
     {
       "k": "out",
-      "dt": 0.476,
+      "dt": 0.312,
       "text": "me     https://xo.quirq.dev              key saved by xo login\nxo     https://dev.xo.builders            uses the same key, through the xo server (me)\ngithub https://github.com                 not logged in; run xo login github\n"
     },
     {
       "k": "end",
-      "dt": 0.024,
+      "dt": 0.016,
       "code": 0
     },
     {
@@ -57,12 +62,28 @@
     },
     {
       "k": "out",
-      "dt": 0.182,
-      "text": "{\n  \"xo\": {\n    \"username\": \"sam\",\n    \"imageUrl\": null,\n    \"firstName\": \"Sam\",\n    \"lastName\": null,\n    \"email\": \"sam@example.com\",\n    \"id\": \"user_sam\",\n    \"createdAt\": 1760000000000,\n    \"public_data\": {},\n    \"private_data\": {\n      \"shared\": [\n        {\n          \"id\": \"95a8a33d0ee40c7f\",\n          \"from\": \"alex\",\n          \"item\": \"space:api\",\n          \"at\": \"2026-10-24T06:16:37Z\",\n          \"projects\": [\n            {\n              \"expressjs/express\": \"master\"\n            }\n          ]\n        },\n        {\n          \"id\": \"7be344fdfcb4cad6\",\n          \"from\": \"alex\",\n          \"item\": \"project:expressjs/express\",\n          \"at\": \"2026-10-24T06:16:39Z\"\n        }\n      ],\n      \"spaces\": [\n        {\n          \"name\": \"web\",\n          \"rev\": 1,\n          \"projects\": []\n        }\n      ]\n    }\n  }\n}\n"
+      "dt": 0.139,
+      "text": "{\n  \"xo\": {\n    \"username\": \"sam\",\n    \"imageUrl\": null,\n    \"firstName\": \"Sam\",\n    \"lastName\": null,\n    \"email\": \"sam@example.com\",\n    \"id\": \"user_sam\",\n    \"createdAt\": 1760000000000,\n    \"public_data\": {},\n    \"private_data\": {\n      \"shared\": [\n        {\n          \"id\": \"6141614ad10bb13a\",\n          \"from\": \"alex\",\n          \"item\": \"space:api\",\n          \"at\": \"2026-10-27T12:08:57Z\",\n          \"projects\": [\n            {\n              \"expressjs/express\": \"master\"\n            }\n          ]\n        },\n        {\n          \"id\": \"562dc5d8082a6e03\",\n          \"from\": \"alex\",\n          \"item\": \"project:expressjs/express\",\n          \"at\": \"2026-10-27T12:08:58Z\"\n        }\n      ],\n      \"spaces\": [\n        {\n          \"name\": \"web\",\n          \"rev\": 1,\n          \"projects\": []\n        }\n      ]\n    }\n  }\n}\n"
     },
     {
       "k": "end",
-      "dt": 0.038,
+      "dt": 0.018,
+      "code": 0
+    },
+    {
+      "k": "cmd",
+      "prompt": "~",
+      "text": "xo gh --version",
+      "id": "xo-gh"
+    },
+    {
+      "k": "out",
+      "dt": 0.145,
+      "text": "gh version 2.89.0 (2026-03-26)\nhttps://github.com/cli/cli/releases/tag/v2.89.0\n"
+    },
+    {
+      "k": "end",
+      "dt": 0.016,
       "code": 0
     },
     {
@@ -73,12 +94,12 @@
     },
     {
       "k": "out",
-      "dt": 0.18,
+      "dt": 0.144,
       "text": "xo: POST https://xo.quirq.dev/me/projects\n"
     },
     {
       "k": "out",
-      "dt": 0.316,
+      "dt": 0.314,
       "text": "xo: ./hello: an empty git repository\n"
     },
     {
@@ -88,7 +109,7 @@
     },
     {
       "k": "end",
-      "dt": 0.02,
+      "dt": 0.018,
       "code": 0
     },
     {
@@ -99,22 +120,17 @@
     },
     {
       "k": "out",
-      "dt": 0.161,
+      "dt": 0.138,
       "text": "xo: POST https://xo.quirq.dev/me/projects\n"
     },
     {
       "k": "out",
-      "dt": 2.337,
-      "text": "xo: ./flask: cloned https://github.com/pallets/flask\n"
-    },
-    {
-      "k": "out",
-      "dt": 0.0,
-      "text": "[\n  {\n    \"name\": \"hello\"\n  },\n  {\n    \"name\": \"flask\",\n    \"owner\": \"pallets\"\n  }\n]\n"
+      "dt": 1.988,
+      "text": "xo: ./flask: cloned https://github.com/pallets/flask\n[\n  {\n    \"name\": \"hello\"\n  },\n  {\n    \"name\": \"flask\",\n    \"owner\": \"pallets\"\n  }\n]\n"
     },
     {
       "k": "end",
-      "dt": 0.031,
+      "dt": 0.017,
       "code": 0
     },
     {
@@ -125,17 +141,17 @@
     },
     {
       "k": "out",
-      "dt": 0.231,
+      "dt": 0.119,
       "text": "xo: POST https://xo.quirq.dev/me/projects\n"
     },
     {
       "k": "out",
-      "dt": 0.321,
+      "dt": 0.309,
       "text": "[\n  {\n    \"name\": \"hello\"\n  },\n  {\n    \"name\": \"flask\",\n    \"owner\": \"pallets\"\n  },\n  {\n    \"name\": \"notes-app\"\n  }\n]\n"
     },
     {
       "k": "end",
-      "dt": 0.021,
+      "dt": 0.019,
       "code": 0
     },
     {
@@ -146,12 +162,12 @@
     },
     {
       "k": "out",
-      "dt": 0.336,
+      "dt": 0.139,
       "text": "[\n  {\n    \"name\": \"hello\"\n  },\n  {\n    \"name\": \"flask\",\n    \"owner\": \"pallets\"\n  },\n  {\n    \"name\": \"notes-app\"\n  }\n]\n"
     },
     {
       "k": "end",
-      "dt": 0.024,
+      "dt": 0.017,
       "code": 0
     },
     {
@@ -162,12 +178,12 @@
     },
     {
       "k": "out",
-      "dt": 0.18,
+      "dt": 0.124,
       "text": "xo: POST https://xo.quirq.dev/me/spaces/web/projects\n"
     },
     {
       "k": "out",
-      "dt": 0.313,
+      "dt": 0.306,
       "text": "{\n  \"name\": \"web\",\n  \"rev\": 2,\n  \"projects\": [\n    {\n      \"pallets/flask\": \"main\"\n    }\n  ]\n}\n"
     },
     {
@@ -183,12 +199,12 @@
     },
     {
       "k": "out",
-      "dt": 0.186,
+      "dt": 0.139,
       "text": "{\n  \"projects\": [\n    {\n      \"name\": \"hello\"\n    },\n    {\n      \"name\": \"flask\",\n      \"owner\": \"pallets\"\n    },\n    {\n      \"name\": \"notes-app\"\n    }\n  ],\n  \"spaces\": [\n    {\n      \"name\": \"web\",\n      \"rev\": 2,\n      \"projects\": [\n        {\n          \"pallets/flask\": \"main\"\n        }\n      ]\n    }\n  ]\n}\n"
     },
     {
       "k": "end",
-      "dt": 0.031,
+      "dt": 0.027,
       "code": 0
     },
     {
@@ -199,7 +215,7 @@
     },
     {
       "k": "out",
-      "dt": 2.027,
+      "dt": 1.785,
       "text": "xo: ./web/flask: main\n"
     },
     {
@@ -209,7 +225,7 @@
     },
     {
       "k": "end",
-      "dt": 0.021,
+      "dt": 0.024,
       "code": 0
     },
     {
@@ -220,12 +236,12 @@
     },
     {
       "k": "out",
-      "dt": 0.187,
+      "dt": 0.124,
       "text": "{\n  \"method\": \"POST\",\n  \"url\": \"https://xo.quirq.dev/me/spaces\",\n  \"headers\": {},\n  \"body\": {\n    \"kind\": \"claude-code\",\n    \"name\": \"lab\",\n    \"body\": {\n      \"volumeSize\": 20,\n      \"name\": \"lab\"\n    }\n  }\n}\nxo: the new space gets a copy of this API key (as xo_api_key)\nxo: dry run, nothing sent\n"
     },
     {
       "k": "end",
-      "dt": 0.022,
+      "dt": 0.018,
       "code": 0
     },
     {
@@ -236,17 +252,17 @@
     },
     {
       "k": "out",
-      "dt": 0.179,
+      "dt": 0.127,
       "text": "xo: POST https://xo.quirq.dev/me/spaces\nxo: the new space gets a copy of this API key (as xo_api_key)\n"
     },
     {
       "k": "out",
-      "dt": 0.319,
+      "dt": 0.317,
       "text": "{\n  \"success\": true,\n  \"data\": {\n    \"space\": {\n      \"name\": \"lab\",\n      \"kind\": \"claude-code\",\n      \"id\": \"181772e3-3c50-5fc6-b0c8-05c9292c3b7a\",\n      \"rev\": 1,\n      \"projects\": []\n    },\n    \"xo\": {\n      \"id\": \"181772e3-3c50-5fc6-b0c8-05c9292c3b7a\",\n      \"name\": \"lab\",\n      \"owner\": \"user_sam\",\n      \"type\": \"claude-code\"\n    }\n  }\n}\n"
     },
     {
       "k": "end",
-      "dt": 0.024,
+      "dt": 0.019,
       "code": 0
     },
     {
@@ -257,12 +273,12 @@
     },
     {
       "k": "out",
-      "dt": 0.256,
+      "dt": 0.145,
       "text": "[\n  {\n    \"name\": \"web\",\n    \"rev\": 2,\n    \"projects\": [\n      {\n        \"pallets/flask\": \"main\"\n      }\n    ]\n  },\n  {\n    \"name\": \"lab\",\n    \"kind\": \"claude-code\",\n    \"id\": \"181772e3-3c50-5fc6-b0c8-05c9292c3b7a\",\n    \"rev\": 1,\n    \"projects\": []\n  }\n]\n"
     },
     {
       "k": "end",
-      "dt": 0.024,
+      "dt": 0.016,
       "code": 0
     },
     {
@@ -273,12 +289,12 @@
     },
     {
       "k": "out",
-      "dt": 0.367,
+      "dt": 0.116,
       "text": "{\n  \"success\": true,\n  \"data\": {\n    \"userId\": \"user_sam\",\n    \"spaceName\": \"lab\",\n    \"spaceApiUrl\": \"https://lab.spaces.example.com\",\n    \"openClawRestartUrl\": \"https://lab.spaces.example.com/restart\",\n    \"sharedUsers\": []\n  }\n}\n"
     },
     {
       "k": "end",
-      "dt": 0.023,
+      "dt": 0.015,
       "code": 0
     },
     {
@@ -289,17 +305,17 @@
     },
     {
       "k": "out",
-      "dt": 0.165,
+      "dt": 0.125,
       "text": "xo: POST https://xo.quirq.dev/me/share\n"
     },
     {
       "k": "out",
-      "dt": 1.507,
+      "dt": 1.505,
       "text": "{\n  \"to\": \"alex\",\n  \"item\": \"space:web\",\n  \"projects\": [\n    {\n      \"pallets/flask\": \"main\"\n    }\n  ]\n}\n"
     },
     {
       "k": "end",
-      "dt": 0.023,
+      "dt": 0.019,
       "code": 0
     },
     {
@@ -310,54 +326,54 @@
     },
     {
       "k": "out",
-      "dt": 0.17,
-      "text": "[\n  {\n    \"id\": \"95a8a33d0ee40c7f\",\n    \"from\": \"alex\",\n    \"item\": \"space:api\",\n    \"at\": \"2026-10-24T06:16:37Z\",\n    \"projects\": [\n      {\n        \"expressjs/express\": \"master\"\n      }\n    ]\n  },\n  {\n    \"id\": \"7be344fdfcb4cad6\",\n    \"from\": \"alex\",\n    \"item\": \"project:expressjs/express\",\n    \"at\": \"2026-10-24T06:16:39Z\"\n  }\n]\n"
+      "dt": 0.149,
+      "text": "[\n  {\n    \"id\": \"6141614ad10bb13a\",\n    \"from\": \"alex\",\n    \"item\": \"space:api\",\n    \"at\": \"2026-10-27T12:08:57Z\",\n    \"projects\": [\n      {\n        \"expressjs/express\": \"master\"\n      }\n    ]\n  },\n  {\n    \"id\": \"562dc5d8082a6e03\",\n    \"from\": \"alex\",\n    \"item\": \"project:expressjs/express\",\n    \"at\": \"2026-10-27T12:08:58Z\"\n  }\n]\n"
     },
     {
       "k": "end",
-      "dt": 0.026,
+      "dt": 0.02,
       "code": 0
     },
     {
       "k": "cmd",
       "prompt": "~",
-      "text": "xo accept 95a8a33d0ee40c7f --as team-api --yes",
+      "text": "xo accept 6141614ad10bb13a --as team-api --yes",
       "id": "xo-accept"
     },
     {
       "k": "out",
-      "dt": 0.2,
+      "dt": 0.156,
       "text": "xo: POST https://xo.quirq.dev/me/shared/accept\n"
     },
     {
       "k": "out",
-      "dt": 0.311,
-      "text": "{\n  \"id\": \"95a8a33d0ee40c7f\",\n  \"item\": \"space:api\",\n  \"space\": {\n    \"name\": \"team-api\",\n    \"rev\": 1,\n    \"projects\": [\n      {\n        \"expressjs/express\": \"master\"\n      }\n    ]\n  },\n  \"projectsAdded\": [\n    \"expressjs/express\"\n  ]\n}\n"
+      "dt": 0.308,
+      "text": "{\n  \"id\": \"6141614ad10bb13a\",\n  \"item\": \"space:api\",\n  \"space\": {\n    \"name\": \"team-api\",\n    \"rev\": 1,\n    \"projects\": [\n      {\n        \"expressjs/express\": \"master\"\n      }\n    ]\n  },\n  \"projectsAdded\": [\n    \"expressjs/express\"\n  ]\n}\n"
     },
     {
       "k": "end",
-      "dt": 0.023,
+      "dt": 0.019,
       "code": 0
     },
     {
       "k": "cmd",
       "prompt": "~",
-      "text": "xo reject 7be344fdfcb4cad6",
+      "text": "xo reject 562dc5d8082a6e03",
       "id": "xo-reject"
     },
     {
       "k": "out",
-      "dt": 0.184,
+      "dt": 0.15,
       "text": "xo: POST https://xo.quirq.dev/me/shared/reject\n"
     },
     {
       "k": "out",
-      "dt": 0.315,
-      "text": "{\n  \"id\": \"7be344fdfcb4cad6\",\n  \"item\": \"project:expressjs/express\"\n}\n"
+      "dt": 0.31,
+      "text": "{\n  \"id\": \"562dc5d8082a6e03\",\n  \"item\": \"project:expressjs/express\"\n}\n"
     },
     {
       "k": "end",
-      "dt": 0.027,
+      "dt": 0.017,
       "code": 0
     },
     {
@@ -368,17 +384,17 @@
     },
     {
       "k": "out",
-      "dt": 0.17,
+      "dt": 0.111,
       "text": "xo: me: deleted ~/.config/xo/credentials\n"
     },
     {
       "k": "out",
-      "dt": 0.129,
+      "dt": 0.087,
       "text": "xo: github: not logged in\n"
     },
     {
       "k": "end",
-      "dt": 0.025,
+      "dt": 0.019,
       "code": 0
     }
   ]

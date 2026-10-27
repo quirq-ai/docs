@@ -34,7 +34,8 @@ The docs home (`src/components/home-terminal.tsx`) replays every qq and xo comma
   folder `./NAME` or this one, an index in a new or existing `.git`), the only lines that differ at
   that width (`COLUMNS=96`). On 2026-10-24 `xo --help` and `xo --version` were replaced with what
   xo 38361fb prints (`COLUMNS=96`, by-hand install): the quirq hub in `xo login`, `xo update` and
-  `xo sync`, and the commit after the version.
+  `xo sync`, and the commit after the version. On 2026-10-27 they were replaced again with what xo
+  82dac60 prints the same way: `gh` and `sh` added to the command list, and the new commit.
 - **Stand-in**: `record-home-xo.sh` records `home-xo.json` into `src/journeys/home-xo.json`. It
   runs the real xo CLI against the real `xo serve`, which talks to `xo-standin.py`: a fake Clerk and
   a fake XO core API on 127.0.0.1 with two made-up users, so no real account, Clerk, XO or
@@ -46,18 +47,21 @@ The docs home (`src/components/home-terminal.tsx`) replays every qq and xo comma
   publishes a folder (to the quirq hub since xo 9bbb460, or GitHub with `--github`), so it is an
   example below; the script makes sam's space `web` with `xo connect web` before recording. The
   stand-in keeps no quirq hub (the xo server takes only an https hub), so `xo login` prints no hub
-  line. The committed `home-xo.json` was recorded on 2026-10-24 with xo 38361fb.
+  line. The committed `home-xo.json` was recorded on 2026-10-27 with xo 82dac60. `xo gh --version`
+  runs the recording machine's own gh, found on the `PATH` (gh 2.89.0 that day).
 
   ```sh
   ./record-home-xo.sh ~/.xo ../../src/journeys/home-xo.json   # ~/.xo: a venv with xo installed
   ```
 
 - **Example**: commands that need GitHub, a signed-in gh or ghcr.io (`qq fetch`, `sync`,
-  `upload`, `try`, `status`, `land`, `xo update`, `xo sync`, `xo create space`). Their output is written in
+  `upload`, `try`, `status`, `land`, `xo update`, `xo sync`, `xo create space`, and `xo sh`, which needs
+  a quirq hub). Their output is written in
   `home-commands.ts` from the source of the version named there, each with a `from` note saying
   where every line comes from, and a made-up pull request, branch and commit. `xo create space web` is
   the real output of xo 38361fb's `spacerepo.create()` with a quirq hub saved, on shallow clones of
   `pallets/flask` and `psf/requests`, asking GitHub for real with no login, with only the hub
-  stubbed (no space there yet, its creation and the push).
+  stubbed (no space there yet, its creation and the push). `xo sh project list` is written from
+  space-hub 2c7bdf5's `projectList` in `cli/src/cli.ts`, with made-up projects, sizes and times.
 
 Check both recordings with the grep above before committing them.

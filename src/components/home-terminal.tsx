@@ -48,7 +48,7 @@ export const SOURCE_LABEL: Record<Source, { name: string; tip: string }> = {
   },
   example: {
     name: "Example",
-    tip: "Not a run: this needs GitHub, gh or ghcr.io, so the output is written from qq's or xo's source, with a made-up pull request and commit.",
+    tip: "Not a run: this needs GitHub, gh, ghcr.io or the quirq hub, so the output is written from the source of qq, xo or the hub's client, with made-up names, pull requests and commits.",
   },
 };
 
@@ -510,7 +510,7 @@ function Legend() {
       <strong className="font-semibold">Stand-in</strong>: the real xo CLI and
       server with made-up users on the recording machine, its address shown as
       xo.quirq.dev. <strong className="font-semibold">Example</strong>: needs
-      GitHub, so written from the source.
+      GitHub or the quirq hub, so written from the source.
     </span>
   );
 }
