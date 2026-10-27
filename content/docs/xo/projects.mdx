@@ -118,6 +118,16 @@ Once [`xo login`](/docs/xo/login) found the quirq hub, a space's GitHub
 projects work through it: the hub is a relay for you and your agents while
 the work is under way, and GitHub stays where the work ends up.
 
+<Callout type="warn" title="Not working yet">
+  With xo 82dac60 and the quirq hub as it is now, nothing xo pushes reaches
+  the hub: xo asks the hub for a space, the hub (which now calls that an org)
+  makes an org of that name, and the push then finds no project there. So
+  `xo create space` on the hub, and a space's `xo update` and `xo sync` once
+  `xo login` found the hub, stop with an error and can leave an empty org
+  behind. A fix is open as xo #92. Until it ships, `xo create space
+  --github` and the `project:P` commands work on GitHub, and `xo sh` works.
+</Callout>
+
 - Each checkout gets a second remote, `quirq`,
   `quirq://hub.quirq.dev/AGENT/OWNER--REPO`. `origin` and everything GitHub
   sees stay as they are, so `git push` and pull requests work as before.

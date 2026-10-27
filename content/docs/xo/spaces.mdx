@@ -165,6 +165,16 @@ xo create space        # space web, on the quirq hub: branches flask and request
 
 ### On the quirq hub
 
+<Callout type="warn" title="Not working yet">
+  With xo 82dac60 and the quirq hub as it is now, nothing xo pushes reaches
+  the hub: xo asks the hub for a space, the hub (which now calls that an org)
+  makes an org of that name, and the push then finds no project there. So
+  `xo create space` on the hub, and a space's `xo update` and `xo sync` once
+  `xo login` found the hub, stop with an error and can leave an empty org
+  behind. A fix is open as xo #92. Until it ships, `xo create space
+  --github` and the `project:P` commands work on GitHub, and `xo sh` works.
+</Callout>
+
 - It needs the hub's client, `spacehub`, and an `xo login` that found the
   hub ([install it](/docs/xo/install#the-quirq-hubs-client)). Without them
   xo stops before making anything and says so; `--github` still works.

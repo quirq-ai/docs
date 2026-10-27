@@ -51,7 +51,7 @@ export const useCases: UseCase[] = [
     id: "repos-to-space",
     tool: "xo",
     title: "Make a space from famous repos",
-    text: "A space is a collection of GitHub repos. Clone Flask and Requests into ./web, and xo create space web publishes the folder as a space on the quirq hub: one branch per repo.",
+    text: "A space is a collection of GitHub repos. Clone Flask and Requests into ./web, and xo create space web publishes the folder as a space on the quirq hub: one branch per repo. With xo 82dac60 the hub push fails until the fix in xo #92 ships; --github works.",
     ids: ["xo-create-space"],
     more: {
       href: "/docs/xo/spaces#a-space-from-your-folders",
@@ -91,13 +91,13 @@ export const useCases: UseCase[] = [
     more: { href: "/docs/xo/share", label: "Share" },
   },
   {
-    id: "hub-together",
+    id: "hub-list",
     tool: "xo",
-    title: "See your projects on the quirq hub",
+    title: "List your projects on the quirq hub",
     text: "xo sh runs the hub's client, spacehub, on the hub xo login found. Here it lists sam's projects there, newest push first, with their sizes.",
     ids: ["xo-sh"],
     more: {
-      href: "/docs/xo/hub#work-on-a-project-together",
+      href: "/docs/xo/hub#xo-sh-the-hubs-client",
       label: "The quirq hub",
     },
   },

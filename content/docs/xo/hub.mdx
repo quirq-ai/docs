@@ -18,13 +18,18 @@ relay while the work is under way: GitHub stays where the work ends up.
 When the xo server keeps a hub, [`xo login`](/docs/xo/login)
 gets you a login there named after your XO username (xo's messages call it
 your hub agent), and hands it to the hub's client, `spacehub`
-([install it](/docs/xo/install#the-quirq-hubs-client) first). What xo
-pushes to the hub lands under that name:
+([install it](/docs/xo/install#the-quirq-hubs-client) first). Your projects
+on the hub are under that name.
 
-- a folder space from [`xo create space`](/docs/xo/spaces#a-space-from-your-folders)
-  is the project `NAME/web`, with one branch per repository;
-- a space's GitHub project is its copy `NAME/OWNER--REPO`, such as
-  `NAME/pallets--flask` ([how](/docs/xo/projects#through-the-quirq-hub)).
+<Callout type="warn" title="Not working yet">
+  With xo 82dac60 and the quirq hub as it is now, nothing xo pushes reaches
+  the hub: xo asks the hub for a space, the hub (which now calls that an org)
+  makes an org of that name, and the push then finds no project there. So
+  `xo create space` on the hub, and a space's `xo update` and `xo sync` once
+  `xo login` found the hub, stop with an error and can leave an empty org
+  behind. A fix is open as xo #92. Until it ships, `xo create space
+  --github` and the `project:P` commands work on GitHub, and `xo sh` works.
+</Callout>
 
 <Callout type="warn">
   Anyone who can reach the hub can read every project on it in this version.
@@ -38,9 +43,9 @@ client is installed as `spacehub`, never as `sh`, the system shell.
 
 ```sh
 xo sh auth status                # the hub, and who you are on it
-xo sh project list NAME          # your projects, newest push first, with their sizes
-xo sh project view web           # one of them: default branch, size and refs
-xo sh project clone NAME/web     # git clone it, with the hub as the remote "quirq"
+xo sh project list NAME          # the projects in the space NAME (yours: your XO username), newest push first
+xo sh project view site          # your project site: default branch, size and refs
+xo sh project clone NAME/site    # git clone it, with the hub as the remote "quirq"
 ```
 
 A project name without a space is one in your own space. `xo sh --help`
@@ -53,8 +58,8 @@ step: every few seconds it commits your changes, rebases onto every push to
 the branch, and pushes. It stops on a conflict (exit 2) for you to fix.
 
 ```sh
-xo sh project clone NAME/web
-cd web
+xo sh project clone NAME/site
+cd site
 xo sh project sync --auto        # edit together until a conflict
 ```
 

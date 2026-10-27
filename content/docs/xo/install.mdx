@@ -133,4 +133,14 @@ Then run `xo login` (again): it hands your hub login to `spacehub`, and
 the client, spaces keep working with GitHub alone, and `xo create space`
 needs `--github`.
 
+<Callout type="warn" title="Not working yet">
+  With xo 82dac60 and the quirq hub as it is now, nothing xo pushes reaches
+  the hub: xo asks the hub for a space, the hub (which now calls that an org)
+  makes an org of that name, and the push then finds no project there. So
+  `xo create space` on the hub, and a space's `xo update` and `xo sync` once
+  `xo login` found the hub, stop with an error and can leave an empty org
+  behind. A fix is open as xo #92. Until it ships, `xo create space
+  --github` and the `project:P` commands work on GitHub, and `xo sh` works.
+</Callout>
+
 Next: [log in](/docs/xo/login).
