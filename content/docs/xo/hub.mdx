@@ -19,17 +19,24 @@ When the xo server keeps a hub, [`xo login`](/docs/xo/login)
 gets you a login there named after your XO username (xo's messages call it
 your hub agent), and hands it to the hub's client, `spacehub`
 ([install it](/docs/xo/install#the-quirq-hubs-client) first). What xo
-pushes to the hub lands under that name:
+pushes to the hub lands under that name, `AGENT` below:
 
 - a folder space from [`xo create space`](/docs/xo/spaces#a-space-from-your-folders)
-  is the project `NAME/web`, with one branch per repository;
-- a space's GitHub project is its copy `NAME/OWNER--REPO`, such as
-  `NAME/pallets--flask` ([how](/docs/xo/projects#through-the-quirq-hub)).
+  is the project `AGENT/web`, with one branch per repository;
+- a space's GitHub project is its copy `AGENT/OWNER--REPO`, such as
+  `AGENT/pallets--flask` ([how](/docs/xo/projects#through-the-quirq-hub)).
 
-An xo older than `6e6d79b` asked the hub for these the old way, so the hub
-made an org of that name instead, and the push failed. If that happened to
-you, update xo ([how](/docs/xo/install#update-or-remove)) and run the
-command again.
+An xo older than `6e6d79b` asked the hub for these the old way: the hub
+made an empty org named after the space (or `OWNER--REPO`) instead, and the
+push failed. Update xo ([how](/docs/xo/install#update-or-remove)) and run
+the command again. To remove those empty orgs, run space-hub's
+[cleanup-junk-orgs.sh](https://github.com/quirq-ai/space-hub/blob/41d21baf4fcd49c5b394be5806dded3888f48f75/scripts/cleanup-junk-orgs.sh)
+where you ran `xo login`. It lists the empty orgs xo made and deletes them
+only when you type `y`:
+
+```sh
+cd space-hub && git pull && bash scripts/cleanup-junk-orgs.sh
+```
 
 <Callout type="warn">
   Anyone who can reach the hub can read every project on it in this version.
@@ -43,9 +50,9 @@ client is installed as `spacehub`, never as `sh`, the system shell.
 
 ```sh
 xo sh auth status                # the hub, and who you are on it
-xo sh project list NAME          # the projects in the space NAME (yours: your XO username), newest push first
+xo sh project list AGENT         # the projects in your space, newest push first, with their sizes
 xo sh project view site          # your project site: default branch, size and refs
-xo sh project clone NAME/site    # git clone it, with the hub as the remote "quirq"
+xo sh project clone AGENT/site   # git clone it, with the hub as the remote "quirq"
 ```
 
 A project name without a space is one in your own space. `xo sh --help`
@@ -58,7 +65,7 @@ step: every few seconds it commits your changes, rebases onto every push to
 the branch, and pushes. It stops on a conflict (exit 2) for you to fix.
 
 ```sh
-xo sh project clone NAME/site
+xo sh project clone AGENT/site
 cd site
 xo sh project sync --auto        # edit together until a conflict
 ```
@@ -71,7 +78,7 @@ xo sh project watch              # each push, live
 xo sh project member add bob     # let the builder bob push to it too
 ```
 
-`xo sh space clone NAME` clones every project in a space into one folder,
+`xo sh space clone AGENT` clones every project in a space into one folder,
 and `xo sh space sync --watch --auto`, run there, keeps them all current.
 Autosync commits often, with generated messages, and skips commit hooks:
 squash before you take the work to GitHub.

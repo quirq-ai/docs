@@ -128,6 +128,10 @@ git clone https://github.com/quirq-ai/space-hub
 space-hub/scripts/install-cli.sh
 ```
 
+xo `6e6d79b` needs a `spacehub` with a `project` command, and stops and says
+so when yours is older: run `git pull` in your `space-hub` folder, then
+`scripts/install-cli.sh` again.
+
 Then run `xo login` (again): it hands your hub login to `spacehub`, and
 `xo sh` runs it on that hub ([the hub](/docs/xo/hub)). Without
 the client, spaces keep working with GitHub alone, and `xo create space`
