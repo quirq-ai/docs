@@ -52,6 +52,19 @@ flags. The options go before or after the command.
 | `xo accept ID` | shows the invite, asks, then adds it (`--as NAME`, `--space S`, `--ref REF`, `--yes`) |
 | `xo reject ID` | takes the invite off |
 
+## Other tools
+
+| Command | Does |
+|---|---|
+| `xo gh ARGS` | runs GitHub's `gh` with these arguments (`xo gh pr list`) |
+| `xo sh ARGS` | runs the quirq hub's client, `spacehub`, with these arguments, on the hub `xo login` found (`xo sh project list`; [the hub](/docs/xo/hub)) |
+
+The arguments go to the tool as they are, and its input, output and exit
+code are its own. Neither tool gets your XO key; `spacehub` gets no GitHub
+token either. Put the word first: `xo gh pr list`, not `xo --json gh pr list`
+(xo's own options do not apply to it). `sh` is a word inside xo only: the
+hub's client is installed as `spacehub`, never as `sh`, the system shell.
+
 ## Settings
 
 | Setting | Variable | Flag | Default |

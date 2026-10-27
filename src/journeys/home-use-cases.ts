@@ -90,6 +90,17 @@ export const useCases: UseCase[] = [
     ids: ["xo-share", "xo-list-shared", "xo-accept"],
     more: { href: "/docs/xo/share", label: "Share" },
   },
+  {
+    id: "hub-list",
+    tool: "xo",
+    title: "List your projects on the quirq hub",
+    text: "xo sh runs the hub's client, spacehub, on the hub xo login found. Here it lists sam's projects there, newest push first, with their sizes.",
+    ids: ["xo-sh"],
+    more: {
+      href: "/docs/xo/hub#xo-sh-the-hubs-client",
+      label: "The quirq hub",
+    },
+  },
 ];
 
 export type Field = {
@@ -173,6 +184,22 @@ const folderSpace: Field = {
     !v.toLowerCase().endsWith(".git") &&
     !["new", "create", ...KINDS].includes(v.toLowerCase()),
 };
+
+// A project on the quirq hub, SPACE/NAME: the hub's space rule (lowercase
+// letters, digits and inner hyphens, up to 39) and its project rule (space-hub
+// module/src/index.ts PROJECT_NAME), here also never starting with "-" or ".",
+// so the clone's folder is NAME and cd NAME is safe to paste.
+const hubProject: Field = {
+  key: "project",
+  label: "Project on the quirq hub",
+  placeholder: "sam/site",
+  rule: "SPACE/NAME: a space of lowercase letters, digits or hyphens, then a name of letters, digits, _ . or -",
+  ok: (v) =>
+    /^[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?\/[A-Za-z0-9_][A-Za-z0-9._-]{0,99}$/.test(
+      v,
+    ) && !v.toLowerCase().endsWith(".git"),
+};
+const projectOf = (v: string) => v.split("/").pop() ?? "";
 
 export const recipes: Recipe[] = [
   {
@@ -265,5 +292,17 @@ export const recipes: Recipe[] = [
     ],
     build: (v) => [`xo share space:${v.space} ${v.user}`],
     play: ["xo-share"],
+  },
+  {
+    id: "hub-together",
+    tool: "xo",
+    title: "Work on a hub project together",
+    fields: [hubProject],
+    build: (v) => [
+      `xo sh project clone ${v.project}`,
+      `cd ${projectOf(v.project)}`,
+      "xo sh project sync --auto",
+    ],
+    play: ["xo-sh"],
   },
 ];

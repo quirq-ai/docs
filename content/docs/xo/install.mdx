@@ -6,9 +6,12 @@ icon: Download
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-xo needs Python 3.11 or newer and git. The installs below pin xo to the
-commit its [quickstart](https://github.com/quirq-ai/xo/blob/593cda7523d13cffb68fb34cfd75cc5448d920c9/docs/quickstart.md)
-installs, `38361fb`. For GitHub, also install the
+xo needs Python 3.11 or newer and git. The by-hand install below pins xo to
+`6e6d79b`, the first commit whose spaces work on the quirq hub as it is now.
+qq-setup installs the commit in its
+[`pins.json`](https://github.com/quirq-ai/setup/blob/main/pins.json); while
+that is older, use the hub after
+[updating by hand](#update-or-remove) to `6e6d79b`. For GitHub, also install the
 [GitHub CLI](https://cli.github.com) (`gh`): xo logs in to GitHub through it.
 For spaces on the quirq hub, also install the hub's client
 ([below](#the-quirq-hubs-client)).
@@ -53,13 +56,13 @@ or Ubuntu `sudo apt install python3-venv`. Using bash? Change `~/.zshrc`
 
 ```sh
 python3 -m venv ~/.xo \
-  && ~/.xo/bin/pip install "quirq-xo @ git+https://github.com/quirq-ai/xo@38361fb016d1d589ee0aa659ef383d166fa536a4" \
+  && ~/.xo/bin/pip install "quirq-xo @ git+https://github.com/quirq-ai/xo@6e6d79b96310968278d3aab14ddc2b49c88642f3" \
   && { grep -qxF 'export PATH="$HOME/.xo/bin:$PATH"' ~/.zshrc 2>/dev/null || echo 'export PATH="$HOME/.xo/bin:$PATH"' >> ~/.zshrc; } \
   && export PATH="$HOME/.xo/bin:$PATH" \
   && xo --version
 ```
 
-The last line prints `xo 0.1.0 (38361fb)`: the version, then the commit it
+The last line prints `xo 0.1.0 (6e6d79b)`: the version, then the commit it
 was installed from. If a step fails, the ones after it don't run.
 
 <Callout type="warn">
@@ -80,8 +83,9 @@ To update by hand, replace `NEW_SHA` with the commit you were given:
 
 `xo --version` shows which commit you have. qq-setup
 reports an xo at another commit instead of calling it out of date, since the
-XO team may have given you a newer one: its **Update** would move it back to
-the pin, `38361fb`.
+XO team may have given you a newer one: its **Update** would move it to
+qq-setup's own pin, in its
+[`pins.json`](https://github.com/quirq-ai/setup/blob/main/pins.json).
 
 ### Auto-update
 
@@ -128,7 +132,12 @@ git clone https://github.com/quirq-ai/space-hub
 space-hub/scripts/install-cli.sh
 ```
 
-Then run `xo login` (again): it hands your hub login to `spacehub`. Without
+xo `6e6d79b` needs a `spacehub` with a `project` command, and stops and says
+so when yours is older: run `git pull` in your `space-hub` folder, then
+`scripts/install-cli.sh` again.
+
+Then run `xo login` (again): it hands your hub login to `spacehub`, and
+`xo sh` runs it on that hub ([the hub](/docs/xo/hub)). Without
 the client, spaces keep working with GitHub alone, and `xo create space`
 needs `--github`.
 
