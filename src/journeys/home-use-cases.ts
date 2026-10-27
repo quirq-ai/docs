@@ -51,7 +51,7 @@ export const useCases: UseCase[] = [
     id: "repos-to-space",
     tool: "xo",
     title: "Make a space from famous repos",
-    text: "A space is a collection of GitHub repos. Clone Flask and Requests into ./web, and xo create space web publishes the folder as a space on the quirq hub: one branch per repo. With xo 82dac60 the hub push fails until the fix in xo #92 ships; --github works.",
+    text: "A space is a collection of GitHub repos. Clone Flask and Requests into ./web, and xo create space web publishes the folder as a space on the quirq hub: one branch per repo.",
     ids: ["xo-create-space"],
     more: {
       href: "/docs/xo/spaces#a-space-from-your-folders",

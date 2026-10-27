@@ -35,7 +35,8 @@ The docs home (`src/components/home-terminal.tsx`) replays every qq and xo comma
   that width (`COLUMNS=96`). On 2026-10-24 `xo --help` and `xo --version` were replaced with what
   xo 38361fb prints (`COLUMNS=96`, by-hand install): the quirq hub in `xo login`, `xo update` and
   `xo sync`, and the commit after the version. On 2026-10-27 they were replaced again with what xo
-  82dac60 prints the same way: `gh` and `sh` added to the command list, and the new commit.
+  82dac60 prints the same way: `gh` and `sh` added to the command list. `xo --version` is what xo
+  6e6d79b prints, whose `xo --help` is the same as 82dac60's.
 - **Stand-in**: `record-home-xo.sh` records `home-xo.json` into `src/journeys/home-xo.json`. It
   runs the real xo CLI against the real `xo serve`, which talks to `xo-standin.py`: a fake Clerk and
   a fake XO core API on 127.0.0.1 with two made-up users, so no real account, Clerk, XO or
@@ -47,7 +48,7 @@ The docs home (`src/components/home-terminal.tsx`) replays every qq and xo comma
   publishes a folder (to the quirq hub since xo 9bbb460, or GitHub with `--github`), so it is an
   example below; the script makes sam's space `web` with `xo connect web` before recording. The
   stand-in keeps no quirq hub (the xo server takes only an https hub), so `xo login` prints no hub
-  line. The committed `home-xo.json` was recorded on 2026-10-27 with xo 82dac60. `xo gh --version`
+  line. The committed `home-xo.json` was recorded on 2026-10-27 with xo 6e6d79b. `xo gh --version`
   runs the recording machine's own gh, found on the `PATH` (gh 2.89.0 that day).
 
   ```sh
